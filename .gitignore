@@ -1,2 +1,5 @@
 # most of the ignored files are platform-specific
 /scripts/
+
+# because users might accidentally run npm install from this dir.
+npm-debug.log
