@@ -1,8 +1,8 @@
 define([
   './mlHttpInterceptor',
   './mlModelBase',
-//  './mlModelFactory',
-//  './mlModelSpec',
+  './mlModelFactory',
+  './mlModelSpec',
   './mlSchema',
   './mlStore',
   './mlWaiter'
