@@ -5,7 +5,7 @@ define(['app/module'], function (module) {
    * @name ssSearch
    * @requires mlModelBase
    * @requires mlSchema
-   * @requires mlSeearch
+   * @requires mlSearch
    *
    * @description
    * TBD

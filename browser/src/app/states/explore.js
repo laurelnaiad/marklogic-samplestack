@@ -2,7 +2,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
 
   /**
    * @ngdoc state
-   * @name exploreResults
+   * @name explore
    *
    * @description
    * TBD
