@@ -147,7 +147,7 @@ self = module.exports = {
         });
 
       // TODO: is this conditional reasonable?
-      if (html5 && buildParams.appSettings.html5Mode) {
+      if (html5 && buildParams.build.appSettings.html5Mode) {
         server.use(
           require('connect-modrewrite')(
           // if lacking a dot, redirect to index.html
