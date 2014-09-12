@@ -1,0 +1,186 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssFacetDateRange.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssFacetDateRange</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Renders date range facet of search results into a
+<a href="https://github.com/pablojim/highcharts-ng"
+target="_blank">highcharts-ng</a> chart, and allows the user
+to specify a range of dates over which to filter the search by selecting
+a range within the chart or by using date-picker dropdowns.</p>
+<p>Listens for <code>newResults</code> event to trigger popuplation of results.</p>
+<p>When the user selects a range either through the chart or using the date
+pickers, a <code>criteriaChange</code> event is emitted so that the search may be
+updated..</p>
+<h2 id="-scope-properties-methods-"><code>scope</code> properties/methods:</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dateData</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array</a></td>
+<td>Array of Configuration for the highcharts object.</td>
+</tr>
+<tr>
+<td><code>highchartsConfig</code></td>
+<td><a href="" class="label type-hint type-hint-object">object</a></td>
+<td>Configuration for the highcharts object.</td>
+</tr>
+<tr>
+<td><code>chart</code></td>
+<td><a href="" class="label type-hint type-hint-object">object</a></td>
+<td>Reference to the actual Highcharts chart</td>
+</tr>
+<tr>
+<td><code>store.session</code></td>
+<td><a href="api/app/domain/ssSession"><code>ssSession</code></a></td>
+<td>As provided by $rootScope, provides session information.</td>
+</tr>
+<tr>
+<td><code>dateStartOptions</code></td>
+<td><a href="" class="label type-hint type-hint-ojbect">ojbect</a></td>
+<td>Configuration for date start picker</td>
+</tr>
+<tr>
+<td><code>dateEndOptions</code></td>
+<td><a href="" class="label type-hint type-hint-ojbect">ojbect</a></td>
+<td>Configuration for date end picker</td>
+</tr>
+<tr>
+<td><code>pickerOpen</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(string)</a></td>
+<td>Opens one or the other date picker as specified by the parameter.</td>
+</tr>
+<tr>
+<td><code>applyPickerDates</code></td>
+<td><a href="" class="label type-hint type-hint-function">function</a></td>
+<td>Applies the values in the date pickers to the relevant properties of the search constraints, and if they have been modified, emits <code>criteriaChange</code></td>
+</tr>
+<tr>
+<td><code>dateStartPlaceholder</code></td>
+<td><a href="" class="label type-hint type-hint-string">string</a></td>
+<td>Formatted representation of the first date found (shadowed) search results to use as placeholder in the dateStart picker.</td>
+</tr>
+<tr>
+<td><code>dateEndPlaceholder</code></td>
+<td><a href="" class="label type-hint type-hint-string">string</a></td>
+<td>Formatted representation of the late date found (shadowed) search results to use as placeholder in the dateEnd picker.</td>
+</tr>
+<tr>
+<td><code>pickerDateStart</code></td>
+<td><a href="" class="label type-hint type-hint-date">Date?</a></td>
+<td>If a Date object, the value of the dateStart search constraint represented as a day for the dateStart picker.</td>
+</tr>
+<tr>
+<td><code>pickerDateEnd</code></td>
+<td><a href="" class="label type-hint type-hint-date">Date?</a></td>
+<td>If a Date object, the value of the dateEnd search constraint represented as a day for the dateEnd picker.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-facet-date-range&#10;  constraints=&quot;&quot;&#10;  results=&quot;&quot;&gt;&#10;...&#10;&lt;/ss-facet-date-range&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constraints
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search `criteria.constraints property from <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        results
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search <code>results</code> for the date facet form <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+

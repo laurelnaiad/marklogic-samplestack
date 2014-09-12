@@ -1,0 +1,120 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/allTags.js#L147' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">allTagsDialog</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - dialog in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Displays all tags in the database in a paged modal, and allows for
+searching and selecting the tags for inclusion as filters on a search.
+Uses <a href="http://angular-ui.github.io/bootstrap/"
+target="_blank">ui.bootstrap.modal</a>. Also see the
+<a href="api/app/controller/allTagsDialogCtlr"><code>allTagsDialogCtlr</code></a>
+and the <a href="api/app/filter/allTagsStartFrom">allTagsStartFrom filter</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>allTagsDialog(unselTags, selTags);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        unselTags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>unselected tags</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        selTags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>selected tags</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>the promise will either be rejected
+or will resolve to an object the following properties that reflect the
+result of the user interaction has the dialog:</p>
+<ul>
+<li><strong>unselTags</strong> - <code>{Array.&lt;object}</code> the unselected tags</li>
+<li><strong>selTags</strong> - <code>{Array.&lt;object}</code> - the selected tags</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

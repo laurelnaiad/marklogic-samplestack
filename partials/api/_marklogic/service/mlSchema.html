@@ -1,0 +1,202 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlSchema.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlSchema</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Manages JSON schemas and enables validation of instances against
+the schema.</p>
+<p><code>mlSchema</code> is used by <code>mlModelBase</code> and its derivatives to define
+and test validity of instances against JSON Schemas.</p>
+<p>Typically an application interacts with mlSchema directly only when
+inheriting from mlModelBase.</p>
+<p>There is no aspect of mlSchema that pro-actively forces objects
+to be valid. Rather, it can be and is used to determine object
+validity at key points in the application. Through mlModelBase
+implementation, it can be used to drive user-interface feedback
+for users to inform them of whether or not certain properties of an
+object are valid.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:addSchema">
+    <h3><p><code>method:addSchema(schema);</code></p>
+
+</h3>
+    <div><p>Adds the given schema to the application-global set of
+shcemas. A schema is valid if it follows the syntax
+specified by the jsonschema library, which by-and-large supports v4
+of JSON
+Schema. As such, at a minimum, one must specify a valid JSON Pointer
+for the id property. All other aspects of the schema are optional.</p>
+<p>To effectively not leverage JSON Schema for validation, simply pass
+a literal with such an id property. Otherwise, specify those
+attributes of the schema that should be used to determine validity.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        schema
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Representation of a JSON Schema as defined
+by <a href="https://github.com/tdegrunt/jsonschema">the tdegrunt/jsonschema</a>
+library. This Node.js-based library is built into
+the application via <a href="http://browserify.org/">browserify</a>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>the jsonschema object that has been added to the
+set
+of schema</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:validate">
+    <h3><p><code>method:validate(instance, $ref);</code></p>
+
+</h3>
+    <div><p>Validates an instance against a defined schema.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        instance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>An object to validate</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        $ref
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>JSON Pointer to a schema against which to
+validate the given instance</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>validation results as specified by the
+jsonschema library</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

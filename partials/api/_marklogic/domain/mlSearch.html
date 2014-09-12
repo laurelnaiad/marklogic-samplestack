@@ -1,0 +1,167 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/domain/mlSearch.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlSearch</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Represents a MarkLogic search. It houses both the
+criteria used in the search and, once posted, the results of the search.
+Implements generalized MarkLogic search for the the browser (as
+<a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>).</p>
+<p><code>mlSearch</code> is a derivation of <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>, customized to:</p>
+<ul>
+<li>determine validity of search criteria;</li>
+<li>aid in mapping between URL parameters and search criteria;</li>
+<li>aid in handling configuring and operating the paging and and sorting
+of searches;</li>
+<li>handle the POSTing and processing of responses into a unified object;</li>
+<li>configure and execute faceted searches and &quot;shadow queries&quot;.</li>
+</ul>
+<p>The schema of an mlSearch is very similar to a combination of the inputs
+and outputs of the MarkLogic REST
+API, but is customized to clarify the distinction between inputs and
+outputs, and to ease handling within a dynamic web application.</p>
+<p>In Samplestack, mlSearch itself is customized by <a href="api/app/domain/ssSearch"><code>ssSearch</code></a>.</p>
+<p>Instances are generated using the <code>create</code> method of <a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a>,
+which optionally takes an object which can be used to set the initial
+configuration for the search.</p>
+<p>Please use the &quot;View Source&quot; link to see the source code for the
+full schema of mlSearch instances.</p>
+<p>For <strong>HTTP support</strong>, mlSearch implements <strong>only</strong> the POST method.</p>
+<p>When posted, a copy of the criteria property is transformed to
+standard MarkLogic REST API form and posted to the server at the search
+endpoint.</p>
+<p>When the response is received, it is transofrmed to the runtime form
+and stored in the <code>results</code> property, where metadata about the search,
+results items themselves, and facet calculation results are available.</p>
+<p>If any facets are configured with <strong>shadows</strong>, then shadow facets are
+calculated, and  results
+are combined
+into the main facet results so that they may accessed together.</p>
+<p><em>Example:</em></p>
+<pre><code class="lang-javascript">angular.module(&#39;mlSearchExample&#39;, [&#39;marklogic&#39;])
+  .controller(&#39;ExampleController&#39;, [
+    &#39;$scope&#39;, &#39;mlSearch&#39;,
+    function ($scope, mlSearch) {
+      // create an instance of mlSearch, passing in the configuration
+      // (note that after creation, the properties of the search may be
+      // subsequently modified, too)
+      var search = mlSearch.create({
+        criteria: {
+          // search for this text
+          q: &#39;&quot;red flag&quot;&#39;,
+          // results beginning at 11th item
+          start: 11,
+          // results ending at 20th item
+          limit: 20,
+          // only include results where someCustomCritera === true
+          constraints: {
+            someCustomCriteria: {
+              type: &#39;boolean&#39;,
+              value: true
+            },
+            myFacetName: {
+              type: &#39;enum&#39;,
+              subType: &#39;string&#39;,
+              values: [&#39;some text&#39;, &#39;some other text&#39;]
+            }
+          }
+        },
+        // configure that we want facet values for the `myFacetName` facet
+        // and that a shadow query which calculates alternate facet values
+        // should be included which *omits* myFacetName. This gives
+        // context to what the results *would have* looked like without
+        // the applied myFacetName settings
+        facets: {
+          myFacetName: {
+            valuesType: &#39;object&#39;,
+            shadowConstraints: [ &#39;myFacetName&#39; ]
+          }
+        }
+      });
+      search.post().$ml.waiting.then(
+        // success, do whatever you do when the results have been returned
+        function () {
+          console.log(&#39;there are &#39; + search.results.count +
+              &#39;items in the results!&#39;
+          );
+        },
+        // something went wrong, &quot;handleError&quot; is a function that deals
+        // with the error message
+        handleError
+      );
+    }
+  ]);</code></pre>
+<p>The above would result in a POST to /v1/search that looks like:</p>
+<pre><code class="lang-json">{
+  &quot;query&quot;:{
+    &quot;qtext&quot;:&quot;\&quot;red flag\&quot;&quot;,
+    &quot;and-query&quot;:{
+      &quot;queries&quot;:[
+        {
+          &quot;value-constraint-query&quot;:{
+            &quot;constraint-name&quot;:&quot;constrName&quot;,
+            &quot;boolean&quot;:true
+          }
+        },
+        {
+          &quot;range-constraint-query&quot;:{
+            &quot;constraint-name&quot;:&quot;facetName&quot;,
+            &quot;value&quot;:&quot;some text&quot;
+          }
+        },
+        {
+          &quot;range-constraint-query&quot;:{
+            &quot;constraint-name&quot;:&quot;facetName&quot;,
+            &quot;value&quot;:&quot;some other text&quot;
+          }
+        }
+      ]
+    }
+  },
+  &quot;start&quot;:11
+}</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

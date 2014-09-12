@@ -1,0 +1,122 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/allTags.js#L188' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">allTagsStartFrom</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - filter in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Returns the starting element for columnar display of tags. See
+<a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Usage</h2>
+  <h3>In HTML Template Binding</h3>
+  
+    <pre><code>{{ allTagsStartFrom_expression | allTagsStartFrom : startIndex : colOffset}}</code></pre>
+  
+
+  <h3>In JavaScript</h3>
+  <pre><code>$filter(&#39;allTagsStartFrom&#39;)(tags, startIndex, colOffset)</code></pre>
+
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        tags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>set of tags</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        startIndex
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>starting index based on current page</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        colOffset
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>offset based on the column index</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+  <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>The starting tag for the column</p>
+</td>
+  </tr>
+</table>
+
+
+  
+</div>
+
+

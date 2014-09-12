@@ -1,0 +1,288 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/util/mlUtil.js#L28' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlUtil</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Provides utility objects and methods.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:stripZone">
+    <h3><p><code>method:stripZone(dateish);</code></p>
+
+</h3>
+    <div></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        dateish
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A JavaScript or <code>moment</code> date object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>an ISO8601 string representing the date, with time
+zone
+information removed.</p>
+<p>This function will be unnecessary when time zones and date string
+handling is fully implemented. For now, it is used to ensure that the
+middle tier doesn&#39;t get ISO8601 time zone information that it cannot
+process.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:objectify">
+    <h3><p><code>method:objectify(obj);</code></p>
+
+</h3>
+    <div><p>Converts and object to a &quot;plain-old JavaScript object&quot;
+by converting it to JSON and then back to an object. This causes
+the results of serialization to JSON to be found in the resulting object.
+For instance, dates will be serialized to strings. Additionally,
+non-enumerable properties are dropped in the resulting object.</p>
+<p>Does not modify its parameter.</p>
+<p>This method is used when validating <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>-derived objects.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Any object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>a &quot;plain old Javascript&quot; version of the object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:merge">
+    <h3><p><code>method:merge(targetObject, objectToMerge, remainingArgs);</code></p>
+
+</h3>
+    <div><p>This is a deep merge. Objecgts are merged from right to left, so the
+last on is merged into the second to last and ultimately the first
+object in the parameters list is the final target. These merges occur
+on the actual objects, so if targets of these marges are not intended
+to be modified, clones should be used.</p>
+<p>This is similar to <a href="http://lodash.com/docs#merge">lodash&#39;s merge
+function</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        targetObject
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The first object is the ultimate target
+of the merge(s).</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        objectToMerge
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an object to merge into the target</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        remainingArgs
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>additional objects to merge</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>Reference to the first object in the parameters list,
+which is the ultimate target of the merge(s).</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="moment">
+    <h3><code>moment</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>This is
+<a href="http://momentjs.com/" target="_blank">
+Moment.js</a>. It is used to handle conversion between dates,
+in particular between ISO 8601 strings from JSON and Javascript
+Date objects.</p>
+<p>It is also used by mlModel elements when serializing and deserializing
+JSON dates for $http.</p>
+<p>Until time zone handling is fully implemented, this instance of moment
+is configured to operate entirely and execlusively in UTC mode.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

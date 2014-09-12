@@ -1,0 +1,335 @@
+
+<h1>
+  <code>app</code>
+</h1>
+
+<p>The <code>app</code> module is the Samplestack application module. It is an
+     an implementation of a MarkLogic-based
+AngularJS application. It depends on and uses the components of the
+_marklogic module.</p>
+<p>At present, Angular.js does not provide strong support for documenting
+<em>applications</em>, as opposed to libraries. As such, certain parts of the
+documentation for the application may seem unwieldy. We have documented
+controllers, dialogs and states using customized templates.</p>
+<p>The dev team has started conversations with the Angular devs on how to
+go about documenting these types of objects and may have early access
+to better methods for documentation. That said, the current
+implementation of the docs is expected to be adequate.</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="controller">Controller</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/allTagsDialogCtlr">allTagsDialogCtlr</a></td>
+        <td><p>Controller for <a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>. This dialog isn&#39;t fully implemented.
+More detail TBD.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/contributorDialogCtlr">contributorDialogCtlr</a></td>
+        <td><p>Controller for the <a href="api/app/dialog/contributorDialog"><code>contributorDialog</code></a>. The controller
+is
+injected by the $modal service.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/loginDialogCtlr">loginDialogCtlr</a></td>
+        <td><p>Controller for <a href="api/app/dialog/loginDialog"><code>loginDialog</code></a>. The controller is injected by the
+$modal service.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="dialog">Dialog</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/allTagsDialog">allTagsDialog</a></td>
+        <td><p>Displays all tags in the database in a paged modal, and allows for
+searching and selecting the tags for inclusion as filters on a search.
+Uses <a href="http://angular-ui.github.io/bootstrap/"
+target="_blank">ui.bootstrap.modal</a>. Also see the
+<a href="api/app/controller/allTagsDialogCtlr"><code>allTagsDialogCtlr</code></a>
+and the <a href="api/app/filter/allTagsStartFrom">allTagsStartFrom filter</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/contributorDialog">contributorDialog</a></td>
+        <td><p>The
+contributor dialog displays information about a contributor.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/loginDialog">loginDialog</a></td>
+        <td><p>User interface for logging into the Samplestack application.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="filter">Filter</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/filter/allTagsStartFrom">allTagsStartFrom</a></td>
+        <td><p>Returns the starting element for columnar display of tags. See
+<a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="directive">Directive</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssAccountDropdown">ssAccountDropdown</a></td>
+        <td><p>Display info for the logged-in user, and allows the user to
+logout of their session.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssFacetDateRange">ssFacetDateRange</a></td>
+        <td><p>Renders date range facet of search results into a
+<a href="https://github.com/pablojim/highcharts-ng"
+target="_blank">highcharts-ng</a> chart, and allows the user
+to specify a range of dates over which to filter the search by selecting
+a range within the chart or by using date-picker dropdowns.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssFacetTags">ssFacetTags</a></td>
+        <td><p>Renders tags facet of search results into a list, and allows the user to select
+tags to use a filter in search criteria.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssMarkdown">ssMarkdown</a></td>
+        <td><p>Wraps an instance of
+<a href="https://://github.com/Hypercubed/angular-marked">angular-marked</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssMarkdownEditor">ssMarkdownEditor</a></td>
+        <td><p>Enables editing of Markdown content with preview tab and editing controls
+in a button-bar.  Uses <a href="api/app/directive/ssMarkdown"><code>ssMarkdown</code></a> for preview and and
+<a href="https://github.com/GrumpyWizards/ngMarkdown"
+target="_blank">ngMarkdown</a> for button bar functionality.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssSearchResult">ssSearchResult</a></td>
+        <td><p>Directive for displaying a search result from a set of results.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssSearchResults">ssSearchResults</a></td>
+        <td><p>Directive for displaying a set of search results.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="domain">Domain</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssContributor">ssContributor</a></td>
+        <td><p>Information associated with a contributor (as
+<a href="api/app/type/SsContributorObject"><code>SsContributorObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssQnaDoc">ssQnaDoc</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssSearch">ssSearch</a></td>
+        <td><p>Implements search for the Samplestack application (as
+<a href="api/app/type/SsSearchObject"><code>SsSearchObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssSession">ssSession</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssVote">ssVote</a></td>
+        <td><p>TODO: This component is not yet implemented.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="type">Type</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsContributorObject">SsContributorObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssContributor"><code>ssContributor</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsQnaDocObject">SsQnaDocObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssQnaDoc"><code>ssQnaDoc</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsSearchObject">SsSearchObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssSearch"><code>ssSearch</code></a>, derived from <a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="provider">Provider</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/provider/appRoutingProvider">appRoutingProvider</a></td>
+        <td><p>Manages routing for the application. Uses
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/service/appRouting">appRouting</a></td>
+        <td><p>TBD -- like now -- or now -- it&#39;;s really time to do this.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="state">State</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/_layout">_layout</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/explore">explore</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/exploreResults">exploreResults</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="constant">Constant</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/constant/statesHierarchy">statesHierarchy</a></td>
+        <td><p>Used by the <a href="api/app/service/appRouting"><code>appRouting</code></a> service to define the hierarchy of
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a> states.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

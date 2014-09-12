@@ -1,0 +1,65 @@
+
+<h1>Service components in <code>_marklogic</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlHttpInterceptor">mlHttpInterceptor</a></td>
+        <td><p>Handles CSRF tokens for all AJAX requests. May be configured or
+disabled  in the
+<a href="api/_marklogic/provider/mlHttpInterceptorProvider"><code>mlHttpInterceptorProvider</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlModelBase">mlModelBase</a></td>
+        <td><p>Service from which domain-specific model elements are derived.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlSchema">mlSchema</a></td>
+        <td><p>Manages JSON schemas and enables validation of instances against
+the schema.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlStore">mlStore</a></td>
+        <td><p>Simple object store which attaches itself to the $rootScope so that
+long-lived model data may be stored on a &quot;side&quot; scope.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlWaiter">mlWaiter</a></td>
+        <td><p>Establishes promise-based properties under the non-enumerable $ml property
+of model objects such that template code may track the status of promises
+(usually related to $http requests) that affect the model element instance.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlAuth">mlAuth</a></td>
+        <td><p>Facilities for handling authentication and sessions.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlUtil">mlUtil</a></td>
+        <td><p>Provides utility objects and methods.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+

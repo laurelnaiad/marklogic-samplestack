@@ -1,0 +1,208 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssFacetTags.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssFacetTags</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Renders tags facet of search results into a list, and allows the user to select
+tags to use a filter in search criteria.</p>
+<p style="color: red">
+TODO: should typeahead use the full tags search that the browseTags dialog will be using? The
+endpoint for such a feature is not yet implemented
+but planned, so maybe we should do so, otherwise the typeahead is
+really not all that useful.
+</p>
+
+<p>Displays a typeahead box from which the user may select tags.</p>
+<p>Listens for <code>newResults</code> event to trigger popuplation of results.</p>
+<p>When the user selects or unselects a tag, moves the tag between the selected and unselected lists
+and emits <code>criteriaChange</code> event so that the search may be
+updated.</p>
+<h2 id="-scope-properties-methods-"><code>scope</code> properties/methods:</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>selected</code></td>
+<td><a href="" class="label type-hint type-hint-string">string</a></td>
+<td>Used by typeahead to communicate user selection back to the directive</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+<td>Used by the repeater that lists tags. Ordered list of column names by which to sort results (descending by count).</td>
+</tr>
+<tr>
+<td><code>selTags</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+<td>Selected tags.</td>
+</tr>
+<tr>
+<td><code>unselTags</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+<td>Unselected tags.</td>
+</tr>
+<tr>
+<td><code>selectTag</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(string)</a></td>
+<td>Select an unselectd tag.</td>
+</tr>
+<tr>
+<td><code>unSelectTag</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(string)</a></td>
+<td>Unselect a selectd tag.</td>
+</tr>
+<tr>
+<td><code>selectTagTypeahead</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(object, object, strubg)</a></td>
+<td>Fired by typeahead when user selects from the dropdown.</td>
+</tr>
+<tr>
+<td><code>toArray</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(object)</a></td>
+<td>Return array version of the tags facet values. Used by the repeater.</td>
+</tr>
+<tr>
+<td><code>haveSelectedTags</code></td>
+<td><a href="" class="label type-hint type-hint-function">function()</a></td>
+<td>Returns true if there are selected tags. Determines layout of the lists.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-facet-tags&#10;  criteria=&quot;&quot;&#10;  results=&quot;&quot;&#10;  totals=&quot;&quot;&#10;  tags-limit=&quot;&quot;&gt;&#10;...&#10;&lt;/ss-facet-tags&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        criteria
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search <code>criteria.tags</code> property from <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        results
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search <code>results.facets.tags</code> property from <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        totals
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The totals calculated during search</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        tagsLimit
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>The number of tags to display</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+

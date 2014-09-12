@@ -1,0 +1,403 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlModelBase.js#L7' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlModelBase</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Service from which domain-specific model elements are derived.</p>
+<p>The <code>mlModelBase</code> service is primarily a means to derive domain-specific
+services that can themselves create and manage instances of model objects.</p>
+<p>Domain objects derived from mlModel base are found in the <a
+href="/marklogic-samplestack/api/_marklogic/domain">_marklogic/domain</a>
+and
+<a href="/marklogic-samplestack/api/app/domain">app/domain</a> directories.</p>
+<p>The model objects spawned by these domain-specific services
+have features to assist in validating, tracking and managing model data
+exhcnage with a server. In addition, specifc directives may provide
+additinal features by binding to these object.</p>
+<p>The Samplestack application uses mlModelBase to define domain objects
+which:</p>
+<ul>
+<li>can be validated for schema-level errors (such as presence of a property
+of the correct type and bounds) using JSON Schema via <a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a>;</li>
+<li>have facilities for being used with REST endpoints, including endpoints
+that require &quot;tweaks&quot;, such as changing endpoint names for certain HTTP
+methods, or overriding what is sent to the server or how responses from
+the server are processed;</li>
+<li>provide metadata about their status while HTTP methods are <em>in progress</em>
+using <a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a>.</li>
+</ul>
+<p>Some of the primary reasons for mlModelBase are consistency, error
+reduction
+and thorough testing. By centralizing the code that handles common issues
+associated with model elements (the &quot;M&quot; in MVC). By centralizing the
+key behaviors of model elements, more attention can be paid to ensuring
+quality in the generic functionality, and there is both less room for
+error in individual elements, as well as less effort required to define
+them.</p>
+<p>The principle of doing it right once, making components testable (and
+testing them well) is one
+key to getting the most out of AngularJS.</p>
+<p>This <code>mlModelBase</code> object certainly does not solve all problems, but it
+allows Samplestack to have such centralized functionality in one
+object that can be extended as requirements change.</p>
+<p>In Angular 2.0, which is currently being designed, plans are forming to
+implement a lot of this functionality within Angular&#39;s Data module. There
+are also other publicly available libraries that try to solve some of these
+issues in various ways, but generally each requires a level of buy-in which
+locks in certain behaviors. In order to maintain flexibility, and until
+Angular 2.0&#39;s data module can be evaluated for incproration, this
+customized solution has been developed for Samplestack. The development
+team looks forward to future developments in this space which might help
+to lessen the amount of custom code.</p>
+<p>It should be noted that most of this service is about providing a
+<strong>default</strong> implementation of a model element, where instances use
+prototype methods which can and are expected to be overriden in specific
+model objects.  For example, a model object may want to override the hook
+that handles processing responses from the server for POSTs using the
+by specifying such an override of the <code>onResponsePOST</code> method.</p>
+<p style="color: red">
+<strong>TODO</strong> the current version of this object  makes documentation difficult
+because of the way that
+instances are defined -- that is, there is no Angular component associated
+with instances of mlModelBase, and such no good place, in Angular terms,
+to put documentation.
+</p>
+
+<p style="color: red">
+<strong>For this reason, and to improve overall clarity of the code,
+the mlModelBase object is presently being refactored.</strong> Expect the next
+revision to have more and clearer documentation, where both the services
+that manage mlModel elements <em>and</em> the instances are documented.
+</p>
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li><li><a href="api/_marklogic/service/mlUtil"><code>mlUtil</code></a></li><li><a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:create">
+    <h3><p><code>method:create(spec);</code></p>
+
+</h3>
+    <div><p>Creates an instance of the
+mlModelBase-derived object.</p>
+<p>The default implementation calls the <code>object</code> constructor.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>If specified, the parameter is an initial
+value for the object.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>the created instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:getOne">
+    <h3><p><code>method:getOne(spec);</code></p>
+
+</h3>
+    <div><p>Fetches a single instance from the server (using GET),
+based on the specified criteria.</p>
+<p>The default implementation either uses the spec as the instance
+whose data should be fetched, or, if the spec isn&#39;t already an
+instance of the model element, it creates one based on the spec.</p>
+<p>This means that one can pass either an existing instance of the
+model element <strong>or</strong> pass a specification, such as an object
+containing an <code>id</code> property, to specify what data to fetch.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Either an existing instance to (re-)fetch, or
+a plain object that otherwise uniquely specifies an instance
+of the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>The instance. Because instances expose their
+http=-related status in their $ml metadata property, it may be used
+to follow progress through the promise via <code>[instance].$ml.waiting</code>,
+as managed by the <a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a> service..</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:post">
+    <h3><p><code>method:post(spec);</code></p>
+
+</h3>
+    <div><p>POSTs an instance of the model element to the server.</p>
+<p>The default implementation merges the response from the server
+into the instance.</p>
+<p>The default implementation either uses the spec as the instance
+whose data should be posted, or, if the spec isn&#39;t already an
+instance of the model element, it creates one based on the spec.</p>
+<p>This means that one can pass either an existing instance of the
+model element <strong>or</strong> pass a specification of data that should be
+used to create a new instance prior to posting.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Either an existing instance to post, or
+a plain object whose data should be used to create an instance prior
+to posting.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>The instance. Because instances expose their
+http=-related status in their $ml metadata property, it may be used
+to follow progress through the promise via <code>[instance].$ml.waiting</code>,
+as managed by the <a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a> service..</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:del">
+    <h3><p><code>method:del(spec);</code></p>
+
+</h3>
+    <div><p>DELETEs an instance of the model element froom the
+server.</p>
+<p>The default implementation merges the response from the server
+into the instance.</p>
+<p>The default implementation either uses the spec as the instance
+whose data should be posted, or, if the spec isn&#39;t already an
+instance of the model element, it creates one based on the spec.</p>
+<p>This means that one can pass either an existing instance of the
+model element <strong>or</strong> pass a specification of data that should be
+used to create a new instance prior to posting.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Either an existing instance to delete, or
+a plain object whose data should be used to specify the instance for
+deletion.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>promise to be resolved when the deletion
+is complete
+or rejected when/if it fails.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="property:object">
+    <h3><code>property:object</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>This is the constructor that creates instances of
+a given mlModelBase-derived object. It is configured when the
+derivation is defined. The default implementation is:</p>
+<pre><code class="lang-javascript">this.preconstruct(spec);
+Object.defineProperty(this, &#39;$ml&#39;, {
+  value: {}
+});
+this.assignData(spec || {});
+this.postconstruct(spec);</code></pre>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

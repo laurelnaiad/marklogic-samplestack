@@ -1,0 +1,181 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/mlAuth.js#L21' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlAuth</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Facilities for handling authentication and sessions.</p>
+<p>It provides for logging in and out of a session and for events and
+properties to track status or presence/absense of a sesssion.</p>
+<p>Once injected, <code>mlAuth</code> immediatly configures a listener on the
+<code>`$rootScope</code> for <code>logout</code> events. When such an event occurs, it
+logs out the user if there is an authenticated session and then
+broadcasts <code>sessionChange</code>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlStore"><code>mlStore</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:restoreSession">
+    <h3><p><code>method:restoreSession();</code></p>
+
+</h3>
+    <div><p>Attempts to find an existing, valid session, first
+by determining whether on is already present in the
+<code>$rootScope.store</code>, and then by checkikng the <code>sessionId</code> cookie.</p>
+<p>If a session is found in the cookie, the object for the session
+is optimistically reinstantiated and an attempt is made to verify
+the sesion with the server and to retrieve additional properties
+of the sesssion. If that succeeds, the session is consider valid
+and active.</p>
+<p>Otherwise, or if any other error occurs, we consider there to be
+no active session and traces of any prior session are removed.</p>
+<p>Within the processing of this function, if there is a change
+to the session state, a <code>sessionChange</code> event is broaccast on
+$rootScope.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>promise to restore the session (or
+to reject if session is not present or cannot be resotred).</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:authenticate">
+    <h3><p><code>method:authenticate(session);</code></p>
+
+</h3>
+    <div><p>Authenticates (or reauthenticates) a user. On success,
+stores the user id in a <code>sessionId</code> cookie.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        session
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>session object to use in attempting to
+authenticate.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>Promise to be resolved if successful
+authetnication or rejected on failureto authenticate.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:logout">
+    <h3><p><code>method:logout();</code></p>
+
+</h3>
+    <div><p>Logs out of a session, including from the REST server
+session that represents the browser session object..</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>Promise to be resolved upon logging
+out the session or rejected on failure to log out.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

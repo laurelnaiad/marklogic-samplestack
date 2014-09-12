@@ -1,0 +1,150 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlWaiter.js#L10' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlWaiter</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Establishes promise-based properties under the non-enumerable $ml property
+of model objects such that template code may track the status of promises
+(usually related to $http requests) that affect the model element instance.</p>
+<p>When a promise is in progress, the <code>$ml.waiting</code> property returns a promise
+of its own which is resolved when the underlying worker promise is
+resolved.</p>
+<p>If the underlying promise is resolved, the $ml.waiting promise is resolved
+too, and then the waiting property is deleted.</p>
+<p>If the underlying promise is rejected, an $ml.error property is created
+to store the error information from the underlying promise, and the
+$ml.waiting property is deleted.</p>
+<p>There are no special requirements on the object, but if it
+does not have a <strong>non-enumerable</strong> <code>$ml</code> property, then a
+<strong>non-enumerable</strong> one is created for tracking purposes.</p>
+<p>This example below is taken from <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>.</p>
+<pre><code class="lang-javascript">    var http = function (instance, httpMethod) {
+      var httpConfig = instance.getHttpConfig(httpMethod);
+      var waiter = mlWaiter.waitOn(instance);
+      httpConfig.url = self.baseUrl + httpConfig.url;
+      $http(httpConfig).then(
+        function (response) {
+          instance.onHttpResponse(response.data, httpMethod);
+          waiter.resolve();
+        },
+        function (err) {
+          waiter.reject(err);
+        }
+      );
+      return instance;
+    };</code></pre>
+<p>In practice, an application will frequently use the properties managed
+by mlWaiter when conducting HTTP-based operations on model elements.</p>
+<p>Example:</p>
+<pre><code class="lang-javascript">myElement.post().$ml.waiting.then(
+  function () {
+    // the post is completed
+  }
+);</code></pre>
+<p>In a template, the same property can be used to visually indicate that an
+http method is in progress.</p>
+<p>Example:</p>
+<pre><code class="lang-html">&lt;div ng-if=&quot;$ml.waiting&quot;&gt;
+  we are waiting for a round trip with the server
+&lt;/div&gt;</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:waitOn">
+    <h3><p><code>method:waitOn(objectInstance);</code></p>
+
+</h3>
+    <div></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        objectInstance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The object that is the subject of
+the
+promise.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Deferred</a></td>
+    <td><p>to be used by the caller to signal
+to mlWaiter that the underlying promise is either resolved or
+rejected.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

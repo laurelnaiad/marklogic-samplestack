@@ -1,0 +1,62 @@
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlHttpInterceptor.js#L30' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlHttpInterceptor</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Handles CSRF tokens for all AJAX requests. May be configured or
+disabled  in the
+<a href="api/_marklogic/provider/mlHttpInterceptorProvider"><code>mlHttpInterceptorProvider</code></a>.</p>
+<p>The intercept assumes that the CSRF token is named <code>X-CSRF-TOKEN</code>.
+and that it may be retrived from a GET request to
+<code>&lt;protocol:server:port&gt;//v1/session</code>.</p>
+<p>As such, before the interceptor will allow through
+any methods that require CSRF (POST, PUT, PATCH, DELETE), it will
+attempt to do a round trip to the /v1/session endpoint to pick
+up the token from the server.</p>
+<p>The token is saved in the <code>$http</code> service default headers and will
+be supplied for all requests subsequently.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlUtil"><code>mlUtil</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
