@@ -35,6 +35,7 @@ define(['app/module'], function (module) {
               }
             },
             criteria: {
+              sort: ['relevance'],
               constraints: {
                 resolved: {
                   constraintName: 'resolved',
@@ -91,6 +92,14 @@ define(['app/module'], function (module) {
           criteria: {
             required: ['constraints'],
             properties: {
+              sort: {
+                type: 'array',
+                items: {
+                  type: {
+                    enum: ['relevance', 'active', 'score']
+                  }
+                }
+              },
               constraints: {
                 required: [
                   'userName',

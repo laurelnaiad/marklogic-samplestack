@@ -23,27 +23,26 @@ define(['app/module'], function (module) {
         },
         link: function (scope, element, attrs) {
           scope.$watch('search.results', function () {
-              // // Sort settings
-              // scope.sorts = [
-              //   {
-              //     label: 'votes',
-              //     value: ['']
-              //   },
-              //   {
-              //     label: 'newest',
-              //     value: ['creationDate']
-              //   },
-              //   {
-              //     label: 'relevance',
-              //     value: ['-score']
-              //   }
-              // ];
-              // scope.selectedSort = scope.sorts[2]; // Default sort
-              //
-              // scope.setSort = function () {
-              //   scope.selectedSort = this.sort;
-              //   scope.$emit('sort', { sort: this.sort });
-              // };
+            //Sort settings
+            scope.sorts = [
+              {
+                label: 'relevance',
+                value: ['relevance']
+              },
+              {
+                label: 'newest',
+                value: ['active']
+              },
+              {
+                label: 'score',
+                value: ['score']
+              }
+            ];
+
+            scope.setSort = function (sort) {
+              scope.search.criteria.sort = sort;
+              scope.$emit('criteriaChange');
+            };
 
           });
         }
