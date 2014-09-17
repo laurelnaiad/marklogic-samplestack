@@ -31,6 +31,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
       var params = angular.copy(appRouting.params);
       params.q = dedasherize(params.q);
       $scope.search.assignStateParams(params);
+      $scope.applySearchToScope();
       $scope.runSearch();
     }
   ]);
