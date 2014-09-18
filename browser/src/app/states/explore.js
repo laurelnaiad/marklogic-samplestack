@@ -88,12 +88,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
               $scope.search.criteria.constraints.resolved.value === true;
         }
 
-        // If q text is in URL, get it and add to search bar
-        var qMatch = location.search.match( /[?&]q=([^&]*)?/ );
-        if (qMatch && qMatch[1]) {
-          var qParam = qMatch[1].replace(/-/g, ' ').replace(/%2D/g, '-');
-          $scope.searchbarText = decodeURIComponent(qParam);
-        }
+        $scope.searchbarText = $scope.search.criteria.q;
       };
 
 
