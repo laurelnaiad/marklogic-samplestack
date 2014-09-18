@@ -34,7 +34,6 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
         $scope.setLoading(true);
 
         $scope.search = ssSearch.create();
-        applySearchToScope();
 
         setWatches();
       };
@@ -65,7 +64,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
         );
       };
 
-      var applyScopeToSearch = function () {
+      $scope.applyScopeToSearch = function () {
         $scope.search.criteria.constraints.userName.value =
             $scope.showMineOnly === true ? $scope.store.session.userName.value :
             null;
@@ -74,7 +73,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
         $scope.search.criteria.q = $scope.searchbarText;
       };
 
-      var applySearchToScope = function () {
+      $scope.applySearchToScope = function () {
         // showMineOnly only if the user is a contributor AND they have
         // specified it in the url. see also setShowMineOnly and
         // showMineOnlyEnabled
@@ -100,7 +99,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
       // whenever criteria changes, go to the state that represents the
       // criteria's results
       $scope.$on('criteriaChange', function () {
-        applyScopeToSearch();
+        $scope.applyScopeToSearch();
         var newStateParams = $scope.search.getStateParams();
         if (newStateParams.q) {
           newStateParams.q = dasherize(newStateParams.q);
@@ -129,7 +128,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
       $scope.runSearch = function () {
         $scope.searching = true;
 
-        applyScopeToSearch();
+        $scope.applyScopeToSearch();
 
         $scope.search.shadowSearch().then(
           function () {
