@@ -67,7 +67,7 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
             $scope.showMineOnly === true ? $scope.store.session.userName.value :
             null;
         $scope.search.criteria.constraints.resolved.value =
-            $scope.showMineOnly === true ? true : null;
+            $scope.resolvedOnly === true ? true : null;
         $scope.search.criteria.q = $scope.searchbarText;
       };
 
