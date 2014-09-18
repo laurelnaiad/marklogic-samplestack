@@ -64,8 +64,9 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
 
       $scope.applyScopeToSearch = function () {
         $scope.search.criteria.constraints.userName.value =
-            $scope.showMineOnly === true ? $scope.store.session.userName.value :
-            null;
+            $scope.showMineOnly === true ?
+              $scope.store.session.userInfo.userName :
+              null;
         $scope.search.criteria.constraints.resolved.value =
             $scope.resolvedOnly === true ? true : null;
         $scope.search.criteria.q = $scope.searchbarText;
@@ -75,8 +76,8 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
         // showMineOnly only if the user is a contributor AND they have
         // specified it in the url. see also setShowMineOnly and
         // showMineOnlyEnabled
-        $scope.showMineOnly = $scope.showMineOnlyEnabled() &&
-            $scope.search.criteria.constraints.userName.value;
+        $scope.showMineOnly = ($scope.showMineOnlyEnabled() &&
+            $scope.search.criteria.constraints.userName.value) ? true : null;
 
         // IF there is a session, set resolved only if they have specified
         // it in the url.  see also setResolvedOnly and resolvedOnly enabled
