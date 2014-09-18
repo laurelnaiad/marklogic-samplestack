@@ -105,7 +105,7 @@ define(['app/module'], function (module) {
                       constraintName: { enum: ['userName'] },
                       type: { enum: ['text'] },
                       value: { type: ['string', 'null'] },
-                      queryStringName: { enum: ['user'] }
+                      queryStringName: { enum: ['contributor'] }
                     }
                   },
                   resolved: {
