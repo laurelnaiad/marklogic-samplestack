@@ -28,7 +28,7 @@ define(
           controller: 'layoutCtlr',
           templateUrl: '/app/states/_layout.html',
           resolve: {
-            authRestored: [
+            appInitialized: [
               'mlAuth', function (mlAuth) { return mlAuth.restoreSession(); }
             ]
           }

@@ -110,7 +110,9 @@ define(['app/module','mocks/index'], function (module,mocksIndex) {
 
       // will be broadcast by mlAuth on a change to the session state
       // do a search b/c permissions are impacted
-      $scope.$on('sessionChange', $scope.runSearch);
+      $scope.$on('sessionChange', function () {
+        $scope.runSearch();
+      });
 
       $scope.clearTagsConstraint = function () {
         var tags = $scope.search.criteria.constraints.tags;
