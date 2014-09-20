@@ -66,6 +66,28 @@ define(['app/module'], function (module) {
         appRouting.go('^.explore', { q: $scope.searchbarText });
       };
 
+      $scope.voteUp = function (ev) {
+        if (angular.element(ev.target).parent().parent()
+            .hasClass('ss-question')) {
+          $scope.doc.itemTally++;
+        }
+        else {
+          this.answer.itemTally++;
+        }
+        // $scope.doc.update() // @todo Update qna doc in db
+      };
+
+      $scope.voteDown = function (ev) {
+        if (angular.element(ev.target).parent().parent()
+            .hasClass('ss-question')) {
+          $scope.doc.itemTally--;
+        }
+        else {
+          this.answer.itemTally--;
+        }
+        // $scope.doc.update() // @todo Update qna doc in db
+      };
+
       $scope.setPageTitle('doc');
       $scope.searchbarText = appRouting.params.q ? appRouting.params.q : null;
       init();

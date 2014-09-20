@@ -18,7 +18,7 @@
       <div
         ng-if="canVoteQuestion()"
         class="ss-up ss-up-enabled"
-        ng-click="vote(1)"
+        ng-click="voteUp($event)"
       ></div>
       <div
         ng-if="!canVoteQuestion()"
@@ -28,7 +28,7 @@
       <div
         ng-if="canVoteQuestion()"
         class="ss-down ss-down-enabled"
-        ng-click="vote(1)"
+        ng-click="voteDown($event)"
       ></div>
       <div
         ng-if="!canVoteQuestion()"
@@ -62,7 +62,7 @@
           <div
             ng-if="canVoteAnswer(answer)"
             class="ss-up ss-up-enabled"
-            ng-click="vote(1)"
+            ng-click="voteUp($event)"
           ></div>
           <div
             ng-if="!canVoteAnswer(answer)"
@@ -72,7 +72,7 @@
           <div
             ng-if="canVoteAnswer(answer)"
             class="ss-down ss-down-enabled"
-            ng-click="vote(1)"
+            ng-click="voteDown($event)"
           ></div>
           <div
             ng-if="!canVoteAnswer(answer)"
