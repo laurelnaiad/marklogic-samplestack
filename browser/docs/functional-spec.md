@@ -1,0 +1,1180 @@
+
+<h1 id=
+
+## Table of Contents
+
+
+- [2 Design Overview](#2-design-overview)
+  - [2.1 Purpose](#21-purpose)
+    - [2.1.1 Stakeholders](#211-stakeholders)
+  - [2.2 Functional Summary](#22-functional-summary)
+    - [2.2.1 For Developers](#221-for-developers)
+    - [2.2.2 For Users](#222-for-users)
+  - [2.3 User Stories (N/A)](#23-user-stories-na)
+- [3 Design Goals and Constraints](#3-design-goals-and-constraints)
+  - [3.1 Overview](#31-overview)
+      - [3.1.0.1 Developer Experience and Task Automation](#3101-developer-experience-and-task-automation)
+  - [3.2 Configurability](#32-configurability)
+    - [3.2.1 Network Ports and Web Servers Configurability](#321-network-ports-and-web-servers-configurability)
+    - [3.2.2 Feature Configurability](#322-feature-configurability)
+  - [3.3 Security](#33-security)
+  - [3.4 Standards](#34-standards)
+  - [3.5 Technology Decisions as Constraints](#35-technology-decisions-as-constraints)
+    - [3.5.1 Build Environment: Node.js and gulp](#351-build-environment-nodejs-and-gulp)
+    - [3.5.2 MVC Framework: Angular.js](#352-mvc-framework-angularjs)
+    - [3.5.3 Dependency Management](#353-dependency-management)
+    - [3.5.4 Style: SASS, Twitter Bootstrap and node-sass](#354-style-sass-twitter-bootstrap-and-node-sass)
+  - [3.6 Abstraction and Extensibility](#36-abstraction-and-extensibility)
+    - [3.6.1 Abstraction in Practice](#361-abstraction-in-practice)
+  - [3.7 Performance](#37-performance)
+    - [3.7.1 Performance Testing](#371-performance-testing)
+  - [3.8 Reliability](#38-reliability)
+  - [3.9 Footprint](#39-footprint)
+- [4 Modules, Interfaces and Algorithms](#4-modules-interfaces-and-algorithms)
+  - [4.1 For Developers](#41-for-developers)
+    - [4.1.1 Functional Description](#411-functional-description)
+    - [4.1.2 APIs (N/A)](#412-apis-na)
+    - [4.1.3 User Interface](#413-user-interface)
+      - [4.1.3.1 Prerequisites](#4131-prerequisites)
+      - [4.1.3.2 Getting the Code Using git](#4132-getting-the-code-using-git)
+      - [4.1.3.3 Installing the Browser Application Dependencies](#4133-installing-the-browser-application-dependencies)
+      - [4.1.3.4 Automated Development Tasks](#4134-automated-development-tasks)
+      - [4.1.3.5 gulp unit [--reporter] [--sauce]](#4135-gulp-unit---reporter---sauce)
+      - [4.1.3.6 gulp e2e [--reporter] [--sauce]](#4136-gulp-e2e---reporter---sauce)
+    - [4.1.4 Errors, Exceptions, Diagnostics (N/A)](#414-errors-exceptions-diagnostics-na)
+    - [4.1.5 Schemas (N/A)](#415-schemas-na)
+    - [4.1.6 Configuration](#416-configuration)
+    - [4.1.7 Security (N/A)](#417-security-na)
+    - [4.1.8 Limitations](#418-limitations)
+    - [4.1.9 Risks and Dependencies](#419-risks-and-dependencies)
+      - [4.1.9.1 Complexity and Developer Familiarity](#4191-complexity-and-developer-familiarity)
+      - [4.1.9.2 Environmental Configuration](#4192-environmental-configuration)
+    - [4.1.10 Scalability](#4110-scalability)
+    - [4.1.11 Performance](#4111-performance)
+    - [4.1.12 Upgrade](#4112-upgrade)
+    - [4.1.13 Feature Interaction](#4113-feature-interaction)
+    - [4.1.14 Testing (N/A)](#4114-testing-na)
+    - [4.1.15 Documentation](#4115-documentation)
+  - [4.2 For End Users](#42-for-end-users)
+    - [4.2.1 Functional Description](#421-functional-description)
+    - [4.2.2 APIs (N/A)](#422-apis-na)
+    - [4.2.3 User Interface](#423-user-interface)
+      - [4.2.3.1 Potential Features](#4231-potential-features)
+    - [4.2.4 Errors, Exceptions, Diagnostics](#424-errors-exceptions-diagnostics)
+    - [4.2.5 Schemas](#425-schemas)
+    - [4.2.6 Configuration (N/A)](#426-configuration-na)
+    - [4.2.7 Security](#427-security)
+    - [4.2.8 Limitations (N/A)](#428-limitations-na)
+    - [4.2.9 Risks and Dependencies (N/A)](#429-risks-and-dependencies-na)
+    - [4.2.10 Scalability (N/A)](#4210-scalability-na)
+    - [4.2.11 Performance](#4211-performance)
+    - [4.2.12 Upgrade (N/A)](#4212-upgrade-na)
+    - [4.2.13 Feature Interaction](#4213-feature-interaction)
+    - [4.2.14 Testing](#4214-testing)
+    - [4.2.15 Documentation](#4215-documentation)
+- [5 Implementation](#5-implementation)
+  - [5.1 Automated Development Environment](#51-automated-development-environment)
+    - [5.1.1 Directory Structure](#511-directory-structure)
+    - [5.1.2 Implementation Phases and Timeline](#512-implementation-phases-and-timeline)
+  - [5.2 Web Application](#52-web-application)
+    - [5.2.1 Operation](#521-operation)
+      - [5.2.1.1 Link To API Reference](#5211-link-to-api-reference)
+      - [5.2.1.2 RequireJS Dependencies](#5212-requirejs-dependencies)
+    - [5.2.2 Internationalization](#522-internationalization)
+    - [5.2.3 Implementation Phases and Timeline](#523-implementation-phases-and-timeline)
+- [6 Issues and Alternatives](#6-issues-and-alternatives)
+  - [6.1 Design Alternatives and Rationales](#61-design-alternatives-and-rationales)
+    - [6.1.1 Dependency Management](#611-dependency-management)
+    - [6.1.2 Bootstrap](#612-bootstrap)
+    - [6.1.3 JSON Schema](#613-json-schema)
+    - [6.1.4 Learning Curve/Complexity](#614-learning-curvecomplexity)
+  - [6.2 Possible Future Enhancements](#62-possible-future-enhancements)
+    - [6.2.1 Angular 2.0](#621-angular-20)
+    - [6.2.2 Features](#622-features)
+      - [6.2.2.1 Potential Features](#6221-potential-features)
+- [7 References](#7-references)
+  - [7.1 Other Samplestack Specifications and Related Documents](#71-other-samplestack-specifications-and-related-documents)
+  - [7.2 Platforms and Architectural Dependencies](#72-platforms-and-architectural-dependencies)
+  - [7.3 Continuous Integration/Testing](#73-continuous-integrationtesting)
+- [8 Document History](#8-document-history)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+"status-of-this-document"><span class="header-section-number">1</span> Status of This Document</h1>
+<p>The document is considered a review draft. Feedback is welcome and encouraged.</p>
+<p><strong>Last Updated: 2014-09-16, Stu Salsbury</strong></p>
+<h2 id="contributors"><span class="header-section-number">1.1</span> Contributors</h2>
+<ul>
+<li>Justin Makeig</li>
+<li>Kasey Alderete</li>
+<li>Mitchell Yawitz</li>
+<li>Charles Greer</li>
+<li>Scott Brooks</li>
+<li>Mike Wooldridge</li>
+</ul>
+<h2 id="introduction-to-this-document"><span class="header-section-number">1.2</span> Introduction to this Document</h2>
+<p>This document specifies the high-level purpose, design, functioanlity and implementation for the Samplestack Browser Application.</p>
+<p>Throughout the document, references will be made to various dependencies/platforms. Where such references appear, they may be linked to their documentation site. A complete list of the major platforms and dependencies with links to those sites appears in <span style="color:red">it's section</span>. Any dependencies selected where alternatives may have been available are discussed in further detail in <span style="color:red">that other section</span>.</p>
+<h2 id="see-also"><span class="header-section-number">1.3</span> See Also</h2>
+<ul>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a></li>
+<li><a href="https://wiki.marklogic.com/download/attachments/29953092/Reference%20Architecture%20Demo%20Application%20Wireframes%20v0.5.pdf">Wireframes Specification</a></li>
+<li><a href="#SamplestackBrowser--FunctionalSpecification-7References">Additional References</a></li>
+</ul>
+<h2 id="authors-note"><span class="header-section-number">1.4</span> Author's Note</h2>
+<p>This version of the document does not yet reflect late-breaking or not yet final design decisions:</p>
+<ul>
+<li>&quot;score&quot; will be renamed to &quot;votes&quot; in the user interface</li>
+<li>a design for the application to offer users the option to log in if no resource is found for a URL is TBD</li>
+</ul>
+<p>Additionally, detailed designs for some components will be developed within Milestone 3 and included in a future version of this document.</p>
+<p>API documentation will be fleshed out and may be merged with the portions of this specification that are deemed suitable for the public into a consolidated online documentation offering.</p>
+<h1 id="design-overview"><span class="header-section-number">2</span> Design Overview</h1>
+<h2 id="purpose"><span class="header-section-number">2.1</span> Purpose</h2>
+<p>The Samplestack MVC Browser App is part of the reference implementation of the <a href="https://wiki.marklogic.com/display/rootwiki/MarkLogic+8+Reference+Architecture">MarkLogic Reference Architecture</a>. As such, the primary objective of the Samplestack MVC Browser App is to <strong>demonstrate how developers can build applications with MarkLogic</strong>.</p>
+<p>The reference architecture states that the main purpose of the reference implementation is:</p>
+<blockquote>
+<p>to demonstrate how a developer would put together a <strong>real application</strong>.</p>
+</blockquote>
+<p>And that:</p>
+<blockquote>
+<p>It should serve as an entry point for training or documentation on more advanced topics, providing a shared baseline across the various media that we use to reach developers. Our documentation and training should use the reference application instance as the primary means to introduce new developers to building applications. As we design workflows for new developers ramping up on MarkLogic, building an application in their own environment should come quickly after a quick intro to core concepts and basic query and document management, for example in JavaScript in Query Console.</p>
+</blockquote>
+<h3 id="stakeholders"><span class="header-section-number">2.1.1</span> Stakeholders</h3>
+<p>There are two very distinct classes of stakeholders for Samplestack. Throughout this document, distinctions between <code>developers</code> and <code>users</code> will be made.</p>
+<p><code>Developers</code> will be considered to be those people who involve themselves with how Samplestack is <em>designed, developed, deployed, etc</em>. Such a &quot;user&quot; is really not a user of the application, but is our true target audience as discussed above. As such, a great deal of focus in this document will be on their interaction with Samplestack and on how the design of the application supports <em>their</em> mission to build applications with MarkLogic technology.</p>
+<p><code>End Users</code> are essentially a fictional group of people who are sharing knowledge on technical topics (and specifically on software development-related topics). Because the purpose of the Samplestack application has been artificially developed in order to derive requirements, Samplestack Users (herein referred to as &quot;users&quot; or &quot;end users&quot;) are not our target audience, yet their imagined goals are used to drive the application design.</p>
+<p>Unless otherwise specified, we assume that <code>developers</code> are a proxy for other &quot;meta&quot; stakeholders such as a development manager, a product manager, the owner of the Samplestack application, the configuration management specialist, the graphical designer, etc. We group these people together for simplicity and in order to avoid assumptions about the shape and content of the pool of people who are part of making the fictitious Samplestack and making it run.</p>
+<h2 id="functional-summary"><span class="header-section-number">2.2</span> Functional Summary</h2>
+<h3 id="for-developers"><span class="header-section-number">2.2.1</span> For Developers</h3>
+<p>From the <a href="https://wiki.marklogic.com/display/rootwiki/MarkLogic+8+Reference+Architecture">Reference Architecture Product Requirements</a>:</p>
+<blockquote>
+<ul>
+<li><strong>Three-tiered, thick client:</strong> In a single-page application (SPA) the front-end is responsible for all view rendering and application state. The UI communicates with the middle tier only through JSON services. These services should represent that domain of the application, and not (necessarily) thin wrappers on document CRUD. A user should be able to swap out a different front-end on top of the services that the middle tier provides—read-write, REST-style, with JSON in and out.</li>
+<li><strong>MVC:</strong> Separation of concerns for request handling, application logic, data access, and view delegation</li>
+<li><strong>Best practices:</strong> Help make it easier to do things the right way than to struggle reinventing the wrong way</li>
+<li><strong>Scaffolding:</strong> Foundation for a PoC or a real, production application: Less code to write, fewer things to understand when starting an application</li>
+<li><strong>Common vocabulary and toolbox:</strong> Shared techniques and tools for our customers, pre-sales, and consultants and less one-off frameworks and plumbing</li>
+<li><strong>Front end:</strong> The front end lives in the browser. The front end will provide a rich interface built in the style of modern web apps. It must use a development style that will be familiar to a moderately sophisticated web developer. The front-end will likely be the portion of the application instance that is most likely to be swapped out. As such, we should provide a service-based infrastructure that simplifies migration to another UI technology. The ease of substitution also mitigates the risk of pushing the envelope a little with a thick, SPA architecture. Initial research indicates that Angular has the features, momentum, ease of use, and adoption, and community that would fulfill this requirement.</li>
+</ul>
+</blockquote>
+<p>Additional notes include:</p>
+<blockquote>
+<p>The middle tier is responsible for brokering data and application logic between UI and the database and providing orchestration for other integrations (e.g. pulling things off of a message queue or getting/putting data from/to another system).</p>
+</blockquote>
+<blockquote>
+<p>The middle tier’s role is to broker communication between the front end and the database, to enforce business rules and flow logic, and provide a place to integrate with other non-UI services, for example pulling data from a relational database. In a modern single-page web application the middle tier provides HTTP services using JSON to the front-end.</p>
+</blockquote>
+<blockquote>
+<p>We will recommend a three-tiered architecture for new users and proofs-of-concept <strong>as well as large-scale production applications</strong>.</p>
+</blockquote>
+<p>One &quot;function&quot; of the development enviornment is the organization of the files that comprise it. This organization forms the basis on which the other functions of the enviornment are built.</p>
+<p>The enviornment is to be capable of locating source code files, checking their syntax, converting or compiling them into runtime forms, and exercising tests of the functionality.</p>
+<p>The structure of the files that make up the app and details of the automatated tasks used to develop it are the subjects of many of the remaining sections of this document.</p>
+<h3 id="for-users"><span class="header-section-number">2.2.2</span> For Users</h3>
+<p>To an end-user, Samplestack is simple app. It is developed as if for a fictional user base that roughly resembles a group that would interact on a Stack Exchange site such as Stack Overflow, and in fact the seed data used to populate the database are from Stack Overflow. Much more information is available in the <a href="https://wiki.marklogic.com/display/rootwiki/Application+Narrative+-+Stack+Overflow+data">Application Narrative</a>.</p>
+<p>Wireframes have been developed to sketch the overall graphical user interface. They include User Experience (UX) specifications which outline how the interface is to derived from data and how it is to respond to user interaction.</p>
+<p>Based on the detailed narrative and these wireframes and UX specifications, individual End-User Features have been specified.</p>
+<p>It is these features that are considered the deliverables of the application itself. Each has a summary and a set of Scenarios which illustrate more specific requirements as to how the application and its users should be able to interact. The features are the units of testability of correctness for the application itself.</p>
+<p>End-User Features are detailed in <a href="#end-user-user-interface">section 4.2.3</a></p>
+<h2 id="user-stories-na"><span class="header-section-number">2.3</span> User Stories (N/A)</h2>
+<p>Because the application requirements are fictitious and were generated primarily by determine how to demonstrate key MarkLogic features, the project team decided to deprioritize user stories for the Samplestack application itself. In their stead, we are using &quot;features&quot; to describe interactions with the system, consistent with what is specified in the application narrative and wireframes.</p>
+<p>The end-user features can be considered as derivatives of what would otherwise have been these user stories.</p>
+<h1 id="design-goals-and-constraints"><span class="header-section-number">3</span> Design Goals and Constraints</h1>
+<h2 id="overview"><span class="header-section-number">3.1</span> Overview</h2>
+<p>The browser app should demonstrate best-practices in modern browser development under the MVC paradigm. These include that:</p>
+<ul>
+<li>The <strong>application and the developer experience should scale</strong> to development and deployment of large, real-world apps developed by teams.</li>
+<li>The application should be <strong>testable</strong> and the developer experience should <strong>support and facilitate</strong> the development and execution of tests.</li>
+<li>It should adhere to <strong>standards</strong> such as RESTful JSON over AJAX-style HTTP.</li>
+<li>It should prefer <strong>components that are popular and/or considered best-of-breed</strong> in the development community.</li>
+</ul>
+<p>It should demonstrate best practices in security in the browser tier.</p>
+<p>It is <em>not</em> a requirement to build libraries or other components packaged for reuse nor which would be supported by MarkLogic in other applications, however, to the extent practical, the app should be structured so that developers may &quot;borrow&quot; code from the application to use in their own application development if they choose to follow the reference architecture.</p>
+<p>In order to support this goal, the application should strive to minimize divergence from in-built MarkLogic APIs, such as <code>search</code> and <code>CRUD</code> features. However, where alternate APIs improve the overall quality of the three-tiered architecture, it may be desirable to diverge from the MarkLogic API at the appropriate level.</p>
+<p>These goals will be referenced within discussion of concrete decision choices below.</p>
+<p>As a part of the MarkLogic product, the Samplestack browser application is delivered as a portion of the Samplestack github repository at <a href="https://github.com/marklogic/marklogic-samplestack" class="uri">https://github.com/marklogic/marklogic-samplestack</a>.</p>
+<h4 id="developer-experience-and-task-automation"><span class="header-section-number">3.1.0.1</span> Developer Experience and Task Automation</h4>
+<p>Developers experience the application through its source code and through automation provided to help develop, test and deploy it.</p>
+<p>From a design perspective, the application development process should allow and enable the developer to carry out these functions as necessary, while focused primarily on the application itself.</p>
+<p>As such, a prime design goal is to automate the experience in a manner such that, subject to some constraints and guidelines for the organization of source code files, the application development experience should not from moment to moment require re-authoring of the tooling that is used to enable these process functions.</p>
+<p>More information about the user interfaces and features of the development process automation included in Samplestack is in <a href="#SamplestackBrowser--FunctionalSpecification-4.1ForDevelopers">section 4.1</a>.</p>
+<p>The overarching goal of Samplestack as a whole is to demonstrate and teach the MarkLogic Reference Architecture and how it can be used to build both small and large apps, from proofs-of-concept to production-ready instances of large, complex applications.</p>
+<p>A major challenge for Samplestack is that in actuating a full example we must implement technology that is not in and of itself directly related to MarkLogic. It compounds that challenge that we wish to demonstrate how a <strong>large-scale </strong>production-ready, real-world** application can be developed in the same manner that a one-off demo app may be. We thus must make affordances and should provide an infrastructure that works in both cases.</p>
+<p>Samplestack, while seeking to demonstrate the basics of development in the architecture, must also demonstrate how those basics can be applied to an app whose development process and whose code itself <em>can be</em> scaled in a much larger project.</p>
+<p>We also have the hope that customers will be able to isolate a skeleton from within the Samplestack application that they could extract and use as the basis for their own applications.</p>
+<p>Some of the areas in which these tradeoffs surface in the Samplestack Browser application are:</p>
+<ul>
+<li>Configurability</li>
+<li>Security</li>
+<li>Standards</li>
+<li>Technology Decisions as Constraints</li>
+<li>Abstraction and Extensibility</li>
+<li>Development Environment Automation</li>
+<li>Reliability</li>
+<li>Footprint</li>
+</ul>
+<p>This section discusses design goals and constraints within the context of the aforementioned tradeoffs <em>on a high level</em>.</p>
+<p>It is not possible to discuss the constraints of the design without discussing certain of the technology choices and dependencies that are selected in order to satisfy the goals and constraints. As such, those choices are discussed and documented in this section.</p>
+<p>Further detail on implementation choices relating to specific external dependencies can also be found throughout the remainder of the specification.</p>
+<p><em>In this release, we are not officially marking any code or as reusable -- Samplestack is built first and foremost to satisfy the goal of demonstration within the context of its ficitious requirements. However, in the longer run, by releasing some aspects of an application skeleton as officially supported components, we will be able to ease the development of applications that follow certain architectural sub-patterns and technology choices. Officially abstracting complexities into supported components may be very valuable to application developers, since in an MVC Browser app, much of the complexity is (intentionally) housed in the browser tier.</em></p>
+<h2 id="configurability"><span class="header-section-number">3.2</span> Configurability</h2>
+<p>In larger teams, different developers may have different development machine environments. This sub-section on configurability is presented first among its peer sub-sections because many of those other subjects are related to the (re)configurability the application for diverse development and production environments.</p>
+<p>Specific configuration parameters are documented in the <a href="#SamplestackBrowser--FunctionalSpecification-4.1.5ConfigurableProperties">section 4.1.5</a>.</p>
+<h3 id="network-ports-and-web-servers-configurability"><span class="header-section-number">3.2.1</span> Network Ports and Web Servers Configurability</h3>
+<p>At a repository level, known areas where conflicts may occur should be designed as configurable. In a networked application, network ports are one such area, and so the application should be developed so as to allow for (re)configuration of the network ports used.</p>
+<p>In order to promote developer ease of use, and specifically to support testing and dynamically rebuilding the browser application, the browser environment needs to be configurable to use web servers that are controlled by the browser development automation system. As such, when a developer is working on the browser code, the app should be served by web servers that are constructed and maintained by that automation code.</p>
+<p>In production, or in cases where a middle-tier developer may wish to have a statically served web application, such a configuration does not provide value, and in fact the installation of the browser automation code may be more trouble than it is worth. As such, a developer should be able to run the application in a local environment where the app is served by the middle-tier HTTP server itself, for simplicity's sake.</p>
+<p>The MVC browser application should be developed so that it can be served from a completely static web server, so that it may be easily deployed to a &quot;dumb&quot; static server such as a simple nginx or Apache installation, or from any other server, such as a Spring web server, where in none of those cases does the server require knowledge of how the application is constructed, nor does the server software collaborate with the browser application code.</p>
+<p>In summary:</p>
+<ul>
+<li>The browser application itself must be fully functional from any static web server served from any address.</li>
+<li>The browser application must allow for configurable REST server addresses.</li>
+<li>The browser development environment must run its own web servers to support testing and &quot;live&quot; coding.</li>
+</ul>
+<h3 id="feature-configurability"><span class="header-section-number">3.2.2</span> Feature Configurability</h3>
+<p>In some cases, we will make particular features or or code paths configurable where such configurations are known points at which an application deployment or a developer environment may want or require divergence. These cases will be noted individually in <a href="">section TODO</a>.</p>
+<h2 id="security"><span class="header-section-number">3.3</span> Security</h2>
+<p>We balance the security requirements for production environments with looser configurations for development environments.</p>
+<p>In general, the application must support employment of all typical defensive measures for browser apps, in particular encryption at the network layer (HTTPS), Cross-Origin Policy with selective Cross Origin Resource Sharing (CORS) configuration, Cross Site Request Forgery protection (CSRF aka XSRF) and the protection of credentials.</p>
+<p>Security, including design goals and constraints that relate to it, are discussed in detail in <a href="">section TODO</a>.</p>
+<h2 id="standards"><span class="header-section-number">3.4</span> Standards</h2>
+<p>In browser applications, certain standards are set by W3C recommendations and following is a requirement for browser-based functionality (HTTP, DOM).</p>
+<p>After that, there are additional standards and conventions that are typical and helpful.</p>
+<p>MVC apps almost universally using a model where the application <em>code itself</em> is served statically. This has positive effect on scalability as serving a static webapp is a very lightweight operation for a web server, especially if CDNs and/or caching are in use.</p>
+<p>All <em>data</em> for an MVC app is almost universally accessed using the AJAX with applicaiton/json Content-Types, and typically follow the RESTful pattern to reasonable degrees. Browser code tends to be &quot;happiest&quot; with fully RESTful endpoints where resources (where verbs are in the HTTP method and resources are tracked by their id). Due to some current areas of non-RESTfulness in the available middle tier, some implementation work is required to adapt RESTful expectations in the browser app to the endpoints provided.</p>
+<p>On the browser, W3C recommendations should always be followed. As some browsers, notably Internet Explorer prior to version 10, do not self-update to maintain compatibility with or implementation of the full set of current standards in the areas of DOM, CSS and ECMAScript, we cannot assume that all features are available to Samplestack.</p>
+<p>At this time, as we are targeting IE9 as the minimum browser, it becomes the measure by which we can determine whether or not a feature will be available to us. Through unit- and end-to-end-testing, we can ensure that our application behaves as expected on the targeted browsers. Adherence to the limitations of Internet Explorer 9 is a significant drag on Samplestack development, as it is for all developers, and we anticipate retiring support for it as soon as is seen feasible. IE9 was chosen as the baseline because it is the baseline we test for in our other products -- this eases our testing burden until we have a lower-cost means of testing on a broader set of browsers and OSes.</p>
+<h2 id="technology-decisions-as-constraints"><span class="header-section-number">3.5</span> Technology Decisions as Constraints</h2>
+<p>We are forced to enter down certain paths with selection of technologies when building a complete example application -- even though our intent is to serve all comers, some of whom might not make the same choices.</p>
+<p>As such, they form a type of constraint on how we can achieve a pure demonstration of three-tier MarkLogic application development.</p>
+<p>MVC web applications are almost universally built &quot;on the shoulders&quot; of open source libraries. A number of major players in the industry have either intentionally or as a side effect of their development efforts, developed such libraries and released them into open source repositories, including but not limited to Google (Angular.js) and Facebook (React). Other frameworks, such as Ember.js, do not have such strong corporate backing but are nonetheless funded, led or contributed to by significant corporate users of such technology.</p>
+<p>In addition, a vast array of smaller libraries are available for more specific application development needs, and it is typical to employ those which fit a particular architecture or technology need within the scope of developing an application.</p>
+<p>The subsections that follow introduce the more significant choices we have made in designing Samplestack.</p>
+<h3 id="build-environment-node.js-and-gulp"><span class="header-section-number">3.5.1</span> Build Environment: Node.js and gulp</h3>
+<p>The open source community has developed various technologies that aid in development which can operate independently of IDEs and text editors. In part, this independence may be driven by the desire to provide automation within open source code repositories themselves, so that no assumptions are made about one's development environment, thereby allowing anyone who works with the code to benefit from the automation.</p>
+<p>MVC browser applications are very heavily JavaScript-centric. HTML and CSS are still important pieces, but more and more, these technologies themselves are driven by JavaScript, both during development and at run-time.</p>
+<p>In fact, such applications are almost always developed with automation that is itself written in JavaScript and executed by Node.js. This takes the form of very specific libraries that execute key functions in handling source code, as well as task and build runner frameworks that are used to exercise these libraries to form a cohesive and developer-friendly development environment.</p>
+<p>In general, these technologies are evolving very quickly in the open.</p>
+<p>The Samplestack JavaScript development environment is centered around a relatively new framework called <a href="http://gulpjs.com/">gulp</a>, self-described as &quot;the streaming build sytem&quot;. It is so called because, contrary to earlier task runners such a <a href="http://gruntjs.com/">grunt</a>, gulp focuses on taking raw source code inputs and streaming them through various filters/plugins in order to render them into different states, such as a rendering that is specifically targeted for unit testing, or for production deployment. Such a stream-based approach yields much faster execution cycles, so that the turnaround time between a developer changing code and being able to evaluate the results is minimized and the experience becomes more fluid. Open- and closed- source JavaScript projects such as <a href="">Angular.js</a> are using or converting to gulp-based automation, as are many of the individuals who are leaders in the open-source JavaScript community. See <a href="https://github.com/gulpjs/gulp/issues/540">this thread on the gulp repository</a>.</p>
+<p>A number of small libraries are used in Samplestack's gulp automation code. These are introdcued [TODO here]. See also the section on Abstraction and Extensibility for discussion of potential for future officially supported abstractions of aspects of this process.</p>
+<h3 id="mvc-framework-angular.js"><span class="header-section-number">3.5.2</span> MVC Framework: Angular.js</h3>
+<p>The most significant technology choice we have made in this regard is the selection of Angular.js as an MVC framework. Angular has, by most measures, the largest base of the current breed of MVC frameworks, is under acctive development by Google and other contributors, and is considered by many as a safe, reliable, flexible and extensible choice among the options.</p>
+<p>By employing <em>any</em> reusable library, we enter into territory where other viable options are left &quot;on the table.&quot; Not all of our customers will (or do) prefer or use Angular.js. Our belief is that, for the short run, Angular.js is in the sweet spot for our base, and our hope is that in the long run we will be able to adapt, both as the landscape changes, and as time and money allow, to be able to broaden our support for alternatives. This will be discussed in more detail under the [TODO -- abstraction/extensibility].</p>
+<h3 id="dependency-management"><span class="header-section-number">3.5.3</span> Dependency Management</h3>
+<p>For better or worse, developing MVC browser apps tends to involve the use of many external libraries, both those used in the application itself and those used to build it.</p>
+<p>There are several aspects to dependency management. The one which is worthy of discussing as a constraint is in the run-time linking of intra-application dependencies.</p>
+<p>Today, larger applications are typically developed such that the global namespace is not occupied by each object, and there are techniques and tools used to allow for development of smaller files while also allowing for the build process to assemble those files into larger units for production deployment. This is the strategy employed in Samplestack via Require.js.</p>
+<p>ECMAScript 6 is nearly here. It will provide language-level facilities for consistently accomplishing that which today is typically achieved through third party libraries. We anticipate moving to ES6 at some point after the 1.0 release of Samplestack, at which time the complexities of this type of dependency management will be reduced and the various implementation choices required to work around this language limitation will be unnecessary.</p>
+<p>Details of this, and other aspects of dependency management that don't rise to the level of constraints and will be discussed below.</p>
+<h3 id="style-sass-twitter-bootstrap-and-node-sass"><span class="header-section-number">3.5.4</span> Style: SASS, Twitter Bootstrap and node-sass</h3>
+<p>Cascading Stylesheets are the universally accepted technology with which to control the layout and style of web pages, as they allow for declarative abstractions of style instructions, resulting in more compact, legible and flexible HTML.</p>
+<p>Most developers and designers have come to find that authoring Cascading Stylesheet directly poses unnecessary challenges where the alternative is to use a preprocessor which allows for a greater degree of abstraction, reuse and control over the styles.</p>
+<p>Using a preprocessor involves writing style instructions in the language of the preprocessor, and employing the preprocessor, either at build-time or at run-time, to convert the instructions into plain CSS for the browser.</p>
+<p>In a statically server app, preprocessing always takes place at build time and thus by definition requires some degree of development environment automation.</p>
+<p>Options for preprocessors include SASS, LESS and Stylus.</p>
+<p>For Samplestack, we selected SASS as our preprocessor language (specifically its SCSS syntax) and the node-sass library as the preprocessor itself.</p>
+<p>Details on our implementation may be found below.</p>
+<h2 id="abstraction-and-extensibility"><span class="header-section-number">3.6</span> Abstraction and Extensibility</h2>
+<p>An application with relatively simple business requirements such as Samplestack could theoretically be developed with minimal employment of abstractions and allowances for extensibility.</p>
+<p>There are a few of reasons why this approach is not taken.</p>
+<p>First, even internally, much of the functionality of Samplestack follows certain patterns, such as HTTP method calls and associated preparation thereof and reactions following the calls in the browser code, handling authentication issues, etc. In order to eliminate duplication and potential error, it's best to consolidate such similarities into abstractions.</p>
+<p>The Angular.js programming model also allows the developer to write very <em>testable</em> code. It is much easier to create an abstract component and test it thoroughly in one place than it is to test several similar code paths in different parts of the application.</p>
+<p>Finally, as one of our primary objectives is to demonstrate how real-world, large scale applications may be developed in this architecture, and to provide an example that could be scaled to such levels, we provide abstractions and make some affordances for extensibility within the Samplestack codebase.</p>
+<h3 id="abstraction-in-practice"><span class="header-section-number">3.6.1</span> Abstraction in Practice</h3>
+<p>The application is divided between code that is relatively abstract, in an Angular module named &quot;_marklogic&quot;, and code that is Samplestack-specific, in a module named &quot;app&quot;. As such, one may review examples of this division by examining the dependencies of each component (i.e. an application specific component may depend on one or more abstract ones).</p>
+<p>Two examples of abstraction are:</p>
+<ul>
+<li>the _marklogic/service/data/mlModelBase component that underlies domain model objects and</li>
+<li>the _marklogic/domain/mlSearch module and the app/domain/ssSearch module</li>
+</ul>
+<h2 id="performance"><span class="header-section-number">3.7</span> Performance</h2>
+<p>In an application such as Samplestack, performance in the browser tier <strong>shouldn't</strong> be a major issue, as long as we do not send very large chunks of data to the browser nor make any other relatively junior mistakes in the architecture of the browser app.</p>
+<p>To the extent that performance for the application as a whole is a concern, such issues are intentionally pushed down to the lower tiers and to the decisions made in designing the middle tier APIs such that round-tripping with the browser is efficient.</p>
+<p>The APIs exposed by the middle tier of the application and their tradeoffs are to be discussed in other documents.</p>
+<h3 id="performance-testing"><span class="header-section-number">3.7.1</span> Performance Testing</h3>
+<p>Measurability and monitoring of performance is an important aspect of 3-tiered application design and data-centric applications.</p>
+<p>We will develop a plan to enable performance of the end-to-end application to be measured. In particular, we wish to measure degradation of performance under stress through concurrent usage or continuous usage, and we wish to measure performance of the end-to-end application in comparison to the services that are invoked by the application in the MarkLogic database tier.</p>
+<p>Additional measures may also be considered.</p>
+<h2 id="reliability"><span class="header-section-number">3.8</span> Reliability</h2>
+<p>One of the goals of Samplestack is to demonstrate how to build robust, serious applications with the reference architecture. As such, we will deliver sufficient tests to minimize the risk that the browser application may be either unstable or buggy, and will attempt to test it across a variety of operating systems and platforms.</p>
+<p>Beyond that, reliability as might typically apply to multi-user application environments, is not a major factor in design.</p>
+<h2 id="footprint"><span class="header-section-number">3.9</span> Footprint</h2>
+<p>We will seek to minimize dependencies so that the browser app is not overly &quot;fat&quot;.</p>
+<p>There are a few areas where this can become an issue:</p>
+<ul>
+<li>we must deliver the ability to render the app with minified code and with dependencies loaded from a CDN;</li>
+<li>we must avoid bloat, in particular with CSS.</li>
+</ul>
+<p><em>Note: one of the reasons to consider moving away from Twitter Bootstrap is the size of resulting CSS files.</em></p>
+<h1 id="modules-interfaces-and-algorithms"><span class="header-section-number">4</span> Modules, Interfaces and Algorithms</h1>
+<h2 id="for-developers-1"><span class="header-section-number">4.1</span> For Developers</h2>
+<h3 id="functional-description"><span class="header-section-number">4.1.1</span> Functional Description</h3>
+<p>The development environment is automated as a set of gulp tasks which perform its functions through the command line.</p>
+<p>A majority of the code uses Node.js streams to process files in the file system, while other areas invoke external utilities such as test runners.</p>
+<h3 id="apis-na"><span class="header-section-number">4.1.2</span> APIs (N/A)</h3>
+<p>While developers may examine the build process automation code or the application itself, they are not expected to interact with either programmatically. Alterations to the developer experience are not supported within the scope of the Samplestack development process, though they may be supported through training offerings. As such, APIs for the developer are out of scope for this document.</p>
+<p>While there is no public API for Samplestack to document here, one of the primary objectives of the app is to teach, so the developer who is interested in the Browser tier will want to refer to the <a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a>.</p>
+<h3 id="user-interface"><span class="header-section-number">4.1.3</span> User Interface</h3>
+<h4 id="prerequisites"><span class="header-section-number">4.1.3.1</span> Prerequisites</h4>
+<p>There are two sets of prerequisites for the Samplestack MVC Browser App.</p>
+<p>Java-centric developers who <strong>only want to run the application (not modify it)</strong> can follow the instructions in the Java/Spring Boot Samplestack documentation to run a pre-built version of the web app. In this case, the Spring container serves the web app's files to the browser(s) and no additional configuration is required.</p>
+<p>Those who who want to be able to <strong>modify, test or otherwise develop the browser app</strong> need a tools installed.</p>
+<ul>
+<li><a href="http://nodejs.org/">Node.js</a> -- versions 0.10.x and newer should work</li>
+<li><a href="https://www.npmjs.org/">npm</a> -- npm is installed automatically with Node.js</li>
+<li><a href="http://bower.io/">bower</a> -- must be installed globally to the environment</li>
+<li><a href="http://gulpjs.com/">gulp</a> -- must be installed globally to the environment</li>
+</ul>
+<p>Instructions for installing these prerequisites are provided in the repository <code>README</code>s.</p>
+<h4 id="getting-the-code-using-git"><span class="header-section-number">4.1.3.2</span> Getting the Code Using git</h4>
+<p>Developers are expected to clone the repository in order to review, run, and experiment with the application.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://github.com/marklogic/marklogic-samplestack</code></pre>
+<p>The master branch of the repository represents the most recently released version of the application, and as the default branch, it is automatically checked out when the repostitory is cloned. A developer who wishes to access more recent builds which have not been officially released may check out the <code>develop</code> branch. See <a href="http://git-scm.com/book">the online version of the Pro Git book</a> for more information on <code>git</code>.</p>
+<h4 id="installing-the-browser-application-dependencies"><span class="header-section-number">4.1.3.3</span> Installing the Browser Application Dependencies</h4>
+<p>In order to access the development automation and run it from source, the application's dependencies must be installed.</p>
+<p>These commands fetch both the automation dependencies (npm-based) and the development and run-time dependencies (bower-based) of the Samplestack browser app itself.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">npm</span> install
+<span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">bower</span> install</code></pre>
+<h4 id="automated-development-tasks"><span class="header-section-number">4.1.3.4</span> Automated Development Tasks</h4>
+<p>It is expected that if the developer is also interacting with or running an instance of the middle-tier of the application, two separate terminal windows will be employed. All commands should be executed from the browser subdirectory of the samplestack installation.</p>
+<p><em>Note: As time permits or priorities are settled and feedback received, we will consider merging automated tasks into one command-line interface such that a unified command line interface would be available to developers.</em></p>
+<h5 id="gulp-run"><span class="header-section-number">4.1.3.4.1</span> gulp run</h5>
+<p>A developer can run the browser application at any time (regardless of whether or not the middle-tier is running/restarted, etc.):</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> run</code></pre>
+<p>This <strong>builds the application, executes its unit tests in the background, and hosts the application on a local web server</strong> (by default at port 3000), so that it can be loaded in a browser at <a href="http://localhost:3000" class="uri">http://localhost:3000</a>. From here a developer can use their browser developer tools to insepct the running unit tests. Note: if a middle-tier server is not running, loading the application in the browser will result in errors. If this happens, a developer can launch (relaunch) the middle-tier server and refresh the browser to enable the application.</p>
+<p>The developer can <strong>run (or rerun) the unit tests in a browser</strong> (by default on port 3001) at <a href="http://localhost:3001/unit-runner.html">http://localhost:3000/unit-runner.html</a>. From here a developer can use their browser developer tools to inspect the running unit tests.</p>
+<p>The developer can see a hierarchical <strong>coverage report</strong> for the unit tests at <a href="http://localhost:3004/coverage" class="uri">http://localhost:3004/coverage</a>. The report shows on a line-by-line-, branch- and statement-level what code is exercised by the unit tests. It can also be a convenient way to review the source code!</p>
+<p>To stop the process, the developer kills it (Ctrl+C in the the terminal works).</p>
+<p>No changes to source code/tests/etc that are made while running the application in this mode will be reflected in the browser/tests/coverage. This is a static build of the application.</p>
+<h4 id="gulp-unit---reporter---sauce"><span class="header-section-number">4.1.3.5</span> gulp unit [--reporter] [--sauce]</h4>
+<p>A developer can execute a one-off build and run of the unit tests for the browser app where results are printed to the console:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> unit</code></pre>
+<p>or</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> unit --reporter spec</code></pre>
+<p>The default reporter reflects the running of any given test using a dot (<code>.</code>). If a different reporter, such as the <code>spec</code> reporter is specified, the the running of a given test will be reflected differently. The <code>spec</code> reporter lists unit tests in their hierarchy of suites, where each suite and test expectation is explicitly listed.</p>
+<p>If the developer wants to generate a reporter suitable for consumption in another tool, the xunit format is available. This format, also known as the JUnit XML format, renders similar information to the <code>spec</code> format, but it renders it as XML and saves it to a file (<code>browser/builds/reports/xunit-UNIT.xml</code>) instead of reporting it to the console.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> run --reporter xunit</code></pre>
+<p>There is no way to set breakpoints in tests that are executed in the console. See <a href="#gulp-run">gulp run, above</a> for how to inspect the tests as they run.</p>
+<p><em>Note: User choice of the reporter is not yet implemented.</em></p>
+<h5 id="gulp-watch"><span class="header-section-number">4.1.3.5.1</span> gulp watch</h5>
+<p>A developer can put the browser development environment into a state where changes to the source code are quickly built and reflected in the running application, including automatic refresh of their browser (subject to browser support for &quot;LiveReload&quot;).</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> watch</code></pre>
+<p>The <code>watch</code> task initially runs the <code>build</code> task and then puts the environment in a state where the source code and releveant project-level files (e.g. the development automation code itself) are being monitored for changes (adds/deletes/saves). When/if the &quot;watcher&quot; sees a change, it attempt to rebuild that file (and any others which may require rebuilding), and to insert the updates file(s) into the running browser app. Upon changes to the running app, a signal is sent to the broser that it should refresh the page. Supported browsers are configured by the application itself to connect to the LiveReload port (for the browser app this is the default 35729) and listen for such messages.</p>
+<p>If building the changed file(s) does not result in style/syntax errors, the unit tests for the application are rerun in the terminal so the developer can see the results of their changes on the tests.</p>
+<p>If a change is made to the project files themselves, typically the development environment application code itself, or if a previous change resulted in style/syntax or other build errors, then the entire <code>run</code>-and-then-<code>watch</code> process is re-executed to ensure that a full clean build is available.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> e2e</code></pre>
+<h4 id="gulp-e2e---reporter---sauce"><span class="header-section-number">4.1.3.6</span> gulp e2e [--reporter] [--sauce]</h4>
+<p>The developer can execute &quot;end-to-end&quot; (aka e2e) tests of the entire Samplestack application (including the database and middle tiers).</p>
+<p>The <code>e2e</code> task builds the application, and then launches a web browser and drives it through a series of exercises to determine whether the entire application is performing as expected.</p>
+<p>As with the unit tests, the developer can specify a reporter. In this case, the only reporter. The choices are:</p>
+<ul>
+<li>(none-specified): the default reporter prints the names of the features and the tested scenarios to the console</li>
+<li><code>xunit</code>: writes XUnit-formatted results to <code>browser/builds/reports/xunit-UNIT.xml</code></li>
+</ul>
+<div style="color: red">
+there is a skeleton implementation of end-to-end tests in EA2. We are prioritizing breadth of functionality in EA3. In EA3 we will at a minimum configure them to run.
+</div>
+<h5 id="the---sauce-parameter"><span class="header-section-number">4.1.3.6.1</span> The --sauce Parameter</h5>
+<p>The sauce parameter will connect to Sauce Labs in order to leverage their farm of browsers.</p>
+<p>A set of browsers that are configured to be run on sauce will be provided, such that the command will be something like</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> e2e --sauce ie9</code></pre>
+<p>to run the end-to-end tests on Internet Explorer 9, or</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> unit --sauce ff27linux --reporter xunit</code></pre>
+<p>to run the unit tests on Firefox 27 under linux and save the results in the XUnit format to a local file. **This example is expected to reflect the kind of command that the MarkLogic test harness will execute and process on a nightly basis. For more information, please follow the <a href="">Samplestack Test Plan</a>.</p>
+<p>Since Sauce Labs has so many browser/OS combinations available, this is a great, free resource for developers of open source projects (or can be used via a paid account with Sauce Labs).</p>
+<p>This form of testing does not require any software to be installed on machines other than the developer's.</p>
+<div style="color: red">
+We could not leverage free Sauce testing until the repository was open-sourced, and it has not been configured, yet. Sauce integration has been fairly easy to set up in the past. If all goes well it should be available in EA3.
+</div>
+<p>It should be noted the testing in this manner does not obviate the need to test the <strong>build process</strong> in a variety of environments. For that, a developer can use <a href="https://travis-ci.org/">Travis</a>. Again, free access to Travis was not available to us prior to open-sourcing the repository and it has not yet been configured. In the case of Travis, the developer does not directly interact with these tests; rather, the tests are instigated by pushes to either the MarkLogic origin repository, or can be configured by the develop to run against their fork.</p>
+<h3 id="errors-exceptions-diagnostics-na"><span class="header-section-number">4.1.4</span> Errors, Exceptions, Diagnostics (N/A)</h3>
+<p>The primary source of errors for the developer is expected to be those that are reported due to syntax or other programmer errors, and reasonable messages should appear in the console when these are found.</p>
+<p>Likewise, if the programming environment suffers its own error, the automation code should attempt to recover and log a meaningful error to the console.</p>
+<h3 id="schemas-na"><span class="header-section-number">4.1.5</span> Schemas (N/A)</h3>
+<p>Aside from the object models of the configuration files that control the development environment, there are no developer-facing schemas.</p>
+<h3 id="configuration"><span class="header-section-number">4.1.6</span> Configuration</h3>
+<p>Configurable elements of the development environment may be seen as part of the high-level functions of the developer experience. As we support public developers who find the need to reconfigure aspects of the development environment, we will develop and include configuration instructions in the documentation.</p>
+<h3 id="security-na"><span class="header-section-number">4.1.7</span> Security (N/A)</h3>
+<p>There are no security requirements associated with Developer stakeholders.</p>
+<h3 id="limitations"><span class="header-section-number">4.1.8</span> Limitations</h3>
+<p>The development environment is meant first and foremost to enable developers to experiment with the application code for Samplestack. It may also serve as sample code for developers wanting to automate their own applications, but this is not its primary purpose.</p>
+<p>As such, the most signicant limitation is that the development environment automation code is that it has not been packaged as a reusable library.</p>
+<p>While efforts have been made to author this code in a manner that allows it to function for an arbitrary application, where such application follows the directory structre of Samplestack, the code will not be as thoroughly documented.</p>
+<p>Additionally, there is not automated testing planned to verify the functionality of the automation code specifically/directly. As such, while the execution of tests <em>using</em> the automation code may provide some level of confidence that it is functioning as expect, it will not undergo any formal testing.</p>
+<h3 id="risks-and-dependencies"><span class="header-section-number">4.1.9</span> Risks and Dependencies</h3>
+<h4 id="complexity-and-developer-familiarity"><span class="header-section-number">4.1.9.1</span> Complexity and Developer Familiarity</h4>
+<p>In general, it is reasonable for us to be concerned that some of our developer audience who have <em>some</em> but not <em>deep</em> experience with JavaScript application development -- and in particular may not have MVC application development experience -- may have a relatively steep learning curve as they discover the architecture of such application.</p>
+<p>It is not, however, a goal to teach development of app development automation scripts.</p>
+<p>So, while Gulp may be a new technology for them, we know that:</p>
+<ul>
+<li>there is not an overwhelming amoung of code to study; and</li>
+<li>they can still achieve the primary object of understanding the 3-tiered architecture and how browser applications fit into that architecture without concerning themselves with the environment automation code.</li>
+</ul>
+<h4 id="environmental-configuration"><span class="header-section-number">4.1.9.2</span> Environmental Configuration</h4>
+<p>The primary risks of this part of the application are the dependencies themselves.</p>
+<p>Node software development, and Gulp programming in particular, combines many small libraries with very specific, targeted features. While this model -- the antithesis of monlithic architecture -- can and has proven to be very productive for the JavaScript developer, it also means that there are many moving parts.</p>
+<p>One way to miminze the risk of having many dependencies is to be careful about the versions that are referenced by our code. For our Node dependencies, this will mean that we &quot;shrinkwrap&quot; the dependencies so that the npm system does not engage in its default behavior of matching and resolving interdependencies each time any developer installs them. Rather, prior to release versions being commit to the <code>master</code> branch, we will resolve all dependencies locally, storing the &quot;shrinkwrapped&quot; list in the repository so that when the repository is cloned, the precise versions of our dependencies to fetch will be defined, and npm will not &quot;improvise&quot; a combination of dependencies that appear from the their version numbers to be compatible.</p>
+<h3 id="scalability"><span class="header-section-number">4.1.10</span> Scalability</h3>
+<p>The Samplestack developer experience is intended to support both one-off proofs-of-concept and large scale development of complex apps. The tradeoffs associated this goal are discussed <a href="">elsewhere</a>.</p>
+<h3 id="performance-1"><span class="header-section-number">4.1.11</span> Performance</h3>
+<p>The Gulp streaming build system is specifically designed with performance as a major goal and is known to scale very well.</p>
+<p>There have been some issues with <code>Gaze</code>....</p>
+<h3 id="upgrade"><span class="header-section-number">4.1.12</span> Upgrade</h3>
+<p>Installing a new version of the Samplestack Browser project is intended to be straightforward. The happy path for a developer is:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> pull
+<span class="kw">npm</span> install
+<span class="kw">bower</span> install</code></pre>
+<h3 id="feature-interaction"><span class="header-section-number">4.1.13</span> Feature Interaction</h3>
+<p>The developer experience for the Samplestack Browser application does not have any direct interaction with any other MarkLogic features.</p>
+<p>We <em>may</em> integrate the Browser development experience with the (two) Middle-tier development experiences. The interaction of browser and middle-tier development automation experiences has not yet been specified, but is anticipated to be self-contained to the Samplestack repository and is not anticipated to require direct feature interaction with other MarkLogic software.</p>
+<p>One area where existing Feature Interaction is specified is in End To End tests. Specifically, end-to-end tests are intended to test the complete Samplestack solution. This means that features which face the End User are tested from the browser presentation layer down through and including Middle Tiers and the MarkLogic Server.</p>
+<p>This requires the End-To-End tests to &quot;drive&quot; the portions of the automation code that is delivered in the middle-tiers in order to launch them, and it requires the tests also to manage the database content upon which the tests are based and to derive expectations from the seed-data used.</p>
+<h3 id="testing-na"><span class="header-section-number">4.1.14</span> Testing (N/A)</h3>
+<p>As noted above, the developer automation code itself will not be independently tested.</p>
+<h3 id="documentation"><span class="header-section-number">4.1.15</span> Documentation</h3>
+<p>Significant portions of this specification, as well as additional introductory material, will be published as part of the online documentation available to all developers.</p>
+<p>Details of how/where the online documentation will be made available are to be decided.</p>
+<h2 id="for-end-users"><span class="header-section-number">4.2</span> For End Users</h2>
+<h3 id="functional-description-1"><span class="header-section-number">4.2.1</span> Functional Description</h3>
+<p>The <a href="https://wiki.marklogic.com/display/rootwiki/Application+Narrative+-+Stack+Overflow+data">Application Narrative</a> presents summary information of the functionality of the application.</p>
+<h3 id="apis-na-1"><span class="header-section-number">4.2.2</span> APIs (N/A)</h3>
+<p>There are no end-user APIs in the Samplestack Browser App. See the Implementation section for information on the APIs that are defined and used internally.</p>
+<h3 id="user-interface-1"><span class="header-section-number">4.2.3</span> User Interface</h3>
+<p><em>Inclusion of wireframes and full documentation within this specification is a work-in-progress. As the features are worked, their specification within this document will be detailed. <strong>Refer to the complete <a href="https://wiki.marklogic.com/download/attachments/29953092/Reference%20Architecture%20Demo%20Application%20Wireframes%20v0.5.pdf">Wireframes Specification document</a> for a single-page PDF view into the annotated wireframes.</strong></em></p>
+<p>The User Experience/User Interface for the Samplestack <em>Application</em> is specified by Wireframes and Features.</p>
+<p>Within the repository the features are to be specified using <a href="https://github.com/cucumber/cucumber/wiki/Gherkin">Gherkin</a>, which allows for expression of scenarios that should be supported by features. These scenarios illustrate how the user and application are expected to interact in specific circumstances in the context of the applications features.</p>
+<p>Please refer to the wireframes for UX specification.</p>
+<h4 id="potential-features"><span class="header-section-number">4.2.3.1</span> Potential Features</h4>
+<p><em>These features have either been discussed or seem to have been referenced in the narrative. We should ensure that they aren't needed, because they are not currently specified.</em></p>
+<ul>
+<li>Edit Question</li>
+<li>Edit Answer</li>
+<li>Edit Comment</li>
+<li>Vote Comment</li>
+<li>Filter by Age of question (date asked/created)</li>
+<li>Only show results for where there are no answers or no accepted answer</li>
+<li>Search only within question or only within answers</li>
+<li>Search by subject matter, e.g. for &quot;XML-based languages&quot; would include all tags for languages that fall into this category like XSLT, XPath, XQuery&quot;</li>
+</ul>
+<h3 id="errors-exceptions-diagnostics"><span class="header-section-number">4.2.4</span> Errors, Exceptions, Diagnostics</h3>
+<p>**Because this is a sample application and because people are likely to break things as they play with it:</p>
+<ul>
+<li>the application should handle runtime errors by providing feedback to the end user (who is likely to in fact be the developer)</li>
+<li>the application should <strong>not</strong> attempt to post any diagnostics back to the server for analysis.</li>
+</ul>
+<h3 id="schemas"><span class="header-section-number">4.2.5</span> Schemas</h3>
+<p>JSON Schemas are used to represent model elements. They are self-documenting expressions of expectations for JSON objects.</p>
+<h3 id="configuration-na"><span class="header-section-number">4.2.6</span> Configuration (N/A)</h3>
+<p>There is no end-user configuration.</p>
+<h3 id="security-1"><span class="header-section-number">4.2.7</span> Security</h3>
+<p>The application runs in a browser and is thus inherently relatively insecure.</p>
+<p>Where credentials are entered, they should remain in the application state only as long as it takes to either confirm them through the login process or for the user to cancel a login attempt.</p>
+<p>The application should be capable of running over an HTTPS connection(s), regardless of whether or not the REST server and the Web server are configured to be one-and-the-same.</p>
+<h3 id="limitations-na"><span class="header-section-number">4.2.8</span> Limitations (N/A)</h3>
+<p>Not applicable for end users -- the application features are intended to be fully realized.</p>
+<h3 id="risks-and-dependencies-na"><span class="header-section-number">4.2.9</span> Risks and Dependencies (N/A)</h3>
+<p>Not applicable for end users.</p>
+<h3 id="scalability-na"><span class="header-section-number">4.2.10</span> Scalability (N/A)</h3>
+<p>Not applicable for end users.</p>
+<h3 id="performance-2"><span class="header-section-number">4.2.11</span> Performance</h3>
+<p>We will keep data passed between server and browser to a minimum through paging of long search results. Users should generally experience sub-second response times for any operation, subject to reasonable machine speed and local deployment scenario.</p>
+<p>By minifying code and structuring the referencing of dependencies, we should strive for the application to load itself &quot;quickly,&quot; though precise expectations may become better available as we build out the deployment of an optimized build.</p>
+<h3 id="upgrade-na"><span class="header-section-number">4.2.12</span> Upgrade (N/A)</h3>
+<p>Not applicable for end users.</p>
+<h3 id="feature-interaction-1"><span class="header-section-number">4.2.13</span> Feature Interaction</h3>
+<p>Not applicable for end users.</p>
+<h3 id="testing"><span class="header-section-number">4.2.14</span> Testing</h3>
+<p>Not applicable for end users.</p>
+<h3 id="documentation-1"><span class="header-section-number">4.2.15</span> Documentation</h3>
+<p>The application is intended to be straightforward enough that it does not require its own &quot;online help&quot; or instructions.</p>
+<p>One aspect for which we will provide assistance is in &quot;Search Tips&quot;, which will help users with syntax and search parameters that they can use within text search criteria.</p>
+<h1 id="implementation"><span class="header-section-number">5</span> Implementation</h1>
+<h2 id="automated-development-environment"><span class="header-section-number">5.1</span> Automated Development Environment</h2>
+<h3 id="directory-structure"><span class="header-section-number">5.1.1</span> Directory Structure</h3>
+<p>The automated development environment code lives in the dev-tasks directory of the browser application:</p>
+<pre><code>.
+├── README.md
+├── build                  // code related to building the app
+│   ├── buildSteps.js      // individual steps in the build
+│   └── runBuild.js        // build runner
+├── cloner.js              // clone one stream into another
+├── context.js             // manages state during build and shared functions
+├── counter.js             // count files in stream
+├── helper.js              // helper vars and functions for the process
+├── index.js               // main module for the dev tasks
+├── rebaser.js             // move the base dir of stream&#39;s files
+├── tasks                  // individually addressable tasks
+│   ├── bower-files.js     // copy bower components to target directories
+│   ├── build.js           // exeute a build
+│   ├── clean.js           // cleans builds directory
+│   ├── e2e.js             // runs e2e tests
+│   ├── run.js             // builds app and puts in &quot;run&quot; mode
+│   ├── seed-patch.js      // patch seed data to improve data quality
+│   ├── server-stress.js   // put stress on the middle tier
+│   ├── unit.js            // run unit tests
+│   └── watch.js           // build, unit test, run and watch for changes
+└── unit                   // code related to unit testing
+    └── runUnit.js         // unit test runner</code></pre>
+<h3 id="implementation-phases-and-timeline"><span class="header-section-number">5.1.2</span> Implementation Phases and Timeline</h3>
+<p>As a distinct application, most of the browser application's development environment automation was completed early in the Milestone 3 phase.</p>
+<p>Remaining for EA3:</p>
+<ul>
+<li>improve end-to-end testing automation / <a href="https://github.com/marklogic/samplestack-internal/issues/117">drive middle tiers</a></li>
+<li>generate test reports for inclusion in harness</li>
+<li>begin to author end-to-end tests with finalized seed data</li>
+</ul>
+<p>Pre-1.0.0:</p>
+<ul>
+<li>Integrate with Node.js tier automation</li>
+<li>integrate with Cloud-based testing to support automated testing on multiple operating systems and browsers</li>
+</ul>
+<h2 id="web-application"><span class="header-section-number">5.2</span> Web Application</h2>
+<h3 id="operation"><span class="header-section-number">5.2.1</span> Operation</h3>
+<h4 id="link-to-api-reference"><span class="header-section-number">5.2.1.1</span> Link To API Reference</h4>
+<p>The API Reference for the browser app is intended to be published here. While formatting issues are being addressed, it is currently in a separate wiki page: <a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a></p>
+<h4 id="requirejs-dependencies"><span class="header-section-number">5.2.1.2</span> RequireJS Dependencies</h4>
+<p>While Angular applications use dependency injection to enable components to collaborate, RequireJS is used to structure the overall file dependencies that allow the components to be added to modules and for the applications external library dependencies to be loaded.</p>
+<div style="width: 100%">
+<img style="display: block"  src="http://raw.githubusercontent.com/stu-salsbury/marklogic-samplestack/SPEC/browser/docs/diagrams/rjs-high-level.png"></img>
+</div>
+<p>The two major <strong>Angular</strong> modules are organized into <strong>RequireJS</strong> modules as _marklogic/marklogic and application. Each is composed of a RequireJS module that is used to collect components (&quot;app/compoments&quot; and &quot;_marklogic/components&quot;). A separate build for testing is layered over the top as &quot;mockedApp&quot;.</p>
+<p>The two main modules each has a set of dependencies:</p>
+<div style="width: 100%">
+<img style="display: block"  src="http://raw.githubusercontent.com/stu-salsbury/marklogic-samplestack/SPEC/browser/docs/diagrams/rjs-dependencies.png"></img>
+</div>
+<h3 id="internationalization"><span class="header-section-number">5.2.2</span> Internationalization</h3>
+<p>I18N is not in scope for 1.0.0 of Samplestack. AngularJS easily supports authoring multi-language applications, so translation of the application itself is probably a significant portion of the cost for I18N support.</p>
+<h3 id="implementation-phases-and-timeline-1"><span class="header-section-number">5.2.3</span> Implementation Phases and Timeline</h3>
+<p>As of mid Milestone 3 phase, the browser application infrastructure is largely in place to support the features of the application.</p>
+<p>For EA3:</p>
+<ul>
+<li>complete features</li>
+<li><span style="color: red">skinning to professional UI graphic design?</span> -- working to identify a designer, timing TBD</li>
+</ul>
+<p>For 1.0.0:</p>
+<ul>
+<li>expand test coverage</li>
+<li>open issues</li>
+<li>documentation finalization</li>
+<li>pre-release activities</li>
+</ul>
+<h1 id="issues-and-alternatives"><span class="header-section-number">6</span> Issues and Alternatives</h1>
+<p>Issues and Alternatives that are actively being worked and/or are intended to be resolved prior to 1.0 release are documented in github. Following are issues that may be considered in future releases, but are <strong>off the table for 1.0</strong>.</p>
+<h2 id="design-alternatives-and-rationales"><span class="header-section-number">6.1</span> Design Alternatives and Rationales</h2>
+<h3 id="dependency-management-1"><span class="header-section-number">6.1.1</span> Dependency Management</h3>
+<p>RequireJS is a proven means to handle dependencies in browser applications.</p>
+<p>In fact, it is the basis for current browsers to support ES6-style dependency management, as the major preprocessors which translate ES6 code to ES5 code translate the ES6 dependency syntax to RequireJS syntax.</p>
+<p>Even though RequireJS syntax is completely different than CommonJS syntax, other than that they both use the word 'require', for version 1.0 we will stay with RequireJS since it is best &quot;not ECMAScript 6&quot; means of handling file dependencies.</p>
+<p>As our underlying libraries shift to ES6 and to the extent that our other tiers also may shift, we expect to do so in the Browser App, as well.</p>
+<h3 id="bootstrap"><span class="header-section-number">6.1.2</span> Bootstrap</h3>
+<p>Bootstrap is bloated and long in the tooth. It is not well-designed for customization. Newer frameworks, built from the ground up for customization, such as Bourbon, offer some advantages. We should consider swapping out Bootstrap for something like Bourbon.</p>
+<h3 id="json-schema"><span class="header-section-number">6.1.3</span> JSON Schema</h3>
+<p>Is JSON Schema a good direction? There are alternatives or enhancements available, including validate.js, which may offer advantages to clarity or features availalbe for validating model elements</p>
+<h3 id="learning-curvecomplexity"><span class="header-section-number">6.1.4</span> Learning Curve/Complexity</h3>
+<p>We are trying to strike a balance between showing professional quality, scalable architecture and development environment, and offering code that can work in other scenarios with simplicity. And for many developers there are multiple new technologies involved. We shall see whether we are in the right ballpark with various tradeoffs and must be prepared to adjust accordingly.</p>
+<h2 id="possible-future-enhancements"><span class="header-section-number">6.2</span> Possible Future Enhancements</h2>
+<h3 id="angular-2.0"><span class="header-section-number">6.2.1</span> Angular 2.0</h3>
+<p>This is presently not an option, but as Angular 2.0 becomes reality, it will offer significant improvements and will certainly be something to consider beginning to adopt when it reaches a stable beta state.</p>
+<h3 id="features"><span class="header-section-number">6.2.2</span> Features</h3>
+<p>There are numerous features that we've discussed adding to Samplestack in the future. Once version 1.0.0 is released, we should start to digest feedback and consider the future. For now, implementing our 1.0 feature set to the best of our ability is the priority.</p>
+<h4 id="potential-features-1"><span class="header-section-number">6.2.2.1</span> Potential Features</h4>
+<p><em>These features have either been discussed or seem to have been referenced in the narrative. We should ensure that they aren't needed, because they are not currently specified.</em></p>
+<ul>
+<li>Edit Question</li>
+<li>Edit Answer</li>
+<li>Edit Comment</li>
+<li>Vote Comment</li>
+<li>Filter by Age of question (date asked/created)</li>
+<li>Only show results for where there are no answers or no accepted answer</li>
+<li>Search only within question or only within answers</li>
+<li>Search by subject matter, e.g. for &quot;XML-based languages&quot; would include all tags for languages that fall into this category like XSLT, XPath, XQuery&quot;</li>
+</ul>
+<h1 id="references"><span class="header-section-number">7</span> References</h1>
+<h2 id="other-samplestack-specifications-and-related-documents"><span class="header-section-number">7.1</span> Other Samplestack Specifications and Related Documents</h2>
+<ul>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/MarkLogic+8+Reference+Architecture">Reference Architecture Product Requirements</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Application+Narrative+-+Stack+Overflow+data">Samplestack Application Narrative</a></li>
+<li><a href="https://wiki.marklogic.com/download/attachments/29953092/Reference%20Architecture%20Demo%20Application%20Wireframes%20v0.5.pdf">Samplestack Wireframes Specification</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Implementation+%28Java%29+--+Functional+Specification">Samplestack Java and Database Tiers Function Specification</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Reference+Architecture+and+Implementation+--+Test+Specification">Samplestack Test Specification</a></li>
+</ul>
+<h2 id="platforms-and-architectural-dependencies"><span class="header-section-number">7.2</span> Platforms and Architectural Dependencies</h2>
+<ul>
+<li><a href="http://nodejs.org/">Node.js</a>: &quot;Node.js® is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient, perfect for data-intensive real-time applications that run across distributed devices.&quot;</li>
+<li><a href="http://bower.io/">Bower</a>: &quot;Web sites are made of lots of things — frameworks, libraries, assets, utilities, and rainbows. Bower manages all these things for you.&quot;</li>
+<li><a href="http://requirejs.org/">RequireJS</a>: &quot;RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node. Using a modular script loader like RequireJS will improve the speed and quality of your code.&quot;</li>
+<li><a href="http://gulpjs.com/">Gulp</a>: &quot;The streaming build system&quot;</li>
+<li><a href="https://angularjs.org/">AngularJS</a>: &quot;HTML enhanced for web apps!&quot;</li>
+<li><a href="http://sass-lang.com/">Sass</a>: &quot;Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.&quot;</li>
+<li><a href="http://visionmedia.github.io/mocha/">mocha</a>: &quot;Mocha is a feature-rich JavaScript test framework running on node.js and the browser, making asynchronous testing simple and fun. Mocha tests run serially, allowing for flexible and accurate reporting, while mapping uncaught exceptions to the correct test cases.&quot;</li>
+<li><a href="http://chaijs.com/">Chai</a>: &quot;Chai is a BDD / TDD assertion library for node and the browser that can be delightfully paired with any javascript testing framework.&quot;</li>
+<li><a href="http://angular.github.io/protractor/">Protractor</a>: &quot;Protractor is an end-to-end test framework for AngularJS applications. Protractor runs tests against your application running in a real browser, interacting with it as a user would.&quot;</li>
+<li><a href="https://github.com/cucumber/cucumber-js">Cucumber.js</a>: &quot;Cucumber lets software development teams describe how software should behave in plain text. The text is written in a business-readable domain-specific language and serves as documentation, automated tests and development-aid - all rolled into one format.&quot;</li>
+</ul>
+<h2 id="continuous-integrationtesting"><span class="header-section-number">7.3</span> Continuous Integration/Testing</h2>
+<ul>
+<li><a href="https://travis-ci.org/">Travis CI</a>: &quot;Travis CI is a hosted continuous integration service. It is integrated with GitHub and offers first class support for [most common langauges].&quot;</li>
+<li><a href="https://saucelabs.com/">Sauce Labs</a>: &quot;Automatically run your Selenium tests and Javascript Unit tests across 300+ mobile and desktop browser/OS platforms. We provide the test infrastructure so you can focus on releasing great web apps.&quot;</li>
+</ul>
+<h1 id="document-history"><span class="header-section-number">8</span> Document History</h1>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Version<span>  </span></td>
+<td style="text-align: left;">Description<span>  </span></td>
+<td style="text-align: left;">Author</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.0.1<span>  </span></td>
+<td style="text-align: left;">Initial draft for review<span>  </span></td>
+<td style="text-align: left;">Stu Salsbury</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.0.2<span>  </span></td>
+<td style="text-align: left;">Second draft for Engineering review<span>  </span></td>
+<td style="text-align: left;">Stu Salsbury</td>
+</tr>
+</tbody>
+</table>
+
+
+"status-of-this-document"><span class="header-section-number">1</span> Status of This Document</h1>
+<p>The document is considered a review draft. Feedback is welcome and encouraged.</p>
+<p><strong>Last Updated: 2014-09-16, Stu Salsbury</strong></p>
+<h2 id="contributors"><span class="header-section-number">1.1</span> Contributors</h2>
+<ul>
+<li>Justin Makeig</li>
+<li>Kasey Alderete</li>
+<li>Mitchell Yawitz</li>
+<li>Charles Greer</li>
+<li>Scott Brooks</li>
+<li>Mike Wooldridge</li>
+</ul>
+<h2 id="introduction-to-this-document"><span class="header-section-number">1.2</span> Introduction to this Document</h2>
+<p>This document specifies the high-level purpose, design, functioanlity and implementation for the Samplestack Browser Application.</p>
+<p>Throughout the document, references will be made to various dependencies/platforms. Where such references appear, they may be linked to their documentation site. A complete list of the major platforms and dependencies with links to those sites appears in <span style="color:red">it's section</span>. Any dependencies selected where alternatives may have been available are discussed in further detail in <span style="color:red">that other section</span>.</p>
+<h2 id="see-also"><span class="header-section-number">1.3</span> See Also</h2>
+<ul>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a></li>
+<li><a href="https://wiki.marklogic.com/download/attachments/29953092/Reference%20Architecture%20Demo%20Application%20Wireframes%20v0.5.pdf">Wireframes Specification</a></li>
+<li><a href="#SamplestackBrowser--FunctionalSpecification-7References">Additional References</a></li>
+</ul>
+<h2 id="authors-note"><span class="header-section-number">1.4</span> Author's Note</h2>
+<p>This version of the document does not yet reflect late-breaking or not yet final design decisions:</p>
+<ul>
+<li>&quot;score&quot; will be renamed to &quot;votes&quot; in the user interface</li>
+<li>a design for the application to offer users the option to log in if no resource is found for a URL is TBD</li>
+</ul>
+<p>Additionally, detailed designs for some components will be developed within Milestone 3 and included in a future version of this document.</p>
+<p>API documentation will be fleshed out and may be merged with the portions of this specification that are deemed suitable for the public into a consolidated online documentation offering.</p>
+<h1 id="design-overview"><span class="header-section-number">2</span> Design Overview</h1>
+<h2 id="purpose"><span class="header-section-number">2.1</span> Purpose</h2>
+<p>The Samplestack MVC Browser App is part of the reference implementation of the <a href="https://wiki.marklogic.com/display/rootwiki/MarkLogic+8+Reference+Architecture">MarkLogic Reference Architecture</a>. As such, the primary objective of the Samplestack MVC Browser App is to <strong>demonstrate how developers can build applications with MarkLogic</strong>.</p>
+<p>The reference architecture states that the main purpose of the reference implementation is:</p>
+<blockquote>
+<p>to demonstrate how a developer would put together a <strong>real application</strong>.</p>
+</blockquote>
+<p>And that:</p>
+<blockquote>
+<p>It should serve as an entry point for training or documentation on more advanced topics, providing a shared baseline across the various media that we use to reach developers. Our documentation and training should use the reference application instance as the primary means to introduce new developers to building applications. As we design workflows for new developers ramping up on MarkLogic, building an application in their own environment should come quickly after a quick intro to core concepts and basic query and document management, for example in JavaScript in Query Console.</p>
+</blockquote>
+<h3 id="stakeholders"><span class="header-section-number">2.1.1</span> Stakeholders</h3>
+<p>There are two very distinct classes of stakeholders for Samplestack. Throughout this document, distinctions between <code>developers</code> and <code>users</code> will be made.</p>
+<p><code>Developers</code> will be considered to be those people who involve themselves with how Samplestack is <em>designed, developed, deployed, etc</em>. Such a &quot;user&quot; is really not a user of the application, but is our true target audience as discussed above. As such, a great deal of focus in this document will be on their interaction with Samplestack and on how the design of the application supports <em>their</em> mission to build applications with MarkLogic technology.</p>
+<p><code>End Users</code> are essentially a fictional group of people who are sharing knowledge on technical topics (and specifically on software development-related topics). Because the purpose of the Samplestack application has been artificially developed in order to derive requirements, Samplestack Users (herein referred to as &quot;users&quot; or &quot;end users&quot;) are not our target audience, yet their imagined goals are used to drive the application design.</p>
+<p>Unless otherwise specified, we assume that <code>developers</code> are a proxy for other &quot;meta&quot; stakeholders such as a development manager, a product manager, the owner of the Samplestack application, the configuration management specialist, the graphical designer, etc. We group these people together for simplicity and in order to avoid assumptions about the shape and content of the pool of people who are part of making the fictitious Samplestack and making it run.</p>
+<h2 id="functional-summary"><span class="header-section-number">2.2</span> Functional Summary</h2>
+<h3 id="for-developers"><span class="header-section-number">2.2.1</span> For Developers</h3>
+<p>From the <a href="https://wiki.marklogic.com/display/rootwiki/MarkLogic+8+Reference+Architecture">Reference Architecture Product Requirements</a>:</p>
+<blockquote>
+<ul>
+<li><strong>Three-tiered, thick client:</strong> In a single-page application (SPA) the front-end is responsible for all view rendering and application state. The UI communicates with the middle tier only through JSON services. These services should represent that domain of the application, and not (necessarily) thin wrappers on document CRUD. A user should be able to swap out a different front-end on top of the services that the middle tier provides—read-write, REST-style, with JSON in and out.</li>
+<li><strong>MVC:</strong> Separation of concerns for request handling, application logic, data access, and view delegation</li>
+<li><strong>Best practices:</strong> Help make it easier to do things the right way than to struggle reinventing the wrong way</li>
+<li><strong>Scaffolding:</strong> Foundation for a PoC or a real, production application: Less code to write, fewer things to understand when starting an application</li>
+<li><strong>Common vocabulary and toolbox:</strong> Shared techniques and tools for our customers, pre-sales, and consultants and less one-off frameworks and plumbing</li>
+<li><strong>Front end:</strong> The front end lives in the browser. The front end will provide a rich interface built in the style of modern web apps. It must use a development style that will be familiar to a moderately sophisticated web developer. The front-end will likely be the portion of the application instance that is most likely to be swapped out. As such, we should provide a service-based infrastructure that simplifies migration to another UI technology. The ease of substitution also mitigates the risk of pushing the envelope a little with a thick, SPA architecture. Initial research indicates that Angular has the features, momentum, ease of use, and adoption, and community that would fulfill this requirement.</li>
+</ul>
+</blockquote>
+<p>Additional notes include:</p>
+<blockquote>
+<p>The middle tier is responsible for brokering data and application logic between UI and the database and providing orchestration for other integrations (e.g. pulling things off of a message queue or getting/putting data from/to another system).</p>
+</blockquote>
+<blockquote>
+<p>The middle tier’s role is to broker communication between the front end and the database, to enforce business rules and flow logic, and provide a place to integrate with other non-UI services, for example pulling data from a relational database. In a modern single-page web application the middle tier provides HTTP services using JSON to the front-end.</p>
+</blockquote>
+<blockquote>
+<p>We will recommend a three-tiered architecture for new users and proofs-of-concept <strong>as well as large-scale production applications</strong>.</p>
+</blockquote>
+<p>One &quot;function&quot; of the development enviornment is the organization of the files that comprise it. This organization forms the basis on which the other functions of the enviornment are built.</p>
+<p>The enviornment is to be capable of locating source code files, checking their syntax, converting or compiling them into runtime forms, and exercising tests of the functionality.</p>
+<p>The structure of the files that make up the app and details of the automatated tasks used to develop it are the subjects of many of the remaining sections of this document.</p>
+<h3 id="for-users"><span class="header-section-number">2.2.2</span> For Users</h3>
+<p>To an end-user, Samplestack is simple app. It is developed as if for a fictional user base that roughly resembles a group that would interact on a Stack Exchange site such as Stack Overflow, and in fact the seed data used to populate the database are from Stack Overflow. Much more information is available in the <a href="https://wiki.marklogic.com/display/rootwiki/Application+Narrative+-+Stack+Overflow+data">Application Narrative</a>.</p>
+<p>Wireframes have been developed to sketch the overall graphical user interface. They include User Experience (UX) specifications which outline how the interface is to derived from data and how it is to respond to user interaction.</p>
+<p>Based on the detailed narrative and these wireframes and UX specifications, individual End-User Features have been specified.</p>
+<p>It is these features that are considered the deliverables of the application itself. Each has a summary and a set of Scenarios which illustrate more specific requirements as to how the application and its users should be able to interact. The features are the units of testability of correctness for the application itself.</p>
+<p>End-User Features are detailed in <a href="#end-user-user-interface">section 4.2.3</a></p>
+<h2 id="user-stories-na"><span class="header-section-number">2.3</span> User Stories (N/A)</h2>
+<p>Because the application requirements are fictitious and were generated primarily by determine how to demonstrate key MarkLogic features, the project team decided to deprioritize user stories for the Samplestack application itself. In their stead, we are using &quot;features&quot; to describe interactions with the system, consistent with what is specified in the application narrative and wireframes.</p>
+<p>The end-user features can be considered as derivatives of what would otherwise have been these user stories.</p>
+<h1 id="design-goals-and-constraints"><span class="header-section-number">3</span> Design Goals and Constraints</h1>
+<h2 id="overview"><span class="header-section-number">3.1</span> Overview</h2>
+<p>The browser app should demonstrate best-practices in modern browser development under the MVC paradigm. These include that:</p>
+<ul>
+<li>The <strong>application and the developer experience should scale</strong> to development and deployment of large, real-world apps developed by teams.</li>
+<li>The application should be <strong>testable</strong> and the developer experience should <strong>support and facilitate</strong> the development and execution of tests.</li>
+<li>It should adhere to <strong>standards</strong> such as RESTful JSON over AJAX-style HTTP.</li>
+<li>It should prefer <strong>components that are popular and/or considered best-of-breed</strong> in the development community.</li>
+</ul>
+<p>It should demonstrate best practices in security in the browser tier.</p>
+<p>It is <em>not</em> a requirement to build libraries or other components packaged for reuse nor which would be supported by MarkLogic in other applications, however, to the extent practical, the app should be structured so that developers may &quot;borrow&quot; code from the application to use in their own application development if they choose to follow the reference architecture.</p>
+<p>In order to support this goal, the application should strive to minimize divergence from in-built MarkLogic APIs, such as <code>search</code> and <code>CRUD</code> features. However, where alternate APIs improve the overall quality of the three-tiered architecture, it may be desirable to diverge from the MarkLogic API at the appropriate level.</p>
+<p>These goals will be referenced within discussion of concrete decision choices below.</p>
+<p>As a part of the MarkLogic product, the Samplestack browser application is delivered as a portion of the Samplestack github repository at <a href="https://github.com/marklogic/marklogic-samplestack" class="uri">https://github.com/marklogic/marklogic-samplestack</a>.</p>
+<h4 id="developer-experience-and-task-automation"><span class="header-section-number">3.1.0.1</span> Developer Experience and Task Automation</h4>
+<p>Developers experience the application through its source code and through automation provided to help develop, test and deploy it.</p>
+<p>From a design perspective, the application development process should allow and enable the developer to carry out these functions as necessary, while focused primarily on the application itself.</p>
+<p>As such, a prime design goal is to automate the experience in a manner such that, subject to some constraints and guidelines for the organization of source code files, the application development experience should not from moment to moment require re-authoring of the tooling that is used to enable these process functions.</p>
+<p>More information about the user interfaces and features of the development process automation included in Samplestack is in <a href="#SamplestackBrowser--FunctionalSpecification-4.1ForDevelopers">section 4.1</a>.</p>
+<p>The overarching goal of Samplestack as a whole is to demonstrate and teach the MarkLogic Reference Architecture and how it can be used to build both small and large apps, from proofs-of-concept to production-ready instances of large, complex applications.</p>
+<p>A major challenge for Samplestack is that in actuating a full example we must implement technology that is not in and of itself directly related to MarkLogic. It compounds that challenge that we wish to demonstrate how a <strong>large-scale </strong>production-ready, real-world** application can be developed in the same manner that a one-off demo app may be. We thus must make affordances and should provide an infrastructure that works in both cases.</p>
+<p>Samplestack, while seeking to demonstrate the basics of development in the architecture, must also demonstrate how those basics can be applied to an app whose development process and whose code itself <em>can be</em> scaled in a much larger project.</p>
+<p>We also have the hope that customers will be able to isolate a skeleton from within the Samplestack application that they could extract and use as the basis for their own applications.</p>
+<p>Some of the areas in which these tradeoffs surface in the Samplestack Browser application are:</p>
+<ul>
+<li>Configurability</li>
+<li>Security</li>
+<li>Standards</li>
+<li>Technology Decisions as Constraints</li>
+<li>Abstraction and Extensibility</li>
+<li>Development Environment Automation</li>
+<li>Reliability</li>
+<li>Footprint</li>
+</ul>
+<p>This section discusses design goals and constraints within the context of the aforementioned tradeoffs <em>on a high level</em>.</p>
+<p>It is not possible to discuss the constraints of the design without discussing certain of the technology choices and dependencies that are selected in order to satisfy the goals and constraints. As such, those choices are discussed and documented in this section.</p>
+<p>Further detail on implementation choices relating to specific external dependencies can also be found throughout the remainder of the specification.</p>
+<p><em>In this release, we are not officially marking any code or as reusable -- Samplestack is built first and foremost to satisfy the goal of demonstration within the context of its ficitious requirements. However, in the longer run, by releasing some aspects of an application skeleton as officially supported components, we will be able to ease the development of applications that follow certain architectural sub-patterns and technology choices. Officially abstracting complexities into supported components may be very valuable to application developers, since in an MVC Browser app, much of the complexity is (intentionally) housed in the browser tier.</em></p>
+<h2 id="configurability"><span class="header-section-number">3.2</span> Configurability</h2>
+<p>In larger teams, different developers may have different development machine environments. This sub-section on configurability is presented first among its peer sub-sections because many of those other subjects are related to the (re)configurability the application for diverse development and production environments.</p>
+<p>Specific configuration parameters are documented in the <a href="#SamplestackBrowser--FunctionalSpecification-4.1.5ConfigurableProperties">section 4.1.5</a>.</p>
+<h3 id="network-ports-and-web-servers-configurability"><span class="header-section-number">3.2.1</span> Network Ports and Web Servers Configurability</h3>
+<p>At a repository level, known areas where conflicts may occur should be designed as configurable. In a networked application, network ports are one such area, and so the application should be developed so as to allow for (re)configuration of the network ports used.</p>
+<p>In order to promote developer ease of use, and specifically to support testing and dynamically rebuilding the browser application, the browser environment needs to be configurable to use web servers that are controlled by the browser development automation system. As such, when a developer is working on the browser code, the app should be served by web servers that are constructed and maintained by that automation code.</p>
+<p>In production, or in cases where a middle-tier developer may wish to have a statically served web application, such a configuration does not provide value, and in fact the installation of the browser automation code may be more trouble than it is worth. As such, a developer should be able to run the application in a local environment where the app is served by the middle-tier HTTP server itself, for simplicity's sake.</p>
+<p>The MVC browser application should be developed so that it can be served from a completely static web server, so that it may be easily deployed to a &quot;dumb&quot; static server such as a simple nginx or Apache installation, or from any other server, such as a Spring web server, where in none of those cases does the server require knowledge of how the application is constructed, nor does the server software collaborate with the browser application code.</p>
+<p>In summary:</p>
+<ul>
+<li>The browser application itself must be fully functional from any static web server served from any address.</li>
+<li>The browser application must allow for configurable REST server addresses.</li>
+<li>The browser development environment must run its own web servers to support testing and &quot;live&quot; coding.</li>
+</ul>
+<h3 id="feature-configurability"><span class="header-section-number">3.2.2</span> Feature Configurability</h3>
+<p>In some cases, we will make particular features or or code paths configurable where such configurations are known points at which an application deployment or a developer environment may want or require divergence. These cases will be noted individually in <a href="">section TODO</a>.</p>
+<h2 id="security"><span class="header-section-number">3.3</span> Security</h2>
+<p>We balance the security requirements for production environments with looser configurations for development environments.</p>
+<p>In general, the application must support employment of all typical defensive measures for browser apps, in particular encryption at the network layer (HTTPS), Cross-Origin Policy with selective Cross Origin Resource Sharing (CORS) configuration, Cross Site Request Forgery protection (CSRF aka XSRF) and the protection of credentials.</p>
+<p>Security, including design goals and constraints that relate to it, are discussed in detail in <a href="">section TODO</a>.</p>
+<h2 id="standards"><span class="header-section-number">3.4</span> Standards</h2>
+<p>In browser applications, certain standards are set by W3C recommendations and following is a requirement for browser-based functionality (HTTP, DOM).</p>
+<p>After that, there are additional standards and conventions that are typical and helpful.</p>
+<p>MVC apps almost universally using a model where the application <em>code itself</em> is served statically. This has positive effect on scalability as serving a static webapp is a very lightweight operation for a web server, especially if CDNs and/or caching are in use.</p>
+<p>All <em>data</em> for an MVC app is almost universally accessed using the AJAX with applicaiton/json Content-Types, and typically follow the RESTful pattern to reasonable degrees. Browser code tends to be &quot;happiest&quot; with fully RESTful endpoints where resources (where verbs are in the HTTP method and resources are tracked by their id). Due to some current areas of non-RESTfulness in the available middle tier, some implementation work is required to adapt RESTful expectations in the browser app to the endpoints provided.</p>
+<p>On the browser, W3C recommendations should always be followed. As some browsers, notably Internet Explorer prior to version 10, do not self-update to maintain compatibility with or implementation of the full set of current standards in the areas of DOM, CSS and ECMAScript, we cannot assume that all features are available to Samplestack.</p>
+<p>At this time, as we are targeting IE9 as the minimum browser, it becomes the measure by which we can determine whether or not a feature will be available to us. Through unit- and end-to-end-testing, we can ensure that our application behaves as expected on the targeted browsers. Adherence to the limitations of Internet Explorer 9 is a significant drag on Samplestack development, as it is for all developers, and we anticipate retiring support for it as soon as is seen feasible. IE9 was chosen as the baseline because it is the baseline we test for in our other products -- this eases our testing burden until we have a lower-cost means of testing on a broader set of browsers and OSes.</p>
+<h2 id="technology-decisions-as-constraints"><span class="header-section-number">3.5</span> Technology Decisions as Constraints</h2>
+<p>We are forced to enter down certain paths with selection of technologies when building a complete example application -- even though our intent is to serve all comers, some of whom might not make the same choices.</p>
+<p>As such, they form a type of constraint on how we can achieve a pure demonstration of three-tier MarkLogic application development.</p>
+<p>MVC web applications are almost universally built &quot;on the shoulders&quot; of open source libraries. A number of major players in the industry have either intentionally or as a side effect of their development efforts, developed such libraries and released them into open source repositories, including but not limited to Google (Angular.js) and Facebook (React). Other frameworks, such as Ember.js, do not have such strong corporate backing but are nonetheless funded, led or contributed to by significant corporate users of such technology.</p>
+<p>In addition, a vast array of smaller libraries are available for more specific application development needs, and it is typical to employ those which fit a particular architecture or technology need within the scope of developing an application.</p>
+<p>The subsections that follow introduce the more significant choices we have made in designing Samplestack.</p>
+<h3 id="build-environment-node.js-and-gulp"><span class="header-section-number">3.5.1</span> Build Environment: Node.js and gulp</h3>
+<p>The open source community has developed various technologies that aid in development which can operate independently of IDEs and text editors. In part, this independence may be driven by the desire to provide automation within open source code repositories themselves, so that no assumptions are made about one's development environment, thereby allowing anyone who works with the code to benefit from the automation.</p>
+<p>MVC browser applications are very heavily JavaScript-centric. HTML and CSS are still important pieces, but more and more, these technologies themselves are driven by JavaScript, both during development and at run-time.</p>
+<p>In fact, such applications are almost always developed with automation that is itself written in JavaScript and executed by Node.js. This takes the form of very specific libraries that execute key functions in handling source code, as well as task and build runner frameworks that are used to exercise these libraries to form a cohesive and developer-friendly development environment.</p>
+<p>In general, these technologies are evolving very quickly in the open.</p>
+<p>The Samplestack JavaScript development environment is centered around a relatively new framework called <a href="http://gulpjs.com/">gulp</a>, self-described as &quot;the streaming build sytem&quot;. It is so called because, contrary to earlier task runners such a <a href="http://gruntjs.com/">grunt</a>, gulp focuses on taking raw source code inputs and streaming them through various filters/plugins in order to render them into different states, such as a rendering that is specifically targeted for unit testing, or for production deployment. Such a stream-based approach yields much faster execution cycles, so that the turnaround time between a developer changing code and being able to evaluate the results is minimized and the experience becomes more fluid. Open- and closed- source JavaScript projects such as <a href="">Angular.js</a> are using or converting to gulp-based automation, as are many of the individuals who are leaders in the open-source JavaScript community. See <a href="https://github.com/gulpjs/gulp/issues/540">this thread on the gulp repository</a>.</p>
+<p>A number of small libraries are used in Samplestack's gulp automation code. These are introdcued [TODO here]. See also the section on Abstraction and Extensibility for discussion of potential for future officially supported abstractions of aspects of this process.</p>
+<h3 id="mvc-framework-angular.js"><span class="header-section-number">3.5.2</span> MVC Framework: Angular.js</h3>
+<p>The most significant technology choice we have made in this regard is the selection of Angular.js as an MVC framework. Angular has, by most measures, the largest base of the current breed of MVC frameworks, is under acctive development by Google and other contributors, and is considered by many as a safe, reliable, flexible and extensible choice among the options.</p>
+<p>By employing <em>any</em> reusable library, we enter into territory where other viable options are left &quot;on the table.&quot; Not all of our customers will (or do) prefer or use Angular.js. Our belief is that, for the short run, Angular.js is in the sweet spot for our base, and our hope is that in the long run we will be able to adapt, both as the landscape changes, and as time and money allow, to be able to broaden our support for alternatives. This will be discussed in more detail under the [TODO -- abstraction/extensibility].</p>
+<h3 id="dependency-management"><span class="header-section-number">3.5.3</span> Dependency Management</h3>
+<p>For better or worse, developing MVC browser apps tends to involve the use of many external libraries, both those used in the application itself and those used to build it.</p>
+<p>There are several aspects to dependency management. The one which is worthy of discussing as a constraint is in the run-time linking of intra-application dependencies.</p>
+<p>Today, larger applications are typically developed such that the global namespace is not occupied by each object, and there are techniques and tools used to allow for development of smaller files while also allowing for the build process to assemble those files into larger units for production deployment. This is the strategy employed in Samplestack via Require.js.</p>
+<p>ECMAScript 6 is nearly here. It will provide language-level facilities for consistently accomplishing that which today is typically achieved through third party libraries. We anticipate moving to ES6 at some point after the 1.0 release of Samplestack, at which time the complexities of this type of dependency management will be reduced and the various implementation choices required to work around this language limitation will be unnecessary.</p>
+<p>Details of this, and other aspects of dependency management that don't rise to the level of constraints and will be discussed below.</p>
+<h3 id="style-sass-twitter-bootstrap-and-node-sass"><span class="header-section-number">3.5.4</span> Style: SASS, Twitter Bootstrap and node-sass</h3>
+<p>Cascading Stylesheets are the universally accepted technology with which to control the layout and style of web pages, as they allow for declarative abstractions of style instructions, resulting in more compact, legible and flexible HTML.</p>
+<p>Most developers and designers have come to find that authoring Cascading Stylesheet directly poses unnecessary challenges where the alternative is to use a preprocessor which allows for a greater degree of abstraction, reuse and control over the styles.</p>
+<p>Using a preprocessor involves writing style instructions in the language of the preprocessor, and employing the preprocessor, either at build-time or at run-time, to convert the instructions into plain CSS for the browser.</p>
+<p>In a statically server app, preprocessing always takes place at build time and thus by definition requires some degree of development environment automation.</p>
+<p>Options for preprocessors include SASS, LESS and Stylus.</p>
+<p>For Samplestack, we selected SASS as our preprocessor language (specifically its SCSS syntax) and the node-sass library as the preprocessor itself.</p>
+<p>Details on our implementation may be found below.</p>
+<h2 id="abstraction-and-extensibility"><span class="header-section-number">3.6</span> Abstraction and Extensibility</h2>
+<p>An application with relatively simple business requirements such as Samplestack could theoretically be developed with minimal employment of abstractions and allowances for extensibility.</p>
+<p>There are a few of reasons why this approach is not taken.</p>
+<p>First, even internally, much of the functionality of Samplestack follows certain patterns, such as HTTP method calls and associated preparation thereof and reactions following the calls in the browser code, handling authentication issues, etc. In order to eliminate duplication and potential error, it's best to consolidate such similarities into abstractions.</p>
+<p>The Angular.js programming model also allows the developer to write very <em>testable</em> code. It is much easier to create an abstract component and test it thoroughly in one place than it is to test several similar code paths in different parts of the application.</p>
+<p>Finally, as one of our primary objectives is to demonstrate how real-world, large scale applications may be developed in this architecture, and to provide an example that could be scaled to such levels, we provide abstractions and make some affordances for extensibility within the Samplestack codebase.</p>
+<h3 id="abstraction-in-practice"><span class="header-section-number">3.6.1</span> Abstraction in Practice</h3>
+<p>The application is divided between code that is relatively abstract, in an Angular module named &quot;_marklogic&quot;, and code that is Samplestack-specific, in a module named &quot;app&quot;. As such, one may review examples of this division by examining the dependencies of each component (i.e. an application specific component may depend on one or more abstract ones).</p>
+<p>Two examples of abstraction are:</p>
+<ul>
+<li>the _marklogic/service/data/mlModelBase component that underlies domain model objects and</li>
+<li>the _marklogic/domain/mlSearch module and the app/domain/ssSearch module</li>
+</ul>
+<h2 id="performance"><span class="header-section-number">3.7</span> Performance</h2>
+<p>In an application such as Samplestack, performance in the browser tier <strong>shouldn't</strong> be a major issue, as long as we do not send very large chunks of data to the browser nor make any other relatively junior mistakes in the architecture of the browser app.</p>
+<p>To the extent that performance for the application as a whole is a concern, such issues are intentionally pushed down to the lower tiers and to the decisions made in designing the middle tier APIs such that round-tripping with the browser is efficient.</p>
+<p>The APIs exposed by the middle tier of the application and their tradeoffs are to be discussed in other documents.</p>
+<h3 id="performance-testing"><span class="header-section-number">3.7.1</span> Performance Testing</h3>
+<p>Measurability and monitoring of performance is an important aspect of 3-tiered application design and data-centric applications.</p>
+<p>We will develop a plan to enable performance of the end-to-end application to be measured. In particular, we wish to measure degradation of performance under stress through concurrent usage or continuous usage, and we wish to measure performance of the end-to-end application in comparison to the services that are invoked by the application in the MarkLogic database tier.</p>
+<p>Additional measures may also be considered.</p>
+<h2 id="reliability"><span class="header-section-number">3.8</span> Reliability</h2>
+<p>One of the goals of Samplestack is to demonstrate how to build robust, serious applications with the reference architecture. As such, we will deliver sufficient tests to minimize the risk that the browser application may be either unstable or buggy, and will attempt to test it across a variety of operating systems and platforms.</p>
+<p>Beyond that, reliability as might typically apply to multi-user application environments, is not a major factor in design.</p>
+<h2 id="footprint"><span class="header-section-number">3.9</span> Footprint</h2>
+<p>We will seek to minimize dependencies so that the browser app is not overly &quot;fat&quot;.</p>
+<p>There are a few areas where this can become an issue:</p>
+<ul>
+<li>we must deliver the ability to render the app with minified code and with dependencies loaded from a CDN;</li>
+<li>we must avoid bloat, in particular with CSS.</li>
+</ul>
+<p><em>Note: one of the reasons to consider moving away from Twitter Bootstrap is the size of resulting CSS files.</em></p>
+<h1 id="modules-interfaces-and-algorithms"><span class="header-section-number">4</span> Modules, Interfaces and Algorithms</h1>
+<h2 id="for-developers-1"><span class="header-section-number">4.1</span> For Developers</h2>
+<h3 id="functional-description"><span class="header-section-number">4.1.1</span> Functional Description</h3>
+<p>The development environment is automated as a set of gulp tasks which perform its functions through the command line.</p>
+<p>A majority of the code uses Node.js streams to process files in the file system, while other areas invoke external utilities such as test runners.</p>
+<h3 id="apis-na"><span class="header-section-number">4.1.2</span> APIs (N/A)</h3>
+<p>While developers may examine the build process automation code or the application itself, they are not expected to interact with either programmatically. Alterations to the developer experience are not supported within the scope of the Samplestack development process, though they may be supported through training offerings. As such, APIs for the developer are out of scope for this document.</p>
+<p>While there is no public API for Samplestack to document here, one of the primary objectives of the app is to teach, so the developer who is interested in the Browser tier will want to refer to the <a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a>.</p>
+<h3 id="user-interface"><span class="header-section-number">4.1.3</span> User Interface</h3>
+<h4 id="prerequisites"><span class="header-section-number">4.1.3.1</span> Prerequisites</h4>
+<p>There are two sets of prerequisites for the Samplestack MVC Browser App.</p>
+<p>Java-centric developers who <strong>only want to run the application (not modify it)</strong> can follow the instructions in the Java/Spring Boot Samplestack documentation to run a pre-built version of the web app. In this case, the Spring container serves the web app's files to the browser(s) and no additional configuration is required.</p>
+<p>Those who who want to be able to <strong>modify, test or otherwise develop the browser app</strong> need a tools installed.</p>
+<ul>
+<li><a href="http://nodejs.org/">Node.js</a> -- versions 0.10.x and newer should work</li>
+<li><a href="https://www.npmjs.org/">npm</a> -- npm is installed automatically with Node.js</li>
+<li><a href="http://bower.io/">bower</a> -- must be installed globally to the environment</li>
+<li><a href="http://gulpjs.com/">gulp</a> -- must be installed globally to the environment</li>
+</ul>
+<p>Instructions for installing these prerequisites are provided in the repository <code>README</code>s.</p>
+<h4 id="getting-the-code-using-git"><span class="header-section-number">4.1.3.2</span> Getting the Code Using git</h4>
+<p>Developers are expected to clone the repository in order to review, run, and experiment with the application.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://github.com/marklogic/marklogic-samplestack</code></pre>
+<p>The master branch of the repository represents the most recently released version of the application, and as the default branch, it is automatically checked out when the repostitory is cloned. A developer who wishes to access more recent builds which have not been officially released may check out the <code>develop</code> branch. See <a href="http://git-scm.com/book">the online version of the Pro Git book</a> for more information on <code>git</code>.</p>
+<h4 id="installing-the-browser-application-dependencies"><span class="header-section-number">4.1.3.3</span> Installing the Browser Application Dependencies</h4>
+<p>In order to access the development automation and run it from source, the application's dependencies must be installed.</p>
+<p>These commands fetch both the automation dependencies (npm-based) and the development and run-time dependencies (bower-based) of the Samplestack browser app itself.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">npm</span> install
+<span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">bower</span> install</code></pre>
+<h4 id="automated-development-tasks"><span class="header-section-number">4.1.3.4</span> Automated Development Tasks</h4>
+<p>It is expected that if the developer is also interacting with or running an instance of the middle-tier of the application, two separate terminal windows will be employed. All commands should be executed from the browser subdirectory of the samplestack installation.</p>
+<p><em>Note: As time permits or priorities are settled and feedback received, we will consider merging automated tasks into one command-line interface such that a unified command line interface would be available to developers.</em></p>
+<h5 id="gulp-run"><span class="header-section-number">4.1.3.4.1</span> gulp run</h5>
+<p>A developer can run the browser application at any time (regardless of whether or not the middle-tier is running/restarted, etc.):</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> run</code></pre>
+<p>This <strong>builds the application, executes its unit tests in the background, and hosts the application on a local web server</strong> (by default at port 3000), so that it can be loaded in a browser at <a href="http://localhost:3000" class="uri">http://localhost:3000</a>. From here a developer can use their browser developer tools to insepct the running unit tests. Note: if a middle-tier server is not running, loading the application in the browser will result in errors. If this happens, a developer can launch (relaunch) the middle-tier server and refresh the browser to enable the application.</p>
+<p>The developer can <strong>run (or rerun) the unit tests in a browser</strong> (by default on port 3001) at <a href="http://localhost:3001/unit-runner.html">http://localhost:3000/unit-runner.html</a>. From here a developer can use their browser developer tools to inspect the running unit tests.</p>
+<p>The developer can see a hierarchical <strong>coverage report</strong> for the unit tests at <a href="http://localhost:3004/coverage" class="uri">http://localhost:3004/coverage</a>. The report shows on a line-by-line-, branch- and statement-level what code is exercised by the unit tests. It can also be a convenient way to review the source code!</p>
+<p>To stop the process, the developer kills it (Ctrl+C in the the terminal works).</p>
+<p>No changes to source code/tests/etc that are made while running the application in this mode will be reflected in the browser/tests/coverage. This is a static build of the application.</p>
+<h4 id="gulp-unit---reporter---sauce"><span class="header-section-number">4.1.3.5</span> gulp unit [--reporter] [--sauce]</h4>
+<p>A developer can execute a one-off build and run of the unit tests for the browser app where results are printed to the console:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> unit</code></pre>
+<p>or</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> unit --reporter spec</code></pre>
+<p>The default reporter reflects the running of any given test using a dot (<code>.</code>). If a different reporter, such as the <code>spec</code> reporter is specified, the the running of a given test will be reflected differently. The <code>spec</code> reporter lists unit tests in their hierarchy of suites, where each suite and test expectation is explicitly listed.</p>
+<p>If the developer wants to generate a reporter suitable for consumption in another tool, the xunit format is available. This format, also known as the JUnit XML format, renders similar information to the <code>spec</code> format, but it renders it as XML and saves it to a file (<code>browser/builds/reports/xunit-UNIT.xml</code>) instead of reporting it to the console.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> run --reporter xunit</code></pre>
+<p>There is no way to set breakpoints in tests that are executed in the console. See <a href="#gulp-run">gulp run, above</a> for how to inspect the tests as they run.</p>
+<p><em>Note: User choice of the reporter is not yet implemented.</em></p>
+<h5 id="gulp-watch"><span class="header-section-number">4.1.3.5.1</span> gulp watch</h5>
+<p>A developer can put the browser development environment into a state where changes to the source code are quickly built and reflected in the running application, including automatic refresh of their browser (subject to browser support for &quot;LiveReload&quot;).</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> watch</code></pre>
+<p>The <code>watch</code> task initially runs the <code>build</code> task and then puts the environment in a state where the source code and releveant project-level files (e.g. the development automation code itself) are being monitored for changes (adds/deletes/saves). When/if the &quot;watcher&quot; sees a change, it attempt to rebuild that file (and any others which may require rebuilding), and to insert the updates file(s) into the running browser app. Upon changes to the running app, a signal is sent to the broser that it should refresh the page. Supported browsers are configured by the application itself to connect to the LiveReload port (for the browser app this is the default 35729) and listen for such messages.</p>
+<p>If building the changed file(s) does not result in style/syntax errors, the unit tests for the application are rerun in the terminal so the developer can see the results of their changes on the tests.</p>
+<p>If a change is made to the project files themselves, typically the development environment application code itself, or if a previous change resulted in style/syntax or other build errors, then the entire <code>run</code>-and-then-<code>watch</code> process is re-executed to ensure that a full clean build is available.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> e2e</code></pre>
+<h4 id="gulp-e2e---reporter---sauce"><span class="header-section-number">4.1.3.6</span> gulp e2e [--reporter] [--sauce]</h4>
+<p>The developer can execute &quot;end-to-end&quot; (aka e2e) tests of the entire Samplestack application (including the database and middle tiers).</p>
+<p>The <code>e2e</code> task builds the application, and then launches a web browser and drives it through a series of exercises to determine whether the entire application is performing as expected.</p>
+<p>As with the unit tests, the developer can specify a reporter. In this case, the only reporter. The choices are:</p>
+<ul>
+<li>(none-specified): the default reporter prints the names of the features and the tested scenarios to the console</li>
+<li><code>xunit</code>: writes XUnit-formatted results to <code>browser/builds/reports/xunit-UNIT.xml</code></li>
+</ul>
+<div style="color: red">
+there is a skeleton implementation of end-to-end tests in EA2. We are prioritizing breadth of functionality in EA3. In EA3 we will at a minimum configure them to run.
+</div>
+<h5 id="the---sauce-parameter"><span class="header-section-number">4.1.3.6.1</span> The --sauce Parameter</h5>
+<p>The sauce parameter will connect to Sauce Labs in order to leverage their farm of browsers.</p>
+<p>A set of browsers that are configured to be run on sauce will be provided, such that the command will be something like</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> e2e --sauce ie9</code></pre>
+<p>to run the end-to-end tests on Internet Explorer 9, or</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">marklogic-samplestack/browser</span>$ <span class="kw">gulp</span> unit --sauce ff27linux --reporter xunit</code></pre>
+<p>to run the unit tests on Firefox 27 under linux and save the results in the XUnit format to a local file. **This example is expected to reflect the kind of command that the MarkLogic test harness will execute and process on a nightly basis. For more information, please follow the <a href="">Samplestack Test Plan</a>.</p>
+<p>Since Sauce Labs has so many browser/OS combinations available, this is a great, free resource for developers of open source projects (or can be used via a paid account with Sauce Labs).</p>
+<p>This form of testing does not require any software to be installed on machines other than the developer's.</p>
+<div style="color: red">
+We could not leverage free Sauce testing until the repository was open-sourced, and it has not been configured, yet. Sauce integration has been fairly easy to set up in the past. If all goes well it should be available in EA3.
+</div>
+<p>It should be noted the testing in this manner does not obviate the need to test the <strong>build process</strong> in a variety of environments. For that, a developer can use <a href="https://travis-ci.org/">Travis</a>. Again, free access to Travis was not available to us prior to open-sourcing the repository and it has not yet been configured. In the case of Travis, the developer does not directly interact with these tests; rather, the tests are instigated by pushes to either the MarkLogic origin repository, or can be configured by the develop to run against their fork.</p>
+<h3 id="errors-exceptions-diagnostics-na"><span class="header-section-number">4.1.4</span> Errors, Exceptions, Diagnostics (N/A)</h3>
+<p>The primary source of errors for the developer is expected to be those that are reported due to syntax or other programmer errors, and reasonable messages should appear in the console when these are found.</p>
+<p>Likewise, if the programming environment suffers its own error, the automation code should attempt to recover and log a meaningful error to the console.</p>
+<h3 id="schemas-na"><span class="header-section-number">4.1.5</span> Schemas (N/A)</h3>
+<p>Aside from the object models of the configuration files that control the development environment, there are no developer-facing schemas.</p>
+<h3 id="configuration"><span class="header-section-number">4.1.6</span> Configuration</h3>
+<p>Configurable elements of the development environment may be seen as part of the high-level functions of the developer experience. As we support public developers who find the need to reconfigure aspects of the development environment, we will develop and include configuration instructions in the documentation.</p>
+<h3 id="security-na"><span class="header-section-number">4.1.7</span> Security (N/A)</h3>
+<p>There are no security requirements associated with Developer stakeholders.</p>
+<h3 id="limitations"><span class="header-section-number">4.1.8</span> Limitations</h3>
+<p>The development environment is meant first and foremost to enable developers to experiment with the application code for Samplestack. It may also serve as sample code for developers wanting to automate their own applications, but this is not its primary purpose.</p>
+<p>As such, the most signicant limitation is that the development environment automation code is that it has not been packaged as a reusable library.</p>
+<p>While efforts have been made to author this code in a manner that allows it to function for an arbitrary application, where such application follows the directory structre of Samplestack, the code will not be as thoroughly documented.</p>
+<p>Additionally, there is not automated testing planned to verify the functionality of the automation code specifically/directly. As such, while the execution of tests <em>using</em> the automation code may provide some level of confidence that it is functioning as expect, it will not undergo any formal testing.</p>
+<h3 id="risks-and-dependencies"><span class="header-section-number">4.1.9</span> Risks and Dependencies</h3>
+<h4 id="complexity-and-developer-familiarity"><span class="header-section-number">4.1.9.1</span> Complexity and Developer Familiarity</h4>
+<p>In general, it is reasonable for us to be concerned that some of our developer audience who have <em>some</em> but not <em>deep</em> experience with JavaScript application development -- and in particular may not have MVC application development experience -- may have a relatively steep learning curve as they discover the architecture of such application.</p>
+<p>It is not, however, a goal to teach development of app development automation scripts.</p>
+<p>So, while Gulp may be a new technology for them, we know that:</p>
+<ul>
+<li>there is not an overwhelming amoung of code to study; and</li>
+<li>they can still achieve the primary object of understanding the 3-tiered architecture and how browser applications fit into that architecture without concerning themselves with the environment automation code.</li>
+</ul>
+<h4 id="environmental-configuration"><span class="header-section-number">4.1.9.2</span> Environmental Configuration</h4>
+<p>The primary risks of this part of the application are the dependencies themselves.</p>
+<p>Node software development, and Gulp programming in particular, combines many small libraries with very specific, targeted features. While this model -- the antithesis of monlithic architecture -- can and has proven to be very productive for the JavaScript developer, it also means that there are many moving parts.</p>
+<p>One way to miminze the risk of having many dependencies is to be careful about the versions that are referenced by our code. For our Node dependencies, this will mean that we &quot;shrinkwrap&quot; the dependencies so that the npm system does not engage in its default behavior of matching and resolving interdependencies each time any developer installs them. Rather, prior to release versions being commit to the <code>master</code> branch, we will resolve all dependencies locally, storing the &quot;shrinkwrapped&quot; list in the repository so that when the repository is cloned, the precise versions of our dependencies to fetch will be defined, and npm will not &quot;improvise&quot; a combination of dependencies that appear from the their version numbers to be compatible.</p>
+<h3 id="scalability"><span class="header-section-number">4.1.10</span> Scalability</h3>
+<p>The Samplestack developer experience is intended to support both one-off proofs-of-concept and large scale development of complex apps. The tradeoffs associated this goal are discussed <a href="">elsewhere</a>.</p>
+<h3 id="performance-1"><span class="header-section-number">4.1.11</span> Performance</h3>
+<p>The Gulp streaming build system is specifically designed with performance as a major goal and is known to scale very well.</p>
+<p>There have been some issues with <code>Gaze</code>....</p>
+<h3 id="upgrade"><span class="header-section-number">4.1.12</span> Upgrade</h3>
+<p>Installing a new version of the Samplestack Browser project is intended to be straightforward. The happy path for a developer is:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> pull
+<span class="kw">npm</span> install
+<span class="kw">bower</span> install</code></pre>
+<h3 id="feature-interaction"><span class="header-section-number">4.1.13</span> Feature Interaction</h3>
+<p>The developer experience for the Samplestack Browser application does not have any direct interaction with any other MarkLogic features.</p>
+<p>We <em>may</em> integrate the Browser development experience with the (two) Middle-tier development experiences. The interaction of browser and middle-tier development automation experiences has not yet been specified, but is anticipated to be self-contained to the Samplestack repository and is not anticipated to require direct feature interaction with other MarkLogic software.</p>
+<p>One area where existing Feature Interaction is specified is in End To End tests. Specifically, end-to-end tests are intended to test the complete Samplestack solution. This means that features which face the End User are tested from the browser presentation layer down through and including Middle Tiers and the MarkLogic Server.</p>
+<p>This requires the End-To-End tests to &quot;drive&quot; the portions of the automation code that is delivered in the middle-tiers in order to launch them, and it requires the tests also to manage the database content upon which the tests are based and to derive expectations from the seed-data used.</p>
+<h3 id="testing-na"><span class="header-section-number">4.1.14</span> Testing (N/A)</h3>
+<p>As noted above, the developer automation code itself will not be independently tested.</p>
+<h3 id="documentation"><span class="header-section-number">4.1.15</span> Documentation</h3>
+<p>Significant portions of this specification, as well as additional introductory material, will be published as part of the online documentation available to all developers.</p>
+<p>Details of how/where the online documentation will be made available are to be decided.</p>
+<h2 id="for-end-users"><span class="header-section-number">4.2</span> For End Users</h2>
+<h3 id="functional-description-1"><span class="header-section-number">4.2.1</span> Functional Description</h3>
+<p>The <a href="https://wiki.marklogic.com/display/rootwiki/Application+Narrative+-+Stack+Overflow+data">Application Narrative</a> presents summary information of the functionality of the application.</p>
+<h3 id="apis-na-1"><span class="header-section-number">4.2.2</span> APIs (N/A)</h3>
+<p>There are no end-user APIs in the Samplestack Browser App. See the Implementation section for information on the APIs that are defined and used internally.</p>
+<h3 id="user-interface-1"><span class="header-section-number">4.2.3</span> User Interface</h3>
+<p><em>Inclusion of wireframes and full documentation within this specification is a work-in-progress. As the features are worked, their specification within this document will be detailed. <strong>Refer to the complete <a href="https://wiki.marklogic.com/download/attachments/29953092/Reference%20Architecture%20Demo%20Application%20Wireframes%20v0.5.pdf">Wireframes Specification document</a> for a single-page PDF view into the annotated wireframes.</strong></em></p>
+<p>The User Experience/User Interface for the Samplestack <em>Application</em> is specified by Wireframes and Features.</p>
+<p>Within the repository the features are to be specified using <a href="https://github.com/cucumber/cucumber/wiki/Gherkin">Gherkin</a>, which allows for expression of scenarios that should be supported by features. These scenarios illustrate how the user and application are expected to interact in specific circumstances in the context of the applications features.</p>
+<p>Please refer to the wireframes for UX specification.</p>
+<h4 id="potential-features"><span class="header-section-number">4.2.3.1</span> Potential Features</h4>
+<p><em>These features have either been discussed or seem to have been referenced in the narrative. We should ensure that they aren't needed, because they are not currently specified.</em></p>
+<ul>
+<li>Edit Question</li>
+<li>Edit Answer</li>
+<li>Edit Comment</li>
+<li>Vote Comment</li>
+<li>Filter by Age of question (date asked/created)</li>
+<li>Only show results for where there are no answers or no accepted answer</li>
+<li>Search only within question or only within answers</li>
+<li>Search by subject matter, e.g. for &quot;XML-based languages&quot; would include all tags for languages that fall into this category like XSLT, XPath, XQuery&quot;</li>
+</ul>
+<h3 id="errors-exceptions-diagnostics"><span class="header-section-number">4.2.4</span> Errors, Exceptions, Diagnostics</h3>
+<p>**Because this is a sample application and because people are likely to break things as they play with it:</p>
+<ul>
+<li>the application should handle runtime errors by providing feedback to the end user (who is likely to in fact be the developer)</li>
+<li>the application should <strong>not</strong> attempt to post any diagnostics back to the server for analysis.</li>
+</ul>
+<h3 id="schemas"><span class="header-section-number">4.2.5</span> Schemas</h3>
+<p>JSON Schemas are used to represent model elements. They are self-documenting expressions of expectations for JSON objects.</p>
+<h3 id="configuration-na"><span class="header-section-number">4.2.6</span> Configuration (N/A)</h3>
+<p>There is no end-user configuration.</p>
+<h3 id="security-1"><span class="header-section-number">4.2.7</span> Security</h3>
+<p>The application runs in a browser and is thus inherently relatively insecure.</p>
+<p>Where credentials are entered, they should remain in the application state only as long as it takes to either confirm them through the login process or for the user to cancel a login attempt.</p>
+<p>The application should be capable of running over an HTTPS connection(s), regardless of whether or not the REST server and the Web server are configured to be one-and-the-same.</p>
+<h3 id="limitations-na"><span class="header-section-number">4.2.8</span> Limitations (N/A)</h3>
+<p>Not applicable for end users -- the application features are intended to be fully realized.</p>
+<h3 id="risks-and-dependencies-na"><span class="header-section-number">4.2.9</span> Risks and Dependencies (N/A)</h3>
+<p>Not applicable for end users.</p>
+<h3 id="scalability-na"><span class="header-section-number">4.2.10</span> Scalability (N/A)</h3>
+<p>Not applicable for end users.</p>
+<h3 id="performance-2"><span class="header-section-number">4.2.11</span> Performance</h3>
+<p>We will keep data passed between server and browser to a minimum through paging of long search results. Users should generally experience sub-second response times for any operation, subject to reasonable machine speed and local deployment scenario.</p>
+<p>By minifying code and structuring the referencing of dependencies, we should strive for the application to load itself &quot;quickly,&quot; though precise expectations may become better available as we build out the deployment of an optimized build.</p>
+<h3 id="upgrade-na"><span class="header-section-number">4.2.12</span> Upgrade (N/A)</h3>
+<p>Not applicable for end users.</p>
+<h3 id="feature-interaction-1"><span class="header-section-number">4.2.13</span> Feature Interaction</h3>
+<p>Not applicable for end users.</p>
+<h3 id="testing"><span class="header-section-number">4.2.14</span> Testing</h3>
+<p>Not applicable for end users.</p>
+<h3 id="documentation-1"><span class="header-section-number">4.2.15</span> Documentation</h3>
+<p>The application is intended to be straightforward enough that it does not require its own &quot;online help&quot; or instructions.</p>
+<p>One aspect for which we will provide assistance is in &quot;Search Tips&quot;, which will help users with syntax and search parameters that they can use within text search criteria.</p>
+<h1 id="implementation"><span class="header-section-number">5</span> Implementation</h1>
+<h2 id="automated-development-environment"><span class="header-section-number">5.1</span> Automated Development Environment</h2>
+<h3 id="directory-structure"><span class="header-section-number">5.1.1</span> Directory Structure</h3>
+<p>The automated development environment code lives in the dev-tasks directory of the browser application:</p>
+<pre><code>.
+├── README.md
+├── build                  // code related to building the app
+│   ├── buildSteps.js      // individual steps in the build
+│   └── runBuild.js        // build runner
+├── cloner.js              // clone one stream into another
+├── context.js             // manages state during build and shared functions
+├── counter.js             // count files in stream
+├── helper.js              // helper vars and functions for the process
+├── index.js               // main module for the dev tasks
+├── rebaser.js             // move the base dir of stream&#39;s files
+├── tasks                  // individually addressable tasks
+│   ├── bower-files.js     // copy bower components to target directories
+│   ├── build.js           // exeute a build
+│   ├── clean.js           // cleans builds directory
+│   ├── e2e.js             // runs e2e tests
+│   ├── run.js             // builds app and puts in &quot;run&quot; mode
+│   ├── seed-patch.js      // patch seed data to improve data quality
+│   ├── server-stress.js   // put stress on the middle tier
+│   ├── unit.js            // run unit tests
+│   └── watch.js           // build, unit test, run and watch for changes
+└── unit                   // code related to unit testing
+    └── runUnit.js         // unit test runner</code></pre>
+<h3 id="implementation-phases-and-timeline"><span class="header-section-number">5.1.2</span> Implementation Phases and Timeline</h3>
+<p>As a distinct application, most of the browser application's development environment automation was completed early in the Milestone 3 phase.</p>
+<p>Remaining for EA3:</p>
+<ul>
+<li>improve end-to-end testing automation / <a href="https://github.com/marklogic/samplestack-internal/issues/117">drive middle tiers</a></li>
+<li>generate test reports for inclusion in harness</li>
+<li>begin to author end-to-end tests with finalized seed data</li>
+</ul>
+<p>Pre-1.0.0:</p>
+<ul>
+<li>Integrate with Node.js tier automation</li>
+<li>integrate with Cloud-based testing to support automated testing on multiple operating systems and browsers</li>
+</ul>
+<h2 id="web-application"><span class="header-section-number">5.2</span> Web Application</h2>
+<h3 id="operation"><span class="header-section-number">5.2.1</span> Operation</h3>
+<h4 id="link-to-api-reference"><span class="header-section-number">5.2.1.1</span> Link To API Reference</h4>
+<p>The API Reference for the browser app is intended to be published here. While formatting issues are being addressed, it is currently in a separate wiki page: <a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a></p>
+<h4 id="requirejs-dependencies"><span class="header-section-number">5.2.1.2</span> RequireJS Dependencies</h4>
+<p>While Angular applications use dependency injection to enable components to collaborate, RequireJS is used to structure the overall file dependencies that allow the components to be added to modules and for the applications external library dependencies to be loaded.</p>
+<div style="width: 100%">
+<img style="display: block"  src="http://raw.githubusercontent.com/stu-salsbury/marklogic-samplestack/SPEC/browser/docs/diagrams/rjs-high-level.png"></img>
+</div>
+<p>The two major <strong>Angular</strong> modules are organized into <strong>RequireJS</strong> modules as _marklogic/marklogic and application. Each is composed of a RequireJS module that is used to collect components (&quot;app/compoments&quot; and &quot;_marklogic/components&quot;). A separate build for testing is layered over the top as &quot;mockedApp&quot;.</p>
+<p>The two main modules each has a set of dependencies:</p>
+<div style="width: 100%">
+<img style="display: block"  src="http://raw.githubusercontent.com/stu-salsbury/marklogic-samplestack/SPEC/browser/docs/diagrams/rjs-dependencies.png"></img>
+</div>
+<h3 id="internationalization"><span class="header-section-number">5.2.2</span> Internationalization</h3>
+<p>I18N is not in scope for 1.0.0 of Samplestack. AngularJS easily supports authoring multi-language applications, so translation of the application itself is probably a significant portion of the cost for I18N support.</p>
+<h3 id="implementation-phases-and-timeline-1"><span class="header-section-number">5.2.3</span> Implementation Phases and Timeline</h3>
+<p>As of mid Milestone 3 phase, the browser application infrastructure is largely in place to support the features of the application.</p>
+<p>For EA3:</p>
+<ul>
+<li>complete features</li>
+<li><span style="color: red">skinning to professional UI graphic design?</span> -- working to identify a designer, timing TBD</li>
+</ul>
+<p>For 1.0.0:</p>
+<ul>
+<li>expand test coverage</li>
+<li>open issues</li>
+<li>documentation finalization</li>
+<li>pre-release activities</li>
+</ul>
+<h1 id="issues-and-alternatives"><span class="header-section-number">6</span> Issues and Alternatives</h1>
+<p>Issues and Alternatives that are actively being worked and/or are intended to be resolved prior to 1.0 release are documented in github. Following are issues that may be considered in future releases, but are <strong>off the table for 1.0</strong>.</p>
+<h2 id="design-alternatives-and-rationales"><span class="header-section-number">6.1</span> Design Alternatives and Rationales</h2>
+<h3 id="dependency-management-1"><span class="header-section-number">6.1.1</span> Dependency Management</h3>
+<p>RequireJS is a proven means to handle dependencies in browser applications.</p>
+<p>In fact, it is the basis for current browsers to support ES6-style dependency management, as the major preprocessors which translate ES6 code to ES5 code translate the ES6 dependency syntax to RequireJS syntax.</p>
+<p>Even though RequireJS syntax is completely different than CommonJS syntax, other than that they both use the word 'require', for version 1.0 we will stay with RequireJS since it is best &quot;not ECMAScript 6&quot; means of handling file dependencies.</p>
+<p>As our underlying libraries shift to ES6 and to the extent that our other tiers also may shift, we expect to do so in the Browser App, as well.</p>
+<h3 id="bootstrap"><span class="header-section-number">6.1.2</span> Bootstrap</h3>
+<p>Bootstrap is bloated and long in the tooth. It is not well-designed for customization. Newer frameworks, built from the ground up for customization, such as Bourbon, offer some advantages. We should consider swapping out Bootstrap for something like Bourbon.</p>
+<h3 id="json-schema"><span class="header-section-number">6.1.3</span> JSON Schema</h3>
+<p>Is JSON Schema a good direction? There are alternatives or enhancements available, including validate.js, which may offer advantages to clarity or features availalbe for validating model elements</p>
+<h3 id="learning-curvecomplexity"><span class="header-section-number">6.1.4</span> Learning Curve/Complexity</h3>
+<p>We are trying to strike a balance between showing professional quality, scalable architecture and development environment, and offering code that can work in other scenarios with simplicity. And for many developers there are multiple new technologies involved. We shall see whether we are in the right ballpark with various tradeoffs and must be prepared to adjust accordingly.</p>
+<h2 id="possible-future-enhancements"><span class="header-section-number">6.2</span> Possible Future Enhancements</h2>
+<h3 id="angular-2.0"><span class="header-section-number">6.2.1</span> Angular 2.0</h3>
+<p>This is presently not an option, but as Angular 2.0 becomes reality, it will offer significant improvements and will certainly be something to consider beginning to adopt when it reaches a stable beta state.</p>
+<h3 id="features"><span class="header-section-number">6.2.2</span> Features</h3>
+<p>There are numerous features that we've discussed adding to Samplestack in the future. Once version 1.0.0 is released, we should start to digest feedback and consider the future. For now, implementing our 1.0 feature set to the best of our ability is the priority.</p>
+<h4 id="potential-features-1"><span class="header-section-number">6.2.2.1</span> Potential Features</h4>
+<p><em>These features have either been discussed or seem to have been referenced in the narrative. We should ensure that they aren't needed, because they are not currently specified.</em></p>
+<ul>
+<li>Edit Question</li>
+<li>Edit Answer</li>
+<li>Edit Comment</li>
+<li>Vote Comment</li>
+<li>Filter by Age of question (date asked/created)</li>
+<li>Only show results for where there are no answers or no accepted answer</li>
+<li>Search only within question or only within answers</li>
+<li>Search by subject matter, e.g. for &quot;XML-based languages&quot; would include all tags for languages that fall into this category like XSLT, XPath, XQuery&quot;</li>
+</ul>
+<h1 id="references"><span class="header-section-number">7</span> References</h1>
+<h2 id="other-samplestack-specifications-and-related-documents"><span class="header-section-number">7.1</span> Other Samplestack Specifications and Related Documents</h2>
+<ul>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/MarkLogic+8+Reference+Architecture">Reference Architecture Product Requirements</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Application+Narrative+-+Stack+Overflow+data">Samplestack Application Narrative</a></li>
+<li><a href="https://wiki.marklogic.com/download/attachments/29953092/Reference%20Architecture%20Demo%20Application%20Wireframes%20v0.5.pdf">Samplestack Wireframes Specification</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Browser+API+Reference">Samplestack Browser API Reference</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Samplestack+Implementation+%28Java%29+--+Functional+Specification">Samplestack Java and Database Tiers Function Specification</a></li>
+<li><a href="https://wiki.marklogic.com/display/rootwiki/Reference+Architecture+and+Implementation+--+Test+Specification">Samplestack Test Specification</a></li>
+</ul>
+<h2 id="platforms-and-architectural-dependencies"><span class="header-section-number">7.2</span> Platforms and Architectural Dependencies</h2>
+<ul>
+<li><a href="http://nodejs.org/">Node.js</a>: &quot;Node.js® is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient, perfect for data-intensive real-time applications that run across distributed devices.&quot;</li>
+<li><a href="http://bower.io/">Bower</a>: &quot;Web sites are made of lots of things — frameworks, libraries, assets, utilities, and rainbows. Bower manages all these things for you.&quot;</li>
+<li><a href="http://requirejs.org/">RequireJS</a>: &quot;RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, but it can be used in other JavaScript environments, like Rhino and Node. Using a modular script loader like RequireJS will improve the speed and quality of your code.&quot;</li>
+<li><a href="http://gulpjs.com/">Gulp</a>: &quot;The streaming build system&quot;</li>
+<li><a href="https://angularjs.org/">AngularJS</a>: &quot;HTML enhanced for web apps!&quot;</li>
+<li><a href="http://sass-lang.com/">Sass</a>: &quot;Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.&quot;</li>
+<li><a href="http://visionmedia.github.io/mocha/">mocha</a>: &quot;Mocha is a feature-rich JavaScript test framework running on node.js and the browser, making asynchronous testing simple and fun. Mocha tests run serially, allowing for flexible and accurate reporting, while mapping uncaught exceptions to the correct test cases.&quot;</li>
+<li><a href="http://chaijs.com/">Chai</a>: &quot;Chai is a BDD / TDD assertion library for node and the browser that can be delightfully paired with any javascript testing framework.&quot;</li>
+<li><a href="http://angular.github.io/protractor/">Protractor</a>: &quot;Protractor is an end-to-end test framework for AngularJS applications. Protractor runs tests against your application running in a real browser, interacting with it as a user would.&quot;</li>
+<li><a href="https://github.com/cucumber/cucumber-js">Cucumber.js</a>: &quot;Cucumber lets software development teams describe how software should behave in plain text. The text is written in a business-readable domain-specific language and serves as documentation, automated tests and development-aid - all rolled into one format.&quot;</li>
+</ul>
+<h2 id="continuous-integrationtesting"><span class="header-section-number">7.3</span> Continuous Integration/Testing</h2>
+<ul>
+<li><a href="https://travis-ci.org/">Travis CI</a>: &quot;Travis CI is a hosted continuous integration service. It is integrated with GitHub and offers first class support for [most common langauges].&quot;</li>
+<li><a href="https://saucelabs.com/">Sauce Labs</a>: &quot;Automatically run your Selenium tests and Javascript Unit tests across 300+ mobile and desktop browser/OS platforms. We provide the test infrastructure so you can focus on releasing great web apps.&quot;</li>
+</ul>
+<h1 id="document-history"><span class="header-section-number">8</span> Document History</h1>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Version<span>  </span></td>
+<td style="text-align: left;">Description<span>  </span></td>
+<td style="text-align: left;">Author</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.0.1<span>  </span></td>
+<td style="text-align: left;">Initial draft for review<span>  </span></td>
+<td style="text-align: left;">Stu Salsbury</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.0.2<span>  </span></td>
+<td style="text-align: left;">Second draft for Engineering review<span>  </span></td>
+<td style="text-align: left;">Stu Salsbury</td>
+</tr>
+</tbody>
+</table>

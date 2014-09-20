@@ -1,0 +1,14 @@
+#### Features Exposed by the Browse Tags Dialog
+
+{include=../../../../specs/features/end-to-end/browse-tags/browse-tags.md}
+
+{include=../../../../specs/features/end-to-end/browse-tags/page-through-tags.md}
+
+{include=../../../../specs/features/end-to-end/browse-tags/sort-tags.md}
+
+###### Also In the Browse Tags Dialog
+
+These features are also exposed by the Browse Tags Dialog:
+
+- View Related Tags for Tag
+- Replace Tag with Related

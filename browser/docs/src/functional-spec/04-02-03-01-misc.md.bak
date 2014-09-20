@@ -1,0 +1,15 @@
+#### Features Exposed By Multiple UI Elements or Otherwise Invoked
+
+Some features have more than one entry point in the user interface or are only initiated by the system. They are documented first..
+
+In addition, it should be noted that many features are accessible directly through properly formed URLs. This method of access will be documented within the individual features and not separately called out here.
+
+{include=../../../../specs/features/end-to-end/misc/unauthorized-prompts-login.md}
+
+{include=../../../../specs/features/end-to-end/misc/view-contributor.md}
+
+{include=../../../../specs/features/end-to-end/misc/view-related-tags-for-tag.md}
+
+{include=../../../../specs/features/end-to-end/misc/replace-tag-with-related.md}
+
+{include=../../../../specs/features/end-to-end/misc/author-markdown.md}

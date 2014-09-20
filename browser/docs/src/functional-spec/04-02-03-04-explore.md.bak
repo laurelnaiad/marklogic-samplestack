@@ -1,0 +1,28 @@
+#### Features Exposed By the Explore State
+
+
+{include=../../../../specs/features/end-to-end/explore/list-docs.md}
+
+{include=../../../../specs/features/end-to-end/explore/explore-by-text-criteria.md}
+
+{include=../../../../specs/features/end-to-end/explore/explore-by-mine-only.md}
+
+{include=../../../../specs/features/end-to-end/explore/explore-by-resolved-only.md}
+
+{include=../../../../specs/features/end-to-end/explore/explore-by-date-range.md}
+
+{include=../../../../specs/features/end-to-end/explore/explore-by-tags.md}
+
+{include=../../../../specs/features/end-to-end/explore/explore-by-multiple-criteria.md}
+
+{include=../../../../specs/features/end-to-end/explore/sort-docs-list.md}
+
+{include=../../../../specs/features/end-to-end/explore/page-through-docs-list.md}
+
+###### Also In the Explore State
+
+These features are also exposed by the Explore State:
+
+- View Contributor
+- View Related Tags for Tag
+- Replace Tag with Related

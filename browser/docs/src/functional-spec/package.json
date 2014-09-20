@@ -1,0 +1,21 @@
+{
+  "name": "samplestack-browser-spec",
+  "version": "0.0.0",
+  "description": "Sources and build script for MarkLogic Samplestack Browser Spec",
+  "main": "watch.js",
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "connect": "^2.25.7",
+    "connect-livereload": "^0.4.0",
+    "doctoc": "^0.7.1",
+    "gaze": "^0.6.4",
+    "livereload": "^0.3.4",
+    "serve-static": "^1.5.3",
+    "shelljs": "^0.3.0",
+    "tiny-lr-fork": "0.0.5"
+  },
+  "dependencies": {
+    "globule": "^0.2.0"
+  }
+}

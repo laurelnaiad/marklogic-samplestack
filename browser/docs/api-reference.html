@@ -1,0 +1,7139 @@
+
+
+
+<h1>
+  <code>_marklogic</code>
+</h1>
+
+<p>The <code>marklogic</code> module provides Angular components that perform
+functions that are related to accessing a MarkLogic-based application,
+along with other functions that form a foundation for building an
+application like Samplestack.  There are no specific Samplestack
+features implemented in this module.</p>
+<p>We have separated the functionality in this module in the hopes that it
+may help developers to find software code within this app that can serve
+as examples of how one might implement their own application.</p>
+<p>This module is referenced as a dependency by the main
+<a href="api/app">app module</a>.</p>
+<p> <strong>Please note:</strong> While the functionality in this module is relatively
+generic in nature (i.e. it doesn&#39;t directly implement Samplestack
+application features), it is not meant to be considered as a supported
+MarkLogic library on its own.</p>
+<p>Developers may use this code in their applications (subject to the
+licensing terms), but such use outside of
+Samplestack is not directly supported by MarkLogic
+Corporation.</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="domain">Domain</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/domain/mlSearch">mlSearch</a></td>
+        <td><p>Represents a MarkLogic search. It houses both the
+criteria used in the search and, once posted, the results of the search.
+Implements generalized MarkLogic search for the the browser (as
+<a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/domain/mlSession">mlSession</a></td>
+        <td><p>Handles authentication and subsequent user information
+associated with a session with a REST server.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="type">Type</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/type/MlSearchObject">MlSearchObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a>, derived from <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="provider">Provider</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/provider/mlHttpInterceptorProvider">mlHttpInterceptorProvider</a></td>
+        <td><p>Configures CSRF handling in the <a href="api/_marklogic/service/mlHttpInterceptor"><code>mlHttpInterceptor</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/provider/mlAuthProvider">mlAuthProvider</a></td>
+        <td><p>May be used to configure the <a href="api/_marklogic/service/mlAuth"><code>mlAuth</code></a> service.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlHttpInterceptor">mlHttpInterceptor</a></td>
+        <td><p>Handles CSRF tokens for all AJAX requests. May be configured or
+disabled  in the
+<a href="api/_marklogic/provider/mlHttpInterceptorProvider"><code>mlHttpInterceptorProvider</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlModelBase">mlModelBase</a></td>
+        <td><p>Service from which domain-specific model elements are derived.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlSchema">mlSchema</a></td>
+        <td><p>Manages JSON schemas and enables validation of instances against
+the schema.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlStore">mlStore</a></td>
+        <td><p>Simple object store which attaches itself to the $rootScope so that
+long-lived model data may be stored on a &quot;side&quot; scope.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlWaiter">mlWaiter</a></td>
+        <td><p>Establishes promise-based properties under the non-enumerable $ml property
+of model objects such that template code may track the status of promises
+(usually related to $http requests) that affect the model element instance.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlAuth">mlAuth</a></td>
+        <td><p>Facilities for handling authentication and sessions.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlUtil">mlUtil</a></td>
+        <td><p>Provides utility objects and methods.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+<h1>Domain components in <code>_marklogic</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/domain/mlSearch">mlSearch</a></td>
+        <td><p>Represents a MarkLogic search. It houses both the
+criteria used in the search and, once posted, the results of the search.
+Implements generalized MarkLogic search for the the browser (as
+<a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/domain/mlSession">mlSession</a></td>
+        <td><p>Handles authentication and subsequent user information
+associated with a session with a REST server.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/domain/mlSearch.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlSearch</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Represents a MarkLogic search. It houses both the
+criteria used in the search and, once posted, the results of the search.
+Implements generalized MarkLogic search for the the browser (as
+<a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>).</p>
+<p><code>mlSearch</code> is a derivation of <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>, customized to:</p>
+<ul>
+<li>determine validity of search criteria;</li>
+<li>aid in mapping between URL parameters and search criteria;</li>
+<li>aid in handling configuring and operating the paging and and sorting
+of searches;</li>
+<li>handle the POSTing and processing of responses into a unified object;</li>
+<li>configure and execute faceted searches and &quot;shadow queries&quot;.</li>
+</ul>
+<p>The schema of an mlSearch is very similar to a combination of the inputs
+and outputs of the MarkLogic REST
+API, but is customized to clarify the distinction between inputs and
+outputs, and to ease handling within a dynamic web application.</p>
+<p>In Samplestack, mlSearch itself is customized by <a href="api/app/domain/ssSearch"><code>ssSearch</code></a>.</p>
+<p>Instances are generated using the <code>create</code> method of <a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a>,
+which optionally takes an object which can be used to set the initial
+configuration for the search.</p>
+<p>Please use the &quot;View Source&quot; link to see the source code for the
+full schema of mlSearch instances.</p>
+<p>For <strong>HTTP support</strong>, mlSearch implements <strong>only</strong> the POST method.</p>
+<p>When posted, a copy of the criteria property is transformed to
+standard MarkLogic REST API form and posted to the server at the search
+endpoint.</p>
+<p>When the response is received, it is transofrmed to the runtime form
+and stored in the <code>results</code> property, where metadata about the search,
+results items themselves, and facet calculation results are available.</p>
+<p>If any facets are configured with <strong>shadows</strong>, then shadow facets are
+calculated, and  results
+are combined
+into the main facet results so that they may accessed together.</p>
+<p><em>Example:</em></p>
+<pre><code class="lang-javascript">angular.module(&#39;mlSearchExample&#39;, [&#39;marklogic&#39;])
+  .controller(&#39;ExampleController&#39;, [
+    &#39;$scope&#39;, &#39;mlSearch&#39;,
+    function ($scope, mlSearch) {
+      // create an instance of mlSearch, passing in the configuration
+      // (note that after creation, the properties of the search may be
+      // subsequently modified, too)
+      var search = mlSearch.create({
+        criteria: {
+          // search for this text
+          q: &#39;&quot;red flag&quot;&#39;,
+          // results beginning at 11th item
+          start: 11,
+          // results ending at 20th item
+          limit: 20,
+          // only include results where someCustomCritera === true
+          constraints: {
+            someCustomCriteria: {
+              type: &#39;boolean&#39;,
+              value: true
+            },
+            myFacetName: {
+              type: &#39;enum&#39;,
+              subType: &#39;string&#39;,
+              values: [&#39;some text&#39;, &#39;some other text&#39;]
+            }
+          }
+        },
+        // configure that we want facet values for the `myFacetName` facet
+        // and that a shadow query which calculates alternate facet values
+        // should be included which *omits* myFacetName. This gives
+        // context to what the results *would have* looked like without
+        // the applied myFacetName settings
+        facets: {
+          myFacetName: {
+            valuesType: &#39;object&#39;,
+            shadowConstraints: [ &#39;myFacetName&#39; ]
+          }
+        }
+      });
+      search.post().$ml.waiting.then(
+        // success, do whatever you do when the results have been returned
+        function () {
+          console.log(&#39;there are &#39; + search.results.count +
+              &#39;items in the results!&#39;
+          );
+        },
+        // something went wrong, &quot;handleError&quot; is a function that deals
+        // with the error message
+        handleError
+      );
+    }
+  ]);</code></pre>
+<p>The above would result in a POST to /v1/search that looks like:</p>
+<pre><code class="lang-json">{
+  &quot;query&quot;:{
+    &quot;qtext&quot;:&quot;\&quot;red flag\&quot;&quot;,
+    &quot;and-query&quot;:{
+      &quot;queries&quot;:[
+        {
+          &quot;value-constraint-query&quot;:{
+            &quot;constraint-name&quot;:&quot;constrName&quot;,
+            &quot;boolean&quot;:true
+          }
+        },
+        {
+          &quot;range-constraint-query&quot;:{
+            &quot;constraint-name&quot;:&quot;facetName&quot;,
+            &quot;value&quot;:&quot;some text&quot;
+          }
+        },
+        {
+          &quot;range-constraint-query&quot;:{
+            &quot;constraint-name&quot;:&quot;facetName&quot;,
+            &quot;value&quot;:&quot;some other text&quot;
+          }
+        }
+      ]
+    }
+  },
+  &quot;start&quot;:11
+}</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/domain/mlSession.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlSession</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Handles authentication and subsequent user information
+associated with a session with a REST server.</p>
+<p><code>mlSearch</code> is a derivation of <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>, customized to
+handle logging into a REST server via a username
+and password. Its default configuration reuqires both properties to be
+strings of at least 5 characters.</p>
+<p>When a session is <em>succcessfully</em> posted to the REST server, the response
+from the server overwrites the session information that was used during the
+login process. As such, and in particular, <strong>passwords</strong> are cleared upon
+successful login.</p>
+<p>After login, the mlSession is considered valid if it has both an <code>id</code>
+property and an array of strings assigned to the <code>role</code> property, which
+are to represent the LDAP roles with which the user is associated.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Provider components in <code>_marklogic</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/provider/mlHttpInterceptorProvider">mlHttpInterceptorProvider</a></td>
+        <td><p>Configures CSRF handling in the <a href="api/_marklogic/service/mlHttpInterceptor"><code>mlHttpInterceptor</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/provider/mlAuthProvider">mlAuthProvider</a></td>
+        <td><p>May be used to configure the <a href="api/_marklogic/service/mlAuth"><code>mlAuth</code></a> service.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/mlAuth.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlAuthProvider</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - provider in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>May be used to configure the <a href="api/_marklogic/service/mlAuth"><code>mlAuth</code></a> service.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="sessionModel">
+    <h3><code>sessionModel</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>May be used to override the name of the
+service that should be used as the domain model for sessions.</p>
+<p>By default, the sessionModel is <a href="api/_marklogic/domain/mlSession"><code>mlSession</code></a>.</p>
+<p>Samplestack customizes the session to be an insatnce of <a href="api/app/domain/ssSession"><code>ssSession</code></a>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlHttpInterceptor.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlHttpInterceptorProvider</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - provider in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Configures CSRF handling in the <a href="api/_marklogic/service/mlHttpInterceptor"><code>mlHttpInterceptor</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="disableCsrf">
+    <h3><code>disableCsrf</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>If true, CSRF handling on
+requests
+will be suppressed and CSRF tokens on responses will be ignored.
+Defaults to <code>false</code> (CSRF enabled).</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="endpoint">
+    <h3><code>endpoint</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>Configured the endpoint
+for requesting the CSRF token. Defaults to <code>&#39;/v1/sesion&#39;</code>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="headerName">
+    <h3><code>headerName</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>The header name
+for the CSRF token.  Defaults to X-CSRF-TOKEN.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Service components in <code>_marklogic</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlHttpInterceptor">mlHttpInterceptor</a></td>
+        <td><p>Handles CSRF tokens for all AJAX requests. May be configured or
+disabled  in the
+<a href="api/_marklogic/provider/mlHttpInterceptorProvider"><code>mlHttpInterceptorProvider</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlModelBase">mlModelBase</a></td>
+        <td><p>Service from which domain-specific model elements are derived.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlSchema">mlSchema</a></td>
+        <td><p>Manages JSON schemas and enables validation of instances against
+the schema.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlStore">mlStore</a></td>
+        <td><p>Simple object store which attaches itself to the $rootScope so that
+long-lived model data may be stored on a &quot;side&quot; scope.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlWaiter">mlWaiter</a></td>
+        <td><p>Establishes promise-based properties under the non-enumerable $ml property
+of model objects such that template code may track the status of promises
+(usually related to $http requests) that affect the model element instance.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlAuth">mlAuth</a></td>
+        <td><p>Facilities for handling authentication and sessions.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/service/mlUtil">mlUtil</a></td>
+        <td><p>Provides utility objects and methods.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/mlAuth.js#L21' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlAuth</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Facilities for handling authentication and sessions.</p>
+<p>It provides for logging in and out of a session and for events and
+properties to track status or presence/absense of a sesssion.</p>
+<p>Once injected, <code>mlAuth</code> immediatly configures a listener on the
+<code>`$rootScope</code> for <code>logout</code> events. When such an event occurs, it
+logs out the user if there is an authenticated session and then
+broadcasts <code>sessionChange</code>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlStore"><code>mlStore</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:restoreSession">
+    <h3><p><code>method:restoreSession();</code></p>
+
+</h3>
+    <div><p>Attempts to find an existing, valid session, first
+by determining whether on is already present in the
+<code>$rootScope.store</code>, and then by checkikng the <code>sessionId</code> cookie.</p>
+<p>If a session is found in the cookie, the object for the session
+is optimistically reinstantiated and an attempt is made to verify
+the sesion with the server and to retrieve additional properties
+of the sesssion. If that succeeds, the session is consider valid
+and active.</p>
+<p>Otherwise, or if any other error occurs, we consider there to be
+no active session and traces of any prior session are removed.</p>
+<p>Within the processing of this function, if there is a change
+to the session state, a <code>sessionChange</code> event is broaccast on
+$rootScope.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>promise to restore the session (or
+to reject if session is not present or cannot be resotred).</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:authenticate">
+    <h3><p><code>method:authenticate(session);</code></p>
+
+</h3>
+    <div><p>Authenticates (or reauthenticates) a user. On success,
+stores the user id in a <code>sessionId</code> cookie.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        session
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>session object to use in attempting to
+authenticate.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>Promise to be resolved if successful
+authetnication or rejected on failureto authenticate.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:logout">
+    <h3><p><code>method:logout();</code></p>
+
+</h3>
+    <div><p>Logs out of a session, including from the REST server
+session that represents the browser session object..</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>Promise to be resolved upon logging
+out the session or rejected on failure to log out.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlHttpInterceptor.js#L30' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlHttpInterceptor</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Handles CSRF tokens for all AJAX requests. May be configured or
+disabled  in the
+<a href="api/_marklogic/provider/mlHttpInterceptorProvider"><code>mlHttpInterceptorProvider</code></a>.</p>
+<p>The intercept assumes that the CSRF token is named <code>X-CSRF-TOKEN</code>.
+and that it may be retrived from a GET request to
+<code>&lt;protocol:server:port&gt;//v1/session</code>.</p>
+<p>As such, before the interceptor will allow through
+any methods that require CSRF (POST, PUT, PATCH, DELETE), it will
+attempt to do a round trip to the /v1/session endpoint to pick
+up the token from the server.</p>
+<p>The token is saved in the <code>$http</code> service default headers and will
+be supplied for all requests subsequently.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlUtil"><code>mlUtil</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlModelBase.js#L7' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlModelBase</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Service from which domain-specific model elements are derived.</p>
+<p>The <code>mlModelBase</code> service is primarily a means to derive domain-specific
+services that can themselves create and manage instances of model objects.</p>
+<p>Domain objects derived from mlModel base are found in the <a
+href="/marklogic-samplestack/api/_marklogic/domain">_marklogic/domain</a>
+and
+<a href="/marklogic-samplestack/api/app/domain">app/domain</a> directories.</p>
+<p>The model objects spawned by these domain-specific services
+have features to assist in validating, tracking and managing model data
+exhcnage with a server. In addition, specifc directives may provide
+additinal features by binding to these object.</p>
+<p>The Samplestack application uses mlModelBase to define domain objects
+which:</p>
+<ul>
+<li>can be validated for schema-level errors (such as presence of a property
+of the correct type and bounds) using JSON Schema via <a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a>;</li>
+<li>have facilities for being used with REST endpoints, including endpoints
+that require &quot;tweaks&quot;, such as changing endpoint names for certain HTTP
+methods, or overriding what is sent to the server or how responses from
+the server are processed;</li>
+<li>provide metadata about their status while HTTP methods are <em>in progress</em>
+using <a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a>.</li>
+</ul>
+<p>Some of the primary reasons for mlModelBase are consistency, error
+reduction
+and thorough testing. By centralizing the code that handles common issues
+associated with model elements (the &quot;M&quot; in MVC). By centralizing the
+key behaviors of model elements, more attention can be paid to ensuring
+quality in the generic functionality, and there is both less room for
+error in individual elements, as well as less effort required to define
+them.</p>
+<p>The principle of doing it right once, making components testable (and
+testing them well) is one
+key to getting the most out of AngularJS.</p>
+<p>This <code>mlModelBase</code> object certainly does not solve all problems, but it
+allows Samplestack to have such centralized functionality in one
+object that can be extended as requirements change.</p>
+<p>In Angular 2.0, which is currently being designed, plans are forming to
+implement a lot of this functionality within Angular&#39;s Data module. There
+are also other publicly available libraries that try to solve some of these
+issues in various ways, but generally each requires a level of buy-in which
+locks in certain behaviors. In order to maintain flexibility, and until
+Angular 2.0&#39;s data module can be evaluated for incproration, this
+customized solution has been developed for Samplestack. The development
+team looks forward to future developments in this space which might help
+to lessen the amount of custom code.</p>
+<p>It should be noted that most of this service is about providing a
+<strong>default</strong> implementation of a model element, where instances use
+prototype methods which can and are expected to be overriden in specific
+model objects.  For example, a model object may want to override the hook
+that handles processing responses from the server for POSTs using the
+by specifying such an override of the <code>onResponsePOST</code> method.</p>
+<p style="color: red">
+<strong>TODO</strong> the current version of this object  makes documentation difficult
+because of the way that
+instances are defined -- that is, there is no Angular component associated
+with instances of mlModelBase, and such no good place, in Angular terms,
+to put documentation.
+</p>
+
+<p style="color: red">
+<strong>For this reason, and to improve overall clarity of the code,
+the mlModelBase object is presently being refactored.</strong> Expect the next
+revision to have more and clearer documentation, where both the services
+that manage mlModel elements <em>and</em> the instances are documented.
+</p>
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li><li><a href="api/_marklogic/service/mlUtil"><code>mlUtil</code></a></li><li><a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:create">
+    <h3><p><code>method:create(spec);</code></p>
+
+</h3>
+    <div><p>Creates an instance of the
+mlModelBase-derived object.</p>
+<p>The default implementation calls the <code>object</code> constructor.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>If specified, the parameter is an initial
+value for the object.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>the created instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:getOne">
+    <h3><p><code>method:getOne(spec);</code></p>
+
+</h3>
+    <div><p>Fetches a single instance from the server (using GET),
+based on the specified criteria.</p>
+<p>The default implementation either uses the spec as the instance
+whose data should be fetched, or, if the spec isn&#39;t already an
+instance of the model element, it creates one based on the spec.</p>
+<p>This means that one can pass either an existing instance of the
+model element <strong>or</strong> pass a specification, such as an object
+containing an <code>id</code> property, to specify what data to fetch.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Either an existing instance to (re-)fetch, or
+a plain object that otherwise uniquely specifies an instance
+of the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>The instance. Because instances expose their
+http=-related status in their $ml metadata property, it may be used
+to follow progress through the promise via <code>[instance].$ml.waiting</code>,
+as managed by the <a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a> service..</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:post">
+    <h3><p><code>method:post(spec);</code></p>
+
+</h3>
+    <div><p>POSTs an instance of the model element to the server.</p>
+<p>The default implementation merges the response from the server
+into the instance.</p>
+<p>The default implementation either uses the spec as the instance
+whose data should be posted, or, if the spec isn&#39;t already an
+instance of the model element, it creates one based on the spec.</p>
+<p>This means that one can pass either an existing instance of the
+model element <strong>or</strong> pass a specification of data that should be
+used to create a new instance prior to posting.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Either an existing instance to post, or
+a plain object whose data should be used to create an instance prior
+to posting.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>The instance. Because instances expose their
+http=-related status in their $ml metadata property, it may be used
+to follow progress through the promise via <code>[instance].$ml.waiting</code>,
+as managed by the <a href="api/_marklogic/service/mlWaiter"><code>mlWaiter</code></a> service..</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:del">
+    <h3><p><code>method:del(spec);</code></p>
+
+</h3>
+    <div><p>DELETEs an instance of the model element froom the
+server.</p>
+<p>The default implementation merges the response from the server
+into the instance.</p>
+<p>The default implementation either uses the spec as the instance
+whose data should be posted, or, if the spec isn&#39;t already an
+instance of the model element, it creates one based on the spec.</p>
+<p>This means that one can pass either an existing instance of the
+model element <strong>or</strong> pass a specification of data that should be
+used to create a new instance prior to posting.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Either an existing instance to delete, or
+a plain object whose data should be used to specify the instance for
+deletion.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>promise to be resolved when the deletion
+is complete
+or rejected when/if it fails.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="property:object">
+    <h3><code>property:object</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>This is the constructor that creates instances of
+a given mlModelBase-derived object. It is configured when the
+derivation is defined. The default implementation is:</p>
+<pre><code class="lang-javascript">this.preconstruct(spec);
+Object.defineProperty(this, &#39;$ml&#39;, {
+  value: {}
+});
+this.assignData(spec || {});
+this.postconstruct(spec);</code></pre>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlSchema.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlSchema</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Manages JSON schemas and enables validation of instances against
+the schema.</p>
+<p><code>mlSchema</code> is used by <code>mlModelBase</code> and its derivatives to define
+and test validity of instances against JSON Schemas.</p>
+<p>Typically an application interacts with mlSchema directly only when
+inheriting from mlModelBase.</p>
+<p>There is no aspect of mlSchema that pro-actively forces objects
+to be valid. Rather, it can be and is used to determine object
+validity at key points in the application. Through mlModelBase
+implementation, it can be used to drive user-interface feedback
+for users to inform them of whether or not certain properties of an
+object are valid.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:addSchema">
+    <h3><p><code>method:addSchema(schema);</code></p>
+
+</h3>
+    <div><p>Adds the given schema to the application-global set of
+shcemas. A schema is valid if it follows the syntax
+specified by the jsonschema library, which by-and-large supports v4
+of JSON
+Schema. As such, at a minimum, one must specify a valid JSON Pointer
+for the id property. All other aspects of the schema are optional.</p>
+<p>To effectively not leverage JSON Schema for validation, simply pass
+a literal with such an id property. Otherwise, specify those
+attributes of the schema that should be used to determine validity.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        schema
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Representation of a JSON Schema as defined
+by <a href="https://github.com/tdegrunt/jsonschema">the tdegrunt/jsonschema</a>
+library. This Node.js-based library is built into
+the application via <a href="http://browserify.org/">browserify</a>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>the jsonschema object that has been added to the
+set
+of schema</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:validate">
+    <h3><p><code>method:validate(instance, $ref);</code></p>
+
+</h3>
+    <div><p>Validates an instance against a defined schema.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        instance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>An object to validate</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        $ref
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>JSON Pointer to a schema against which to
+validate the given instance</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>validation results as specified by the
+jsonschema library</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlStore.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlStore</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Simple object store which attaches itself to the $rootScope so that
+long-lived model data may be stored on a &quot;side&quot; scope.</p>
+<p>The object is thus accessisble from any scope in the application as
+<code>[the scope].store</code>. It is to be used as a name/value pair dictionary.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/util/mlUtil.js#L28' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlUtil</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Provides utility objects and methods.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:stripZone">
+    <h3><p><code>method:stripZone(dateish);</code></p>
+
+</h3>
+    <div></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        dateish
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A JavaScript or <code>moment</code> date object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>an ISO8601 string representing the date, with time
+zone
+information removed.</p>
+<p>This function will be unnecessary when time zones and date string
+handling is fully implemented. For now, it is used to ensure that the
+middle tier doesn&#39;t get ISO8601 time zone information that it cannot
+process.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:objectify">
+    <h3><p><code>method:objectify(obj);</code></p>
+
+</h3>
+    <div><p>Converts and object to a &quot;plain-old JavaScript object&quot;
+by converting it to JSON and then back to an object. This causes
+the results of serialization to JSON to be found in the resulting object.
+For instance, dates will be serialized to strings. Additionally,
+non-enumerable properties are dropped in the resulting object.</p>
+<p>Does not modify its parameter.</p>
+<p>This method is used when validating <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>-derived objects.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Any object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>a &quot;plain old Javascript&quot; version of the object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:merge">
+    <h3><p><code>method:merge(targetObject, objectToMerge, remainingArgs);</code></p>
+
+</h3>
+    <div><p>This is a deep merge. Objecgts are merged from right to left, so the
+last on is merged into the second to last and ultimately the first
+object in the parameters list is the final target. These merges occur
+on the actual objects, so if targets of these marges are not intended
+to be modified, clones should be used.</p>
+<p>This is similar to <a href="http://lodash.com/docs#merge">lodash&#39;s merge
+function</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        targetObject
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The first object is the ultimate target
+of the merge(s).</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        objectToMerge
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an object to merge into the target</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        remainingArgs
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>additional objects to merge</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>Reference to the first object in the parameters list,
+which is the ultimate target of the merge(s).</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="moment">
+    <h3><code>moment</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>This is
+<a href="http://momentjs.com/" target="_blank">
+Moment.js</a>. It is used to handle conversion between dates,
+in particular between ISO 8601 strings from JSON and Javascript
+Date objects.</p>
+<p>It is also used by mlModel elements when serializing and deserializing
+JSON dates for $http.</p>
+<p>Until time zone handling is fully implemented, this instance of moment
+is configured to operate entirely and execlusively in UTC mode.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/services/data/mlWaiter.js#L10' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">mlWaiter</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Establishes promise-based properties under the non-enumerable $ml property
+of model objects such that template code may track the status of promises
+(usually related to $http requests) that affect the model element instance.</p>
+<p>When a promise is in progress, the <code>$ml.waiting</code> property returns a promise
+of its own which is resolved when the underlying worker promise is
+resolved.</p>
+<p>If the underlying promise is resolved, the $ml.waiting promise is resolved
+too, and then the waiting property is deleted.</p>
+<p>If the underlying promise is rejected, an $ml.error property is created
+to store the error information from the underlying promise, and the
+$ml.waiting property is deleted.</p>
+<p>There are no special requirements on the object, but if it
+does not have a <strong>non-enumerable</strong> <code>$ml</code> property, then a
+<strong>non-enumerable</strong> one is created for tracking purposes.</p>
+<p>This example below is taken from <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>.</p>
+<pre><code class="lang-javascript">    var http = function (instance, httpMethod) {
+      var httpConfig = instance.getHttpConfig(httpMethod);
+      var waiter = mlWaiter.waitOn(instance);
+      httpConfig.url = self.baseUrl + httpConfig.url;
+      $http(httpConfig).then(
+        function (response) {
+          instance.onHttpResponse(response.data, httpMethod);
+          waiter.resolve();
+        },
+        function (err) {
+          waiter.reject(err);
+        }
+      );
+      return instance;
+    };</code></pre>
+<p>In practice, an application will frequently use the properties managed
+by mlWaiter when conducting HTTP-based operations on model elements.</p>
+<p>Example:</p>
+<pre><code class="lang-javascript">myElement.post().$ml.waiting.then(
+  function () {
+    // the post is completed
+  }
+);</code></pre>
+<p>In a template, the same property can be used to visually indicate that an
+http method is in progress.</p>
+<p>Example:</p>
+<pre><code class="lang-html">&lt;div ng-if=&quot;$ml.waiting&quot;&gt;
+  we are waiting for a round trip with the server
+&lt;/div&gt;</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:waitOn">
+    <h3><p><code>method:waitOn(objectInstance);</code></p>
+
+</h3>
+    <div></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        objectInstance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The object that is the subject of
+the
+promise.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Deferred</a></td>
+    <td><p>to be used by the caller to signal
+to mlWaiter that the underlying promise is either resolved or
+rejected.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Type components in <code>_marklogic</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/_marklogic/type/MlSearchObject">MlSearchObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a>, derived from <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/_marklogic/domain/mlSearch.js#L274' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">MlSearchObject</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/_marklogic">_marklogic</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The model instance prototype for
+<a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a>, derived from <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:constructor">
+    <h3><p><code>method:constructor(spec);</code></p>
+
+</h3>
+    <div><p>Constructor. Creates the simplest of search specifications
+by creating the <code>criteria</code> property with an empty <code>q</code> (query string)
+property and <code>constraints</code> property.</p>
+<p>Application-specific derivations should override this method to
+configure the application&#39;s search feature(s).</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data used to populate
+the new instance.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.onResponsePOST">
+    <h3><p><code>method:prototype.onResponsePOST(data);</code></p>
+
+</h3>
+    <div><p>Override arranges key properties of the search results
+in order to simplify their usage in the browser.</p>
+<p>Moves facet values from the facetValues subproperty up into the
+`results.facets object.</p>
+<p>If a facet is configured to keep its results as an object, converts
+the array to an object.</p>
+<p>Initializes <code>$ml.pagingInfo</code> helper properties.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Response from the server.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.getMlConstraint">
+    <h3><p><code>method:prototype.getMlConstraint(constraint);</code></p>
+
+</h3>
+    <div><p>Based on the browser-side object,
+create the constraint object that will be passsed to the server when
+POSTing
+a search.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constraint
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Browser-side constraint object.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.getHttpDataPOST">
+    <h3><p><code>method:prototype.getHttpDataPOST();</code></p>
+
+</h3>
+    <div><p>Override. Based on browser-side format of search,
+constructs a version of the criteria that will be POSTed to the
+server.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>server-interpretable search specification.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.stateParamFromConstraint">
+    <h3><p><code>method:prototype.stateParamFromConstraint(constraint);</code></p>
+
+</h3>
+    <div><p>Based on the constraint object, determine the state
+parameter for routing along with its value.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constraint
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>a constraint object.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>A plain object containing the found state parameter
+and its value.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.getStateParams">
+    <h3><p><code>method:prototype.getStateParams(oldParams);</code></p>
+
+</h3>
+    <div><p>Based on the search criteria and
+existing parameters, return an object
+representing routing state parameters.constraint object.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        oldParams
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Parameters currently active for the state</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>new parameters.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.constraintFromStateParam">
+    <h3><p><code>method:prototype.constraintFromStateParam(constraint, stateParams);</code></p>
+
+</h3>
+    <div><p>Based on the state params, assign value to the specified
+constraint</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constraint
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>a search constraint for which
+to find a value in stateParams</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        stateParams
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>state params</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.assignStateParams">
+    <h3><p><code>method:prototype.assignStateParams(stateParams);</code></p>
+
+</h3>
+    <div><p>Based on the state params, assign as relevant
+search configured values.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        stateParams
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>full set of state parameters</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.setCurrentPage">
+    <h3><p><code>method:prototype.setCurrentPage(pageNum);</code></p>
+
+</h3>
+    <div><p>If a valid page number assign start to cause search
+to begin at the correct results item.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        pageNum
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>page number to make current in search
+config.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>Whether or not the page number is valid</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.shadowSearch">
+    <h3><p><code>method:prototype.shadowSearch();</code></p>
+
+</h3>
+    <div><p>Use facet configuration to execute both the main search
+and any shadow queries that are required.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>promise to be resolved when all search
+results have been returned and processed.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>
+  <code>app</code>
+</h1>
+
+<p>The <code>app</code> module is the Samplestack application module. It is an
+     an implementation of a MarkLogic-based
+AngularJS application. It depends on and uses the components of the
+_marklogic module.</p>
+<p>At present, Angular.js does not provide strong support for documenting
+<em>applications</em>, as opposed to libraries. As such, certain parts of the
+documentation for the application may seem unwieldy. We have documented
+controllers, dialogs and states using customized templates.</p>
+<p>The dev team has started conversations with the Angular devs on how to
+go about documenting these types of objects and may have early access
+to better methods for documentation. That said, the current
+implementation of the docs is expected to be adequate.</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="controller">Controller</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/allTagsDialogCtlr">allTagsDialogCtlr</a></td>
+        <td><p>Controller for <a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>. This dialog isn&#39;t fully implemented.
+More detail TBD.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/contributorDialogCtlr">contributorDialogCtlr</a></td>
+        <td><p>Controller for the <a href="api/app/dialog/contributorDialog"><code>contributorDialog</code></a>. The controller
+is
+injected by the $modal service.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/loginDialogCtlr">loginDialogCtlr</a></td>
+        <td><p>Controller for <a href="api/app/dialog/loginDialog"><code>loginDialog</code></a>. The controller is injected by the
+$modal service.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="dialog">Dialog</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/allTagsDialog">allTagsDialog</a></td>
+        <td><p>Displays all tags in the database in a paged modal, and allows for
+searching and selecting the tags for inclusion as filters on a search.
+Uses <a href="http://angular-ui.github.io/bootstrap/"
+target="_blank">ui.bootstrap.modal</a>. Also see the
+<a href="api/app/controller/allTagsDialogCtlr"><code>allTagsDialogCtlr</code></a>
+and the <a href="api/app/filter/allTagsStartFrom">allTagsStartFrom filter</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/contributorDialog">contributorDialog</a></td>
+        <td><p>The
+contributor dialog displays information about a contributor.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/loginDialog">loginDialog</a></td>
+        <td><p>User interface for logging into the Samplestack application.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="filter">Filter</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/filter/allTagsStartFrom">allTagsStartFrom</a></td>
+        <td><p>Returns the starting element for columnar display of tags. See
+<a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="directive">Directive</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssAccountDropdown">ssAccountDropdown</a></td>
+        <td><p>Display info for the logged-in user, and allows the user to
+logout of their session.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssFacetDateRange">ssFacetDateRange</a></td>
+        <td><p>Renders date range facet of search results into a
+<a href="https://github.com/pablojim/highcharts-ng"
+target="_blank">highcharts-ng</a> chart, and allows the user
+to specify a range of dates over which to filter the search by selecting
+a range within the chart or by using date-picker dropdowns.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssFacetTags">ssFacetTags</a></td>
+        <td><p>Renders tags facet of search results into a list, and allows the user to select
+tags to use a filter in search criteria.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssMarkdown">ssMarkdown</a></td>
+        <td><p>Wraps an instance of
+<a href="https://://github.com/Hypercubed/angular-marked">angular-marked</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssMarkdownEditor">ssMarkdownEditor</a></td>
+        <td><p>Enables editing of Markdown content with preview tab and editing controls
+in a button-bar.  Uses <a href="api/app/directive/ssMarkdown"><code>ssMarkdown</code></a> for preview and and
+<a href="https://github.com/GrumpyWizards/ngMarkdown"
+target="_blank">ngMarkdown</a> for button bar functionality.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssSearchResult">ssSearchResult</a></td>
+        <td><p>Directive for displaying a search result from a set of results.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssSearchResults">ssSearchResults</a></td>
+        <td><p>Directive for displaying a set of search results.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="domain">Domain</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssContributor">ssContributor</a></td>
+        <td><p>Information associated with a contributor (as
+<a href="api/app/type/SsContributorObject"><code>SsContributorObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssQnaDoc">ssQnaDoc</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssSearch">ssSearch</a></td>
+        <td><p>Implements search for the Samplestack application (as
+<a href="api/app/type/SsSearchObject"><code>SsSearchObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssSession">ssSession</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssVote">ssVote</a></td>
+        <td><p>TODO: This component is not yet implemented.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="type">Type</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsContributorObject">SsContributorObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssContributor"><code>ssContributor</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsQnaDocObject">SsQnaDocObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssQnaDoc"><code>ssQnaDoc</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsSearchObject">SsSearchObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssSearch"><code>ssSearch</code></a>, derived from <a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="provider">Provider</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/provider/appRoutingProvider">appRoutingProvider</a></td>
+        <td><p>Manages routing for the application. Uses
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/service/appRouting">appRouting</a></td>
+        <td><p>TBD -- like now -- or now -- it&#39;;s really time to do this.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="state">State</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/_layout">_layout</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/explore">explore</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/exploreResults">exploreResults</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="constant">Constant</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/constant/statesHierarchy">statesHierarchy</a></td>
+        <td><p>Used by the <a href="api/app/service/appRouting"><code>appRouting</code></a> service to define the hierarchy of
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a> states.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+<h1>Constant components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/constant/statesHierarchy">statesHierarchy</a></td>
+        <td><p>Used by the <a href="api/app/service/appRouting"><code>appRouting</code></a> service to define the hierarchy of
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a> states.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/states/_statesHierarchy.js#L7' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">statesHierarchy</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - constant in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Used by the <a href="api/app/service/appRouting"><code>appRouting</code></a> service to define the hierarchy of
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a> states.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Controller components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/allTagsDialogCtlr">allTagsDialogCtlr</a></td>
+        <td><p>Controller for <a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>. This dialog isn&#39;t fully implemented.
+More detail TBD.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/contributorDialogCtlr">contributorDialogCtlr</a></td>
+        <td><p>Controller for the <a href="api/app/dialog/contributorDialog"><code>contributorDialog</code></a>. The controller
+is
+injected by the $modal service.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/controller/loginDialogCtlr">loginDialogCtlr</a></td>
+        <td><p>Controller for <a href="api/app/dialog/loginDialog"><code>loginDialog</code></a>. The controller is injected by the
+$modal service.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/allTags.js#L4' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">allTagsDialogCtlr</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - controller in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Controller for <a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>. This dialog isn&#39;t fully implemented.
+More detail TBD.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <code>the controller is injected by the $modal service</code>
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        $scope
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-angular">angular.Scope</a>
+      </td>
+      <td>
+        <p>(injected)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        $modalInstance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-ui">ui.bootstrap.modal.$modalInstance</a>
+      </td>
+      <td>
+        <p>(injected)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        allTagsStartFromFilter
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-ui">ui.bootstrap.$modalInstance</a>
+      </td>
+      <td>
+        <p>Filter for
+columnar display of tags</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        unselTags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>unselected tags</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        selTags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>selected tags</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:$scope.clicked">
+    <h3><p><code>method:$scope.clicked(tag);</code></p>
+
+</h3>
+    <div><p>Handle a click event for a tag checkbox</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        tag
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>the clicked element</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:$scope.submit">
+    <h3><p><code>method:$scope.submit();</code></p>
+
+</h3>
+    <div><p>Close the dialog via the $modalInstance. This resolves the promise
+from the <a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a> service</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="$scope.unselTags">
+    <h3><code>$scope.unselTags</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+    <td><p>set of tags that are found
+in tags facet results but not presently selected as criteria.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$scope.selTags">
+    <h3><code>$scope.selTags</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+    <td><p>set of tags that are found
+in tags facet results are are presently selected as criteria.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$scope.tags">
+    <h3><code>$scope.tags</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+    <td><p>set of tags that are found
+in tags facet results. Since the list of tags is limited by configuration
+to 8, at most 8 tags will be in this array at any time.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/contributor.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">contributorDialogCtlr</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - controller in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Controller for the <a href="api/app/dialog/contributorDialog"><code>contributorDialog</code></a>. The controller
+is
+injected by the $modal service.</p>
+<p>Upon instantiation the <code>contributorDialogCtlr</code> looks up the specified
+contributor by id on the server.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>contributorDialogCtlr($scope, $modalInstance, ssContributor, contributorId);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        $scope
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-angular">angular.Scope</a>
+      </td>
+      <td>
+        <p>(injected)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        $modalInstance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-ui">ui.bootstrap.modal.$modalInstance</a>
+      </td>
+      <td>
+        <p>(injected)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ssContributor
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        contributorId
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:$scope.cancel">
+    <h3><p><code>method:$scope.cancel();</code></p>
+
+</h3>
+    <div><p>Dismisses the modal (without logging in).</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/login.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">loginDialogCtlr</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - controller in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Controller for <a href="api/app/dialog/loginDialog"><code>loginDialog</code></a>. The controller is injected by the
+$modal service.</p>
+<p>Used to provide a user interface through which to autenticate a user.</p>
+<p>Upon instantiation the <code>loginDialogCtlr</code> creates an empty instance of
+<a href="api/app/domain/ssSession"><code>ssSession</code></a> for handling authentication.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>loginDialogCtlr($scope, $modalInstance, ssSession, mlAuth);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        $scope
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-angular">angular.Scope</a>
+      </td>
+      <td>
+        <p>(injected)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        $modalInstance
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-ui">ui.bootstrap.modal.$modalInstance</a>
+      </td>
+      <td>
+        <p>(injected)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ssSession
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Session object</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        mlAuth
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Authentication object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:$scope.authenticate">
+    <h3><p><code>method:$scope.authenticate();</code></p>
+
+</h3>
+    <div><p>Initiate authentication of the <code>$scope.session</code>
+credentials.</p>
+<p>On success, closes the dialog.</p>
+<p>On failure, reports the failure to the user via the <code>$scope.error</code>
+property.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:$scope.cancel">
+    <h3><p><code>method:$scope.cancel();</code></p>
+
+</h3>
+    <div><p>Dismisses the dialog.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="$scope.error">
+    <h3><code>$scope.error</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>If present, indicates textually what
+error occured while attempting to authenticate a user.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Dialog components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/allTagsDialog">allTagsDialog</a></td>
+        <td><p>Displays all tags in the database in a paged modal, and allows for
+searching and selecting the tags for inclusion as filters on a search.
+Uses <a href="http://angular-ui.github.io/bootstrap/"
+target="_blank">ui.bootstrap.modal</a>. Also see the
+<a href="api/app/controller/allTagsDialogCtlr"><code>allTagsDialogCtlr</code></a>
+and the <a href="api/app/filter/allTagsStartFrom">allTagsStartFrom filter</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/contributorDialog">contributorDialog</a></td>
+        <td><p>The
+contributor dialog displays information about a contributor.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/dialog/loginDialog">loginDialog</a></td>
+        <td><p>User interface for logging into the Samplestack application.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/allTags.js#L147' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">allTagsDialog</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - dialog in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Displays all tags in the database in a paged modal, and allows for
+searching and selecting the tags for inclusion as filters on a search.
+Uses <a href="http://angular-ui.github.io/bootstrap/"
+target="_blank">ui.bootstrap.modal</a>. Also see the
+<a href="api/app/controller/allTagsDialogCtlr"><code>allTagsDialogCtlr</code></a>
+and the <a href="api/app/filter/allTagsStartFrom">allTagsStartFrom filter</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>allTagsDialog(unselTags, selTags);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        unselTags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>unselected tags</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        selTags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>selected tags</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-angular">angular.Promise</a></td>
+    <td><p>the promise will either be rejected
+or will resolve to an object the following properties that reflect the
+result of the user interaction has the dialog:</p>
+<ul>
+<li><strong>unselTags</strong> - <code>{Array.&lt;object}</code> the unselected tags</li>
+<li><strong>selTags</strong> - <code>{Array.&lt;object}</code> - the selected tags</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/contributor.js#L43' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">contributorDialog</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - dialog in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The
+contributor dialog displays information about a contributor.</p>
+<p>This is the service that configures the dialog and the
+<a href="api/app/controller/contributorDialogCtlr"><code>contributorDialogCtlr</code></a>, and launches the dialog.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>contributorDialog(contributorId);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        contributorId
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The id of the contributor whose information
+should
+be displayed</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/login.js#L77' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">loginDialog</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - dialog in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>User interface for logging into the Samplestack application.</p>
+<p>This is the service that cobfigures the dialog and
+the <a href="api/app/controller/loginDialogCtlr"><code>loginDialogCtlr</code></a>, and launches the dialog.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>loginDialog();</code></p>
+
+
+    
+
+    
+    
+    
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Directive components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssAccountDropdown">ssAccountDropdown</a></td>
+        <td><p>Display info for the logged-in user, and allows the user to
+logout of their session.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssFacetDateRange">ssFacetDateRange</a></td>
+        <td><p>Renders date range facet of search results into a
+<a href="https://github.com/pablojim/highcharts-ng"
+target="_blank">highcharts-ng</a> chart, and allows the user
+to specify a range of dates over which to filter the search by selecting
+a range within the chart or by using date-picker dropdowns.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssFacetTags">ssFacetTags</a></td>
+        <td><p>Renders tags facet of search results into a list, and allows the user to select
+tags to use a filter in search criteria.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssMarkdown">ssMarkdown</a></td>
+        <td><p>Wraps an instance of
+<a href="https://://github.com/Hypercubed/angular-marked">angular-marked</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssMarkdownEditor">ssMarkdownEditor</a></td>
+        <td><p>Enables editing of Markdown content with preview tab and editing controls
+in a button-bar.  Uses <a href="api/app/directive/ssMarkdown"><code>ssMarkdown</code></a> for preview and and
+<a href="https://github.com/GrumpyWizards/ngMarkdown"
+target="_blank">ngMarkdown</a> for button bar functionality.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssSearchResult">ssSearchResult</a></td>
+        <td><p>Directive for displaying a search result from a set of results.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/directive/ssSearchResults">ssSearchResults</a></td>
+        <td><p>Directive for displaying a set of search results.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssAccountDropdown.js#L6' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssAccountDropdown</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Display info for the logged-in user, and allows the user to
+logout of their session.</p>
+<p>The <a href="http://getbootstrap.com/javascript/#dropdowns">Bootstrap
+Dropdown</a> directive is used to display the dropdown.</p>
+<p>The template for this dropdown reads logged-in user information
+from the <code>scope.store.session</code> object, an instance of
+<a href="api/app/domain/ssSession"><code>ssSession</code></a>.</p>
+<h2 id="-scope-properties-methods-"><code>scope</code> properties/methods:</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logout</code></td>
+<td><a href="" class="label type-hint type-hint-function">function</a></td>
+<td>Emits a <code>logout</code> event</td>
+</tr>
+<tr>
+<td><code>store.session</code></td>
+<td><a href="api/app/domain/ssSession"><code>ssSession</code></a></td>
+<td>As provided by $rootScope, provides session information.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ss-account-dropdown=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ssAccountDropdown
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-undefined">undefined</a>
+      </td>
+      <td>
+        
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssFacetDateRange.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssFacetDateRange</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Renders date range facet of search results into a
+<a href="https://github.com/pablojim/highcharts-ng"
+target="_blank">highcharts-ng</a> chart, and allows the user
+to specify a range of dates over which to filter the search by selecting
+a range within the chart or by using date-picker dropdowns.</p>
+<p>Listens for <code>newResults</code> event to trigger popuplation of results.</p>
+<p>When the user selects a range either through the chart or using the date
+pickers, a <code>criteriaChange</code> event is emitted so that the search may be
+updated..</p>
+<h2 id="-scope-properties-methods-"><code>scope</code> properties/methods:</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dateData</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array</a></td>
+<td>Array of Configuration for the highcharts object.</td>
+</tr>
+<tr>
+<td><code>highchartsConfig</code></td>
+<td><a href="" class="label type-hint type-hint-object">object</a></td>
+<td>Configuration for the highcharts object.</td>
+</tr>
+<tr>
+<td><code>chart</code></td>
+<td><a href="" class="label type-hint type-hint-object">object</a></td>
+<td>Reference to the actual Highcharts chart</td>
+</tr>
+<tr>
+<td><code>store.session</code></td>
+<td><a href="api/app/domain/ssSession"><code>ssSession</code></a></td>
+<td>As provided by $rootScope, provides session information.</td>
+</tr>
+<tr>
+<td><code>dateStartOptions</code></td>
+<td><a href="" class="label type-hint type-hint-ojbect">ojbect</a></td>
+<td>Configuration for date start picker</td>
+</tr>
+<tr>
+<td><code>dateEndOptions</code></td>
+<td><a href="" class="label type-hint type-hint-ojbect">ojbect</a></td>
+<td>Configuration for date end picker</td>
+</tr>
+<tr>
+<td><code>pickerOpen</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(string)</a></td>
+<td>Opens one or the other date picker as specified by the parameter.</td>
+</tr>
+<tr>
+<td><code>applyPickerDates</code></td>
+<td><a href="" class="label type-hint type-hint-function">function</a></td>
+<td>Applies the values in the date pickers to the relevant properties of the search constraints, and if they have been modified, emits <code>criteriaChange</code></td>
+</tr>
+<tr>
+<td><code>dateStartPlaceholder</code></td>
+<td><a href="" class="label type-hint type-hint-string">string</a></td>
+<td>Formatted representation of the first date found (shadowed) search results to use as placeholder in the dateStart picker.</td>
+</tr>
+<tr>
+<td><code>dateEndPlaceholder</code></td>
+<td><a href="" class="label type-hint type-hint-string">string</a></td>
+<td>Formatted representation of the late date found (shadowed) search results to use as placeholder in the dateEnd picker.</td>
+</tr>
+<tr>
+<td><code>pickerDateStart</code></td>
+<td><a href="" class="label type-hint type-hint-date">Date?</a></td>
+<td>If a Date object, the value of the dateStart search constraint represented as a day for the dateStart picker.</td>
+</tr>
+<tr>
+<td><code>pickerDateEnd</code></td>
+<td><a href="" class="label type-hint type-hint-date">Date?</a></td>
+<td>If a Date object, the value of the dateEnd search constraint represented as a day for the dateEnd picker.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-facet-date-range&#10;  constraints=&quot;&quot;&#10;  results=&quot;&quot;&gt;&#10;...&#10;&lt;/ss-facet-date-range&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constraints
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search `criteria.constraints property from <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        results
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search <code>results</code> for the date facet form <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssFacetTags.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssFacetTags</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Renders tags facet of search results into a list, and allows the user to select
+tags to use a filter in search criteria.</p>
+<p style="color: red">
+TODO: should typeahead use the full tags search that the browseTags dialog will be using? The
+endpoint for such a feature is not yet implemented
+but planned, so maybe we should do so, otherwise the typeahead is
+really not all that useful.
+</p>
+
+<p>Displays a typeahead box from which the user may select tags.</p>
+<p>Listens for <code>newResults</code> event to trigger popuplation of results.</p>
+<p>When the user selects or unselects a tag, moves the tag between the selected and unselected lists
+and emits <code>criteriaChange</code> event so that the search may be
+updated.</p>
+<h2 id="-scope-properties-methods-"><code>scope</code> properties/methods:</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>selected</code></td>
+<td><a href="" class="label type-hint type-hint-string">string</a></td>
+<td>Used by typeahead to communicate user selection back to the directive</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+<td>Used by the repeater that lists tags. Ordered list of column names by which to sort results (descending by count).</td>
+</tr>
+<tr>
+<td><code>selTags</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+<td>Selected tags.</td>
+</tr>
+<tr>
+<td><code>unselTags</code></td>
+<td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+<td>Unselected tags.</td>
+</tr>
+<tr>
+<td><code>selectTag</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(string)</a></td>
+<td>Select an unselectd tag.</td>
+</tr>
+<tr>
+<td><code>unSelectTag</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(string)</a></td>
+<td>Unselect a selectd tag.</td>
+</tr>
+<tr>
+<td><code>selectTagTypeahead</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(object, object, strubg)</a></td>
+<td>Fired by typeahead when user selects from the dropdown.</td>
+</tr>
+<tr>
+<td><code>toArray</code></td>
+<td><a href="" class="label type-hint type-hint-function">function(object)</a></td>
+<td>Return array version of the tags facet values. Used by the repeater.</td>
+</tr>
+<tr>
+<td><code>haveSelectedTags</code></td>
+<td><a href="" class="label type-hint type-hint-function">function()</a></td>
+<td>Returns true if there are selected tags. Determines layout of the lists.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-facet-tags&#10;  criteria=&quot;&quot;&#10;  results=&quot;&quot;&#10;  totals=&quot;&quot;&#10;  tags-limit=&quot;&quot;&gt;&#10;...&#10;&lt;/ss-facet-tags&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        criteria
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search <code>criteria.tags</code> property from <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        results
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The search <code>results.facets.tags</code> property from <a href="api/app/domain/ssSearch"><code>ssSearch</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        totals
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The totals calculated during search</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        tagsLimit
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>The number of tags to display</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssMarkdown.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssMarkdown</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Wraps an instance of
+<a href="https://://github.com/Hypercubed/angular-marked">angular-marked</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ss-markdown=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ssMarkdown
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name of the scope property to which
+to
+bind.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssMarkdownEditor.js#L12' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssMarkdownEditor</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Enables editing of Markdown content with preview tab and editing controls
+in a button-bar.  Uses <a href="api/app/directive/ssMarkdown"><code>ssMarkdown</code></a> for preview and and
+<a href="https://github.com/GrumpyWizards/ngMarkdown"
+target="_blank">ngMarkdown</a> for button bar functionality.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ss-markdown-editor=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ssMarkdownEditor
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p>the content to which to bind.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssSearchResult.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSearchResult</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Directive for displaying a search result from a set of results.</p>
+<p>The view binds to various properties of the <code>$scope.item</code> property.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-search-result&gt;&#10;...&#10;&lt;/ss-search-result&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssSearchResult.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSearchResult;</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Directive for displaying a search result from a set of results.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-search-result&gt;&#10;...&#10;&lt;/ss-search-result&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/directives/ssSearchResults.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSearchResults</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Directive for displaying a set of search results.</p>
+<p>The view binds to various properties of the <code>$scope.results</code> property
+and assigns the <code>item</code> property in an ngRepeater
+for use by the <a href="api/app/directive/ssSearchResult"><code>ssSearchResult</code></a> directive.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;ss-search-results&gt;&#10;...&#10;&lt;/ss-search-results&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+</div>
+
+
+
+
+
+<h1>Domain components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssContributor">ssContributor</a></td>
+        <td><p>Information associated with a contributor (as
+<a href="api/app/type/SsContributorObject"><code>SsContributorObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssQnaDoc">ssQnaDoc</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssSearch">ssSearch</a></td>
+        <td><p>Implements search for the Samplestack application (as
+<a href="api/app/type/SsSearchObject"><code>SsSearchObject</code></a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssSession">ssSession</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/domain/ssVote">ssVote</a></td>
+        <td><p>TODO: This component is not yet implemented.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssContributor.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssContributor</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Information associated with a contributor (as
+<a href="api/app/type/SsContributorObject"><code>SsContributorObject</code></a>).</p>
+<p><code>ssContributor</code> is a derivation of <a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a>,
+customized to be able to fetch contributor information (GET).</p>
+<p>It is also used by <a href="api/app/domain/ssSession"><code>ssSession</code></a> to expose information
+about the currently logged-in user.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssQnaDoc.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssQnaDoc</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssSearch.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSearch</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Implements search for the Samplestack application (as
+<a href="api/app/type/SsSearchObject"><code>SsSearchObject</code></a>).</p>
+<p><code>ssSearch</code> is a derivation of <a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a>,
+customized for the specifics of Samplestack.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li><li><a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssSession.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSession</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li><li><a href="api/_marklogic/domain/mlSession"><code>mlSession</code></a></li><li><a href="api/app/domain/ssContributor"><code>ssContributor</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssVote.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssVote</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - domain in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TODO: This component is not yet implemented.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Filter components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/filter/allTagsStartFrom">allTagsStartFrom</a></td>
+        <td><p>Returns the starting element for columnar display of tags. See
+<a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/allTags.js#L188' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">allTagsStartFrom</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - filter in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Returns the starting element for columnar display of tags. See
+<a href="api/app/dialog/allTagsDialog"><code>allTagsDialog</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Usage</h2>
+  <h3>In HTML Template Binding</h3>
+  
+    <pre><code>{{ allTagsStartFrom_expression | allTagsStartFrom : startIndex : colOffset}}</code></pre>
+  
+
+  <h3>In JavaScript</h3>
+  <pre><code>$filter(&#39;allTagsStartFrom&#39;)(tags, startIndex, colOffset)</code></pre>
+
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        tags
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;object&gt;</a>
+      </td>
+      <td>
+        <p>set of tags</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        startIndex
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>starting index based on current page</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        colOffset
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-integer">integer</a>
+      </td>
+      <td>
+        <p>offset based on the column index</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+  <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>The starting tag for the column</p>
+</td>
+  </tr>
+</table>
+
+
+  
+</div>
+
+
+
+
+
+<h1>Provider components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/provider/appRoutingProvider">appRoutingProvider</a></td>
+        <td><p>Manages routing for the application. Uses
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/services/appRouting.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">appRoutingProvider</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - provider in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Manages routing for the application. Uses
+<a href="https://github.com/angular-ui/ui-router"
+target="_blank">ui-router</a>.</p>
+<p>More TODO</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/app/constant/statesHierarchy"><code>statesHierarchy</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Service components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/service/appRouting">appRouting</a></td>
+        <td><p>TBD -- like now -- or now -- it&#39;;s really time to do this.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/services/appRouting.js#L77' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">appRouting</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD -- like now -- or now -- it&#39;;s really time to do this.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/contributor.js#L43' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">contributorDialog</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The
+contributor dialog displays information about a contributor.</p>
+<p>This is the service that configures the dialog and the
+<a href="api/app/controller/contributorDialogCtlr"><code>contributorDialogCtlr</code></a>, and launches the dialog.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>contributorDialog(contributorId);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        contributorId
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The id of the contributor whose information
+should
+be displayed</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/dialogs/login.js#L77' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">loginDialog</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>User interface for logging into the Samplestack application.</p>
+<p>This is the service that cobfigures the dialog and
+the <a href="api/app/controller/loginDialogCtlr"><code>loginDialogCtlr</code></a>, and launches the dialog.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>loginDialog();</code></p>
+
+
+    
+
+    
+    
+    
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssQnaDoc.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssQnaDoc</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssSearch.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSearch</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li><li><a href="api/_marklogic/domain/mlSearch"><code>mlSearch</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssSession.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssSession</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li><li><a href="api/_marklogic/domain/mlSession"><code>mlSession</code></a></li><li><a href="api/app/domain/ssContributor"><code>ssContributor</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssVote.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ssVote</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>This component is not yet (properly) implemented.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/_marklogic/service/mlModelBase"><code>mlModelBase</code></a></li><li><a href="api/_marklogic/service/mlSchema"><code>mlSchema</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>State components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/_layout">_layout</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/explore">explore</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/state/exploreResults">exploreResults</a></td>
+        <td><p>TBD</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/states/_layout.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">_layout</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - state in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/app/service/appRouting"><code>appRouting</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/states/explore.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">explore</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - state in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/states/exploreResults.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">exploreResults</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - state in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>TBD</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+<h1>Type components in <code>app</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsContributorObject">SsContributorObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssContributor"><code>ssContributor</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsQnaDocObject">SsQnaDocObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssQnaDoc"><code>ssQnaDoc</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/app/type/SsSearchObject">SsSearchObject</a></td>
+        <td><p>The model instance prototype for
+<a href="api/app/domain/ssSearch"><code>ssSearch</code></a>, derived from <a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssContributor.js#L26' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">SsContributorObject</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The model instance prototype for
+<a href="api/app/domain/ssContributor"><code>ssContributor</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:constructor">
+    <h3><p><code>method:constructor(spec);</code></p>
+
+</h3>
+    <div><p>Constructor. Uses default implementation.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data used to populate
+the new instance.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.preconstruct">
+    <h3><p><code>method:prototype.preconstruct(spec);</code></p>
+
+</h3>
+    <div><p>Override. Parses the <code>votes</code> property, if present,
+any, provided to the constructor and replaces the
+property value with the result.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Instance spec from constructor.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.onHttpResponseGET">
+    <h3><p><code>method:prototype.onHttpResponseGET(data);</code></p>
+
+</h3>
+    <div><p>Override. Parses the <code>votes</code> property, if present,
+any, provided to the constructor and replaces the
+property value with the result.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data from the call to the server.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.hasVotesOnQuestion">
+    <h3><p><code>method:prototype.hasVotesOnQuestion(qnaDoc);</code></p>
+
+</h3>
+    <div><p>Override. Whether or not the contributor has
+voted on the given question.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        qnaDoc
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The <a href="api/app/type/SsQnaDocObject"><code>SsQnaDocObject</code></a> instance about
+which to
+determine voting.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.hasVotedOnAnswer">
+    <h3><p><code>method:prototype.hasVotedOnAnswer(qnaDoc, answer);</code></p>
+
+</h3>
+    <div><p>Override. Whether or not the contributor has
+voted on the given answer.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        qnaDoc
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The <a href="api/app/type/SsQnaDocObject"><code>SsQnaDocObject</code></a> instance about
+which to
+determine voting.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        answer
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>The <a href="api/app/type/SsQnaDocObject"><code>SsQnaDocObject</code></a> <code>answer</code> about
+which to
+determine voting.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.getResourceId">
+    <h3><p><code>method:prototype.getResourceId();</code></p>
+
+</h3>
+    <div><p>Overrides the resource id.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>&#39;contributors&#39;</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:constructor">
+    <h3><p><code>method:constructor(spec);</code></p>
+
+</h3>
+    <div><p>Constructor. Creates the basic structure of a search,
+including the definitions for search criteria and facets, and
+sets the pageLength for search results.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data used to populate
+the new instance.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssQnaDoc.js#L19' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">SsQnaDocObject</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The model instance prototype for
+<a href="api/app/domain/ssQnaDoc"><code>ssQnaDoc</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:constructor">
+    <h3><p><code>method:constructor(spec);</code></p>
+
+</h3>
+    <div><p>Constructor. Uses default implementation.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        spec
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data used to populate
+the new instance.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.getResourceId">
+    <h3><p><code>method:prototype.getResourceId();</code></p>
+
+</h3>
+    <div><p>Overrides the resource id.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>&#39;questions&#39;</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.onResponseGET">
+    <h3><p><code>method:prototype.onResponseGET(data);</code></p>
+
+</h3>
+    <div><p>Override. Processes the data to standardize and
+adapt the schema for the browser.</p>
+<p style="color: red">
+TODO This method will be revisited as the REST API
+schema is standardized and as proper seed data becomes
+available. It is likely that the method will not be required at
+that time. It is primarily patching for holes in seed data and
+inconsistencies in the domain schema which are being addressed.
+</p></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data from the server.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.isLocalOwner">
+    <h3><p><code>method:prototype.isLocalOwner(obj);</code></p>
+
+</h3>
+    <div><p>Whether or not a content object is owned by a local or
+StackOverflow user.</p>
+<p style="color: red">
+TODO this method uses an ugly hack and will be rewritten once
+better data are availale from the server.
+</p></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A question, answer or comment object (i.e.
+something that has an <code>owner</code> property.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p><code>true</code> if the owner is &quot;locally created&quot;,
+<code>false</code> if the owner is from Stack Overflow.
+if the data Data from the server.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.soOwnerId">
+    <h3><p><code>method:prototype.soOwnerId(obj);</code></p>
+
+</h3>
+    <div><p>If a StackOverflow user owns the content object, the id
+of that SO user.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A question, answer or comment object (i.e.
+something that has an <code>owner</code> property.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">String</a><a href="" class="label type-hint type-hint-null">null</a></td>
+    <td><p>If a local owner, null, otherwise the
+StackOverflow
+user id of the owner.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.soUserName">
+    <h3><p><code>method:prototype.soUserName(obj);</code></p>
+
+</h3>
+    <div><p>If a StackOverflow user owns the content object, the
+display name
+of that SO user.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A question, answer or comment object (i.e.
+something that has an <code>owner</code> property.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">String</a><a href="" class="label type-hint type-hint-null">null</a></td>
+    <td><p>If a local owner, null, otherwise the
+StackOverflow
+user&#39;s display name.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.soUserLink">
+    <h3><p><code>method:prototype.soUserLink(obj);</code></p>
+
+</h3>
+    <div><p>If a StackOverflow user owns the content object, the
+a URL to the user profile.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A question, answer or comment object (i.e.
+something that has an <code>owner</code> property.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">String</a><a href="" class="label type-hint type-hint-null">null</a></td>
+    <td><p>If a local owner, null, otherwise a URL
+to the StackOverflow user profile.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="method:prototype.noValidUser">
+    <h3><p><code>method:prototype.noValidUser(obj);</code></p>
+
+</h3>
+    <div><p><p style="color: red">
+TODO: this method can go away with better data.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        obj
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>A question, answer or comment object (i.e.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="method:prototype.formatDate">
+    <h3><p><code>method:prototype.formatDate(str);</code></p>
+
+</h3>
+    <div><p>Reformats a date for display.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        str
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>A date string to parse and reformat.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
+
+
+
+
+<a href='https://github.com/stu-salsbury/marklogic-samplestack/tree/SPEC/browser/src/app/domain/ssSearch.js#L28' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">SsSearchObject</h1>
+  <ul class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/app">app</a>
+    </li>
+  </ul>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The model instance prototype for
+<a href="api/app/domain/ssSearch"><code>ssSearch</code></a>, derived from <a href="api/_marklogic/type/MlSearchObject"><code>MlSearchObject</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="method:prototype.onHttpResponsePOST">
+    <h3><p><code>method:prototype.onHttpResponsePOST(data);</code></p>
+
+</h3>
+    <div><p>Override. Simplifies and
+adapts the search results for the browser.</p>
+<p>Renames facet reusults for clarity.</p>
+<p>Tweaks answer objects for consistency.</p>
+<p>Calculated docScore.</p>
+<p style="color: red">
+This method can be simplified when seed data are improved.
+</p></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Data from the call to the server.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

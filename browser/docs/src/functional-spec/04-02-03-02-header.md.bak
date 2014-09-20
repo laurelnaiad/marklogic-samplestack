@@ -1,0 +1,7 @@
+#### Features Exposed By the Application Header
+
+{include=../../../../specs/features/end-to-end/header/go-home.md}
+
+{include=../../../../specs/features/end-to-end/header/login.md}
+
+{include=../../../../specs/features/end-to-end/header/view-logged-in-account.md}
