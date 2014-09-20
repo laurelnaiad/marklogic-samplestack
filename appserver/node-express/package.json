@@ -1,14 +1,10 @@
 {
-  "name": "samplestack-node-express",
+  "name": "marklogic-samplestack-node-express",
   "version": "1.0.0",
-  "description": "stuff",
-  "main": "testy.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
-  },
+  "description": "An Node.js/Express REST server to demonstrate basic 3-tiered MarkLogic-based development following the MarkLogic Reference Architecture",
+  "main": "server.js",
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "body-parser": "^1.6.5",
     "express": "^4.8.5",
