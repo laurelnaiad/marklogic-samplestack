@@ -1,9 +1,11 @@
 define([
   './ssSearch.unit',
-  './ssSession.unit'
+  './ssSession.unit',
+  './ssQnaDoc.unit'
 ], function (
   ssSearch,
-  ssSession
+  ssSession,
+  ssQnaDoc
 ) {
 
   return function () {
@@ -11,6 +13,7 @@ define([
     describe('domain', function () {
       ssSearch();
       ssSession();
+      ssQnaDoc();
     });
 
   };
