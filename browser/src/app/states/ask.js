@@ -2,13 +2,17 @@ define(['app/module'], function (module) {
 
   module.controller('askCtlr', [
 
-    '$scope', 'appRouting',
-    function ($scope, appRouting) {
+    '$scope', 'appRouting', 'ssQnaDoc',
+    function ($scope, appRouting, ssQnaDoc) {
 
       $scope.setPageTitle('ask');
 
-      $scope.post = function () {
-        appRouting.go('qnaDoc');
+      ssQnaDoc.create().attachScope($scope, 'qnaDoc');
+
+      $scope.save = function () {
+        $scope.qnaDoc.post().$ml.waiting.then(function () {
+          appRouting.go('^.qnaDoc', {id: $scope.qnaDoc.id});
+        });
       };
 
     }
