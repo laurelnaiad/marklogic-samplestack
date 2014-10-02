@@ -43,6 +43,9 @@ define(['app/module'], function (module) {
           required: ['id'],
           properties: {
             id: { type: 'string', minLength: 36, maxLength: 36 },
+            title: { type: 'string' },
+            text: { type: 'string' }
+            // build this out, add question text
           }
         })
       };
