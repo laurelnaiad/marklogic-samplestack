@@ -10,12 +10,21 @@ define(['app/module'], function (module) {
       ssQnaDoc.create().attachScope($scope, 'qnaDoc');
 
       $scope.save = function () {
-        // How does the following method work? Pass itself as arg?
-        // Shouldn't it know to test its current state?
-        window.console.log($scope.qnaDoc.validateObject());
-        $scope.qnaDoc.post().$ml.waiting.then(function () {
-          appRouting.go('^.qnaDoc', {id: $scope.qnaDoc.id});
-        });
+        if ($scope.qnaDoc.$ml.valid) {
+          $scope.qnaDoc.post().$ml.waiting.then(function () {
+            appRouting.go('^.qnaDoc', {id: $scope.qnaDoc.id});
+          },
+          function (error) {
+            if (error.status === 401) {
+              $scope.setLocalError(
+                'User does not have permission to ask questions'
+              );
+            }
+            else {
+              throw new Error('Error occurred: ' + JSON.stringify(error));
+            }
+          });
+        }
       };
 
     }

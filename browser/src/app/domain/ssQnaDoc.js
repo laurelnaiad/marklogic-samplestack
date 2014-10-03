@@ -40,12 +40,12 @@ define(['app/module'], function (module) {
       SsQnaDocObject.prototype.$mlSpec = {
         schema: mlSchema.addSchema({
           id: 'http://marklogic.com/samplestack#qnaDoc',
-          required: ['id'],
+          required: ['title'],
           properties: {
             id: { type: 'string', minLength: 36, maxLength: 36 },
-            title: { type: 'string' },
+            title: { type: 'string', minLength: 1 },
             text: { type: 'string' }
-            // build this out, add question text
+            // build this out
           }
         })
       };
