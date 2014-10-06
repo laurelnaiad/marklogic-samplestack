@@ -32,7 +32,7 @@ define([
                 '<tab-heading>' +
                   'edit' +
                 '</tab-heading>' +
-                '<wiz-markdown-editor content="content">' +
+                '<wiz-markdown-editor content="content.text">' +
                     generateWizToolbarBtnHTML('bold') +
                     generateWizToolbarBtnHTML('italic') +
                     generateWizToolbarBtnHTML('heading') +
@@ -53,7 +53,7 @@ define([
                   'preview' +
                 '</tab-heading>' +
                 '<div class="ss-markdown-editor-preview" ' +
-                    'ss-markdown="content"></div>' +
+                    'ss-markdown="content.text"></div>' +
               '</tab>' +
             '</tabset>' +
           '</div>',
