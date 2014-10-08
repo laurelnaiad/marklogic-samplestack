@@ -13,11 +13,10 @@ define(['app/module'], function (module) {
 
       $scope.save = function () {
 
-        // convert tags-input data from object to array of values
-        $scope.qnaDoc.tags = Object.keys($scope.tagsInput)
-          .map(function (key) {
-            return $scope.tagsInput[key].text;
-          });
+        // convert tags-input data from array of objects to array of strings
+        $scope.qnaDoc.tags = $scope.tagsInput.map(function (obj) {
+          return obj.text;
+        });
 
         if ($scope.qnaDoc.$ml.valid) {
           $scope.qnaDoc.post().$ml.waiting.then(function () {
