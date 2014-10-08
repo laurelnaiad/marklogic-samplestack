@@ -9,7 +9,16 @@ define(['app/module'], function (module) {
 
       ssQnaDoc.create().attachScope($scope, 'qnaDoc');
 
+      $scope.tagsInput; // store tags-input data
+
       $scope.save = function () {
+
+        // convert tags-input data from object to array of values
+        $scope.qnaDoc.tags = Object.keys($scope.tagsInput)
+          .map(function (key) {
+            return $scope.tagsInput[key].text;
+          });
+
         if ($scope.qnaDoc.$ml.valid) {
           $scope.qnaDoc.post().$ml.waiting.then(function () {
             appRouting.go('^.qnaDoc', {id: $scope.qnaDoc.id});
@@ -25,6 +34,7 @@ define(['app/module'], function (module) {
             }
           });
         }
+
       };
 
     }

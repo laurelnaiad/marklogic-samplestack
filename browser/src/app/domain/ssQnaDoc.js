@@ -44,7 +44,11 @@ define(['app/module'], function (module) {
           properties: {
             id: { type: 'string', minLength: 36, maxLength: 36 },
             title: { type: 'string', minLength: 1 },
-            text: { type: 'string' }
+            text: { type: 'string' },
+            tags: {
+              type: 'array',
+              items: { type: 'string' }
+            }
             // build this out
           }
         })

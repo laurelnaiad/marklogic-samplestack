@@ -21,7 +21,8 @@ require.config({
     'highcharts-ng': 'deps/highcharts-ng/dist/highcharts-ng<%=min%>',
     'highlightjs': 'deps/highlightjs/highlight.pack<%=min%>',
     'json': 'deps/requirejs-plugins/src/json',
-    'text': 'deps/requirejs-plugins/lib/text'
+    'text': 'deps/requirejs-plugins/lib/text',
+    'ng-tags-input': 'deps/ng-tags-input/ng-tags-input.min'
   },
 
   shim: {
@@ -35,7 +36,8 @@ require.config({
     'angular-sanitize': { deps: ['angular'] },
     'ng-markdown': { deps: ['angular', 'angular-sanitize'] },
     'angular-marked': { deps: ['angular'] },
-    'highlightjs': { exports: 'hljs' }
+    'highlightjs': { exports: 'hljs' },
+    'ng-tags-input': { deps: ['angular'] }
   }
 });
 
@@ -56,6 +58,7 @@ define(
     'angular-marked',
     'angular-sanitize',
     'ng-markdown',
+    'ng-tags-input',
 
     '_marklogic/marklogic'
   ],
@@ -81,6 +84,7 @@ define(
       'hc.marked',
       'ngSanitize',
       'wiz.markdown',
+      'ngTagsInput',
 
       '_marklogic'
     ];

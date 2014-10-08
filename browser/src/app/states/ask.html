@@ -16,10 +16,9 @@ into sass without losing styles -->
       <input type="text" ng-model="qnaDoc.title" class="form-control" />
     </div>
     <div ss-markdown-editor content="qnaDoc.text"></div>
-    <!-- todo https://github.com/TimSchlechter/bootstrap-tagsinput -->
-    <div class="ss-ask-tags ss-ui-incomplete">
+    <div class="ss-ask-tags">
       <label>Tags</label>
-      <input disabled type="text" data-role="tagsinput" class="form-control" />
+      <tags-input ng-model="tagsInput"></tags-input>
     </div>
     <button
       ng-disabled="qnaDoc.$ml.invalid"
