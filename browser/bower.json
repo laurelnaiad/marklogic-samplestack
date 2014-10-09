@@ -82,6 +82,14 @@
         "highlight.pack.js",
         "styles/github.css"
       ]
+    },
+    "ng-tags-input": {
+      "main": [
+        "ng-tags-input.js",
+        "ng-tags-input.css",
+        "ng-tags-input.min.js",
+        "ng-tags-input.min.css"
+      ]
     }
   },
   "resolutions": {
