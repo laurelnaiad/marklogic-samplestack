@@ -1,7 +1,12 @@
 define(['_marklogic/module'], function (module) {
 
 
-
+  /*
+   * A factory on which to base other factories which are each customized
+   * to provide services associated with a given domain model object.
+   *
+   * Usage: inject into another factory in order to do the derivation
+   */
   module.factory('mlModelFactory', [
 
     'mlModelSpec',
@@ -23,7 +28,7 @@ define(['_marklogic/module'], function (module) {
       };
 
       MlModelFactory.prototype.extend = function (newSpec) {
-        // start with constructor, either theirs or ours
+        // start with constructor, either the new one or ours
         var MySpec = newSpec.factory || this.Spec;
         // inherit prototype from *our* prototype
         MySpec.prototype = Object.create(this.Spec.prototype, {
