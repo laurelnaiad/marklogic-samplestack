@@ -114,18 +114,18 @@ define(['_marklogic/module'], function (module) {
        * this.postconstruct(spec);
        * ```
        */
-      var MlModel = function (spec) {
-        this.preconstruct(spec);
+      var MlModel = function (spec, parent) {
+        this.preconstruct(spec, parent);
         Object.defineProperty(this, '$ml', {
-          value: {}
+          value: { parent: parent }
         });
-        this.assignData(spec || {});
-        this.postconstruct(spec);
+        this.assignData(spec || {}, parent);
+        this.postconstruct(spec, parent);
       };
 
-      MlModel.prototype.preconstruct = function (spec) {
+      MlModel.prototype.preconstruct = function (spec, parent) {
       };
-      MlModel.prototype.postconstruct = function (spec) {
+      MlModel.prototype.postconstruct = function (spec, parent) {
       };
 
       MlModel.prototype.attachScope = function (scope, as) {
@@ -433,8 +433,8 @@ define(['_marklogic/module'], function (module) {
          *
          * The default implementation calls the `object` constructor.
          */
-        svcImplementation.create = function (spec) {
-          return new svcImplementation[name](spec);
+        svcImplementation.create = function (spec, parent) {
+          return new svcImplementation[name](spec, parent);
         };
 
         var ensureInstance = function (spec) {

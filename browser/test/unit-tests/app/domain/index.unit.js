@@ -1,11 +1,13 @@
 define([
   './ssSearch.unit',
   './ssSession.unit',
-  './ssQnaDoc.unit'
+  './ssQnaDoc.unit',
+  './ssAnswer.unit'
 ], function (
   ssSearch,
   ssSession,
-  ssQnaDoc
+  ssQnaDoc,
+  ssAnswer
 ) {
 
   return function () {
@@ -14,6 +16,7 @@ define([
       ssSearch();
       ssSession();
       ssQnaDoc();
+      ssAnswer();
     });
 
   };

@@ -23,7 +23,7 @@
         "id": "sou2377920",
         "userName": "souser2377920@email.com"
       },
-      "text": "I believe JSON.stringify is unnecisary, assuming you passed post parameters `simpleSentance= 'I dont want anything <b>but</b> this'`\n\n\tvar newBody = req.body.simpleSentance\n\t"
+      "text": "This is \n\n\tsome answer text."
     }
   ],
   "comments": [
@@ -57,7 +57,7 @@
     "displayName": "Squirrl",
     "id": "sou1179593",
     "userName": "souser1179593@email.com"
-},
+  },
   "tags": [
     "javascript",
     "json",

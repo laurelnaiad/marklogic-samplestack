@@ -12,9 +12,9 @@ define(['app/module'], function (module) {
 
   module.factory('ssQnaDoc', [
 
-    '$q', 'mlModelBase', 'mlSchema', 'mlUtil',
+    '$q', 'mlModelBase', 'mlSchema', 'mlUtil', 'ssAnswer',
     function (
-      $q, mlModelBase, mlSchema, mlUtil
+      $q, mlModelBase, mlSchema, mlUtil, ssAnswer
     ) {
       /**
        * @ngdoc type
@@ -36,6 +36,17 @@ define(['app/module'], function (module) {
       SsQnaDocObject.prototype = Object.create(
         mlModelBase.object.prototype
       );
+
+
+      SsQnaDocObject.prototype.preconstruct = function (spec, parent) {
+        // data structure for storing sub-documents
+        Object.defineProperty(this, 'docs', {
+          value: {
+            answers: [],
+            comments: []
+          }
+        });
+      };
 
       SsQnaDocObject.prototype.$mlSpec = {
         schema: mlSchema.addSchema({
@@ -94,6 +105,10 @@ define(['app/module'], function (module) {
             comment.owner = comment.commenter;
             delete comment.commenter;
           });
+
+          // instantiate answers as ssAnswer objects
+          self.docs.answers.push(ssAnswer.create({ text: answer.text }));
+
         });
 
         this.docScore = docScore;
