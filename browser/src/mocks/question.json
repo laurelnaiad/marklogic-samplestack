@@ -35,17 +35,7 @@
         "id": "sou2864740",
         "userName": "souser2864740@email.com"
       },
-      "text": "It sounds like you're JSON'ifying JSON .. long and short of it is: don't."
-    },
-    {
-      "creationDate": "2013-12-06T07:37:39.067",
-      "id": "soc30495898",
-      "owner": {
-        "displayName": "Squirrl",
-        "id": "sou1179593",
-        "userName": "souser1179593@email.com"
-      },
-      "text": "Thanks, but than I get some craz%in%ess ;)"
+      "text": "This is \n\n\tsome comment text."
     }
   ],
   "creationDate": "2013-12-06T07:30:24.907",

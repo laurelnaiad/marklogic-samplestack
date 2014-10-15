@@ -12,9 +12,9 @@ define(['app/module'], function (module) {
 
   module.factory('ssQnaDoc', [
 
-    '$q', 'mlModelBase', 'mlSchema', 'mlUtil', 'ssAnswer',
+    '$q', 'mlModelBase', 'mlSchema', 'mlUtil', 'ssAnswer', 'ssComment',
     function (
-      $q, mlModelBase, mlSchema, mlUtil, ssAnswer
+      $q, mlModelBase, mlSchema, mlUtil, ssAnswer, ssComment
     ) {
       /**
        * @ngdoc type
@@ -120,6 +120,13 @@ define(['app/module'], function (module) {
           )[0];
           this.answers.unshift(acceptedAnswer);
         }
+
+        angular.forEach(this.comments, function (comment, index) {
+
+          // instantiate comments as ssComment objects
+          self.docs.comments.push(ssComment.create({ text: comment.text }));
+
+        });
       };
 
       /**
