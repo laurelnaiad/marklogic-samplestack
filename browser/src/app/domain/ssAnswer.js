@@ -73,6 +73,11 @@ define(['app/module'], function (module) {
         }
       };
 
+      // Endpoint returns entire QnaDoc content, call parent method
+      SsAnswerObject.prototype.onResponsePOST = function (data) {
+        this.$ml.parent.onResponsePOST(data);
+      };
+
       return mlModelBase.extend('SsAnswerObject', SsAnswerObject);
     }
   ]);
