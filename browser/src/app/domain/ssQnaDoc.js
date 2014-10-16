@@ -65,6 +65,21 @@ define(['app/module'], function (module) {
         })
       };
 
+      SsQnaDocObject.prototype.mergeData = function (data) {
+        // Replace answers with ssAnswer objects
+        angular.forEach(data.answers, function (answer, index) {
+          var answerObj = ssAnswer.create(answer);
+          data.answers[index] = answerObj;
+        });
+        // Replace comments with ssComment objects
+        angular.forEach(data.comments, function (comment, index) {
+          var commentObj = ssComment.create(comment);
+          data.comments[index] = commentObj;
+        });
+        mlUtil.merge(this, data);
+        this.testValidity();
+      };
+
       /**
        * @ngdoc method
        * @name SsQnaDocObject#prototype.getResourceId

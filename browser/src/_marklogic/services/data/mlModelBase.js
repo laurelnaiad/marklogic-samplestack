@@ -180,7 +180,7 @@ define(['_marklogic/module'], function (module) {
         angular.forEach(this, function (val, key) {
           delete this[key];
         });
-        mlUtil.merge(this, data);
+        this.mergeData(data);
         this.testValidity();
       };
 
