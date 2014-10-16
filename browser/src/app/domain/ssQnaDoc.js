@@ -37,17 +37,6 @@ define(['app/module'], function (module) {
         mlModelBase.object.prototype
       );
 
-
-      SsQnaDocObject.prototype.preconstruct = function (spec, parent) {
-        // data structure for storing sub-documents
-        Object.defineProperty(this, 'docs', {
-          value: {
-            answers: [],
-            comments: []
-          }
-        });
-      };
-
       SsQnaDocObject.prototype.$mlSpec = {
         schema: mlSchema.addSchema({
           id: 'http://marklogic.com/samplestack#qnaDoc',
@@ -120,10 +109,6 @@ define(['app/module'], function (module) {
             comment.owner = comment.commenter;
             delete comment.commenter;
           });
-
-          // instantiate answers as ssAnswer objects
-          self.docs.answers.push(ssAnswer.create({ text: answer.text }));
-
         });
 
         this.docScore = docScore;
@@ -136,12 +121,6 @@ define(['app/module'], function (module) {
           this.answers.unshift(acceptedAnswer);
         }
 
-        angular.forEach(this.comments, function (comment, index) {
-
-          // instantiate comments as ssComment objects
-          self.docs.comments.push(ssComment.create({ text: comment.text }));
-
-        });
       };
 
       /**
