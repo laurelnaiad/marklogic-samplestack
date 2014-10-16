@@ -27,23 +27,17 @@ define([
         text: 'This is \n\n\tsome answer text.'
       };
 
-// Tests:
-// don't allow answers with parents that are not qnaDocs
-// check the results of an answer post
-//
-
-      xit(
+      it(
         'ssAnswer parent param should be an ssQnaDoc object',
         function () {
           var qnaDoc = ssQnaDoc.create(validQnaDoc);
           var answer = ssAnswer.create(validAnswer, qnaDoc);
-          // Best way to check for the ssQnaDoc object type?
-          // expect(answer.$ml.parent).to.???;
+          expect(answer.$ml.parent instanceof ssQnaDoc.object).to.be.true;
         }
       );
 
       it(
-        'on POST, ssAnswer should have answer text and ID',
+        'on POST, answer (in parent qnaDoc) should have text and ID',
         function (done) {
           var url = '/v1/questions/' + validQnaDoc.id + '/answers';
           $httpBackend.expectPOST(url).respond(200, mocks.question);
@@ -51,9 +45,8 @@ define([
           var answer = ssAnswer.create(validAnswer, qnaDoc);
           answer.post().$ml.waiting.then(
             function (data) {
-              // PROBLEM: posting should update parent with response, how?
-              expect(answer.answers[0].text).to.equal(validAnswer.text);
-              expect(answer.answers[0].id).to.exist;
+              expect(qnaDoc.answers[0].text).to.equal(validAnswer.text);
+              expect(qnaDoc.answers[0].id).to.exist;
               done();
             }
           );

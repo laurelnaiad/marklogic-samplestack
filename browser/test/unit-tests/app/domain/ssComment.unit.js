@@ -27,23 +27,17 @@ define([
         text: 'This is \n\n\tsome comment text.'
       };
 
-// Tests:
-// don't allow answers with parents that are not qnaDocs
-// check the results of an answer post
-//
-
-      xit(
+      it(
         'ssComment parent param should be an ssQnaDoc object',
         function () {
           var qnaDoc = ssQnaDoc.create(validQnaDoc);
           var comment = ssComment.create(validComment, qnaDoc);
-          // Best way to check for the ssQnaDoc object type?
-          // expect(comment.$ml.parent).to.???;
+          expect(comment.$ml.parent instanceof ssQnaDoc.object).to.be.true;
         }
       );
 
       it(
-        'on POST, ssComment should have answer text and ID',
+        'on POST, comment (in parent qnaDoc) should have answer text and ID',
         function (done) {
           var url = '/v1/questions/' + validQnaDoc.id + '/comments';
           $httpBackend.expectPOST(url).respond(200, mocks.question);
@@ -51,9 +45,8 @@ define([
           var comment = ssComment.create(validComment, qnaDoc);
           comment.post().$ml.waiting.then(
             function (data) {
-              // PROBLEM: posting should update parent with response, how?
-              expect(comment.comments[0].text).to.equal(validComment.text);
-              expect(comment.comments[0].id).to.exist;
+              expect(qnaDoc.comments[0].text).to.equal(validComment.text);
+              expect(qnaDoc.comments[0].id).to.exist;
               done();
             }
           );
