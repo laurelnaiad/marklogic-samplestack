@@ -45,7 +45,17 @@
             <ss-qna-doc-metadata doc="comment" doc-type="comment"></ss-qna-doc-metadata>
           </div>
         </div>
-        <span class="ss-add-comment ss-ui-todo">add comment</div>
+        <div class="ss-add-comment">
+          <div ng-show="!addComment" ng-click="addComment=true">
+            add comment
+          </div>
+          <div ng-show="addComment">
+            <textarea ng-model="newComment.text"></textarea>
+            <button ng-click="saveComment()">
+              Add Comment
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -90,7 +100,7 @@
                 <ss-qna-doc-metadata doc="comment" doc-type="comment"></ss-qna-doc-metadata>
               </div>
             </div>
-            <span class="ss-add-comment ss-ui-todo">add comment</div>
+            <div class="ss-add-comment ss-ui-todo">add comment</div>
           </div>
         </div>
         <br/>
@@ -103,11 +113,8 @@
         <h3>Your Answer</h3>
       </header>
       <div ss-markdown-editor content="newAnswer.text"></div>
-      <button
-        ng-disabled="qnaDoc.$ml.invalid"
-        ng-click="saveAnswer()"
-      >
-        Post Your Answer
+      <button ng-click="saveAnswer()">
+        Add Comment
       </button>
     </section>
 
