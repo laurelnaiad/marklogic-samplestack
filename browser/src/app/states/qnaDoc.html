@@ -102,11 +102,13 @@
       <header>
         <h3>Your Answer</h3>
       </header>
-      <form>
-        <div class="ml-edit-tools">Editing Tools</div>
-        <textarea></textarea>
-        <button disabled class="ss-ui-incomplete">Post Your Answer</button>
-      </form>
+      <div ss-markdown-editor content="newAnswer.text"></div>
+      <button
+        ng-disabled="qnaDoc.$ml.invalid"
+        ng-click="saveAnswer()"
+      >
+        Post Your Answer
+      </button>
     </section>
 
   </section>
