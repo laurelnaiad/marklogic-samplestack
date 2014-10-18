@@ -40,6 +40,12 @@ define(['app/module'], function (module) {
               return !$scope.store.session.userInfo
                   .hasVotedOnAnswer($scope.doc, answer);
             };
+
+            // angular.forEach(doc.answers, function (answer, index) {
+            //   ssComment.create({}, doc).
+            //     attachScope($scope.doc.answers[index], 'newComment');
+            // });
+
           },
           function (error) {
             if (error.status === 401) {
