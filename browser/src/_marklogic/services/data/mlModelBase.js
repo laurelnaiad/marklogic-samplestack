@@ -189,19 +189,21 @@ define(['_marklogic/module'], function (module) {
         this.testValidity();
       };
 
-      MlModel.prototype.onHttpResponse = function (data, httpMethod) {
+      MlModel.prototype.onHttpResponse = function (
+        data, httpMethod, additionalPromises
+      ) {
         switch (httpMethod) {
           case 'PUT':
-            this.onResponsePUT(data);
+            this.onResponsePUT(data, additionalPromises);
             break;
           case 'DELETE':
-            this.onResponseDELETE(data);
+            this.onResponseDELETE(data, additionalPromises);
             break;
           case 'POST':
-            this.onResponsePOST(data);
+            this.onResponsePOST(data, additionalPromises);
             break;
           case 'GET':
-            this.onResponseGET(data);
+            this.onResponseGET(data, additionalPromises);
             break;
           default:
             throw new Error(
@@ -358,37 +360,46 @@ define(['_marklogic/module'], function (module) {
         throw new Error('not implemented');  // override this to use it
       };
 
-      var http = function (instance, httpMethod) {
-        var httpConfig = instance.getHttpConfig(httpMethod);
+      MlModel.prototype.http = function (httpMethod, promises) {
+        if (!promises) {
+          promises = [];
+        }
+
+        var httpConfig = this.getHttpConfig(httpMethod);
         httpConfig.timeout = 3000;
-        var waiter = mlWaiter.waitOn(instance);
+        var waiter = mlWaiter.waitOn(this);
         httpConfig.url = self.baseUrl + httpConfig.url;
-        $http(httpConfig).then(
-          function (response) {
-            instance.onHttpResponse(response.data, httpMethod);
+        promises.unshift($http(httpConfig));
+        $q.all(promises).then(
+          function (responses) {
+            this.onHttpResponse(
+              responses[0].data,
+              httpMethod,
+              responses.slice(1)
+            );
             waiter.resolve();
           },
           function (err) {
             waiter.reject(err);
           }
         );
-        return instance;
+        return this;
       };
 
       MlModel.prototype.post = function () {
-        return http(this, 'POST');
+        return this.http('POST');
       };
 
       MlModel.prototype.put = function () {
-        return http(this, 'PUT');
+        return this.http('PUT');
       };
 
       MlModel.prototype.getOne = function () {
-        return http(this, 'GET');
+        return this.http('GET');
       };
 
       MlModel.prototype.del = function () {
-        return http(this, 'DELETE');
+        return this.http('DELETE');
       };
 
       MlModel.prototype.getService = function () {
@@ -437,7 +448,7 @@ define(['_marklogic/module'], function (module) {
           return new svcImplementation[name](spec, parent);
         };
 
-        var ensureInstance = function (spec) {
+        svcImplementation.ensureInstance = function (spec) {
           if (typeof spec !== 'object') {
             spec = constructor.prototype.specFromArguments
                 .apply(null, arguments);
@@ -470,7 +481,7 @@ define(['_marklogic/module'], function (module) {
          * containing an `id` property, to specify what data to fetch.
          */
         svcImplementation.getOne = function (spec) {
-          return ensureInstance(spec).getOne();
+          return svcImplementation.ensureInstance(spec).getOne();
         };
 
         /**
@@ -498,7 +509,7 @@ define(['_marklogic/module'], function (module) {
          * used to create a new instance prior to posting.
          */
         svcImplementation.post = function (spec) {
-          return ensureInstance(spec).post();
+          return svcImplementation.ensureInstance(spec).post();
         };
 
         /**
@@ -527,7 +538,7 @@ define(['_marklogic/module'], function (module) {
          */
         svcImplementation.del = function (spec) {
           var deferred = $q.defer();
-          var instance = ensureInstance(spec);
+          var instance = svcImplementation.ensureInstance(spec);
           instance.del().$ml.waiting.then(
             deferred.resolve, deferred.reject
           );
