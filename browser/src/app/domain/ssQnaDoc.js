@@ -12,9 +12,15 @@ define(['app/module'], function (module) {
 
   module.factory('ssQnaDoc', [
 
-    '$q', 'mlModelBase', 'mlSchema', 'mlUtil', 'ssAnswer', 'ssComment',
+    '$q',
+    'mlModelBase',
+    'mlSchema',
+    'mlUtil',
+    'ssAnswer',
+    'ssComment',
+    'ssHasVoted',
     function (
-      $q, mlModelBase, mlSchema, mlUtil, ssAnswer, ssComment
+      $q, mlModelBase, mlSchema, mlUtil, ssAnswer, ssComment, ssHasVoted
     ) {
       /**
        * @ngdoc type
@@ -55,6 +61,11 @@ define(['app/module'], function (module) {
       };
 
       SsQnaDocObject.prototype.mergeData = function (data) {
+        if (data.hasVoted) {
+          this.$ml.hasVotedObject = data.hasVoted;
+          delete data.hasVoted;
+        }
+
         // Replace answers with ssAnswer objects
         angular.forEach(data.answers, function (answer, index) {
           var answerObj = ssAnswer.create(answer);
@@ -68,6 +79,22 @@ define(['app/module'], function (module) {
         mlUtil.merge(this, data);
         this.testValidity();
       };
+
+      // SsQnaDocObject.prototype.postconstruct = function (spec, parent) {
+      //   if (parent && parent.hasVotedOn(this.id)) {
+      //     this.$ml.hasVoted = true;
+      //   }
+      // };
+      //
+      SsQnaDocObject.prototype.hasVotedOn = function (id) {
+        return this.$ml.hasVotedObject.votes[id];
+      };
+
+      Object.defineProperty(SsQnaDocObject.prototype, 'hasVoted', {
+        get: function () {
+          return this.hasVotedOn(this.id);
+        }
+      });
 
       /**
        * @ngdoc method
@@ -94,8 +121,14 @@ define(['app/module'], function (module) {
        * inconsistencies in the domain schema which are being addressed.
        * </p>
        */
-      SsQnaDocObject.prototype.onResponseGET = function (data) {
+      SsQnaDocObject.prototype.onResponseGET = function (
+        data, additionalPromises
+      ) {
         var self = this;
+
+        if (additionalPromises && additionalPromises.length) {
+          this.hasVoted = additionalPromises[0];
+        }
 
         mlModelBase.object.prototype.onResponseGET.call(this, data);
         var docScore = this.itemTally || 0;
@@ -121,6 +154,18 @@ define(['app/module'], function (module) {
           this.answers.unshift(acceptedAnswer);
         }
 
+      };
+
+      SsQnaDocObject.prototype.getOne = function (contributorId) {
+        var additionalPromises = contributorId ?
+            [
+              ssHasVoted.getOne({
+                contributorId: contributorId,
+                questionId: this.id
+              })
+            ] :
+            [];
+        return this.http('GET', additionalPromises);
       };
 
       /**
@@ -228,7 +273,13 @@ define(['app/module'], function (module) {
         }
       };
 
-      return mlModelBase.extend('SsQnaDocObject', SsQnaDocObject);
+      var svc = mlModelBase.extend('SsQnaDocObject', SsQnaDocObject);
+
+      svc.getOne = function (spec, contributorId) {
+        return svc.ensureInstance(spec).getOne(contributorId);
+      };
+
+      return svc;
     }
   ]);
 });

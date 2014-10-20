@@ -20,7 +20,13 @@ define(['app/module'], function (module) {
       $scope.setLoading(true);
 
       var init = function () {
-        var doc = ssQnaDoc.getOne({ id: appRouting.params.id });
+        var doc = ssQnaDoc.getOne(
+          { id: appRouting.params.id },
+          // by passing a contributorId we instigate the getting
+          // and availability of hasVoted properties on the content
+          // objects
+          $scope.store.session ? $scope.store.session.id : null
+        );
         doc.$ml.waiting.then(
           function () {
             $scope.doc = doc;
@@ -29,16 +35,14 @@ define(['app/module'], function (module) {
               if (!$scope.store.session) {
                 return false;
               }
-              return !$scope.store.session.userInfo
-                  .hasVotedOnQuestion($scope.doc);
+              return $scope.doc.hasVoted !== true;
             };
 
             $scope.canVoteAnswer = function (answer) {
               if (!$scope.store.session) {
                 return false;
               }
-              return !$scope.store.session.userInfo
-                  .hasVotedOnAnswer($scope.doc, answer);
+              return answer.hasVoted !== true;
             };
 
             // angular.forEach(doc.answers, function (answer, index) {

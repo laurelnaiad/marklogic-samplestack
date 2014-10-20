@@ -37,6 +37,12 @@ define(['app/module'], function (module) {
         mlModelBase.object.prototype
       );
 
+      Object.defineProperty(SsAnswerObject.prototype, 'hasVoted', {
+        get: function () {
+          return this.parent.hasVotedOn(this.id);
+        }
+      });
+
       SsAnswerObject.prototype.$mlSpec = {
         schema: mlSchema.addSchema({
           id: 'http://marklogic.com/samplestack#answer',
