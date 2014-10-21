@@ -5,5 +5,6 @@ define([
   './ssSession',
   './ssVote',
   './ssAnswer',
-  './ssComment'
+  './ssComment',
+  './ssHasVoted'
 ], function () {});

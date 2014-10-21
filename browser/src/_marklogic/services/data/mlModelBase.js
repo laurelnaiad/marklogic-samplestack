@@ -94,8 +94,6 @@ define(['_marklogic/module'], function (module) {
     function (
       $http, $q, $parse, $injector, mlSchema, mlUtil, mlWaiter
     ) {
-      var self = this;
-      this.baseUrl = '/v1';
 
       /**
        * @ngdoc property
@@ -126,6 +124,10 @@ define(['_marklogic/module'], function (module) {
       MlModel.prototype.preconstruct = function (spec, parent) {
       };
       MlModel.prototype.postconstruct = function (spec, parent) {
+      };
+
+      MlModel.prototype.getBaseUrl = function () {
+        return '/v1'; // TODO should come from config setting
       };
 
       MlModel.prototype.attachScope = function (scope, as) {
@@ -361,18 +363,18 @@ define(['_marklogic/module'], function (module) {
       };
 
       MlModel.prototype.http = function (httpMethod, promises) {
+        var self = this;
         if (!promises) {
           promises = [];
         }
-
         var httpConfig = this.getHttpConfig(httpMethod);
         httpConfig.timeout = 3000;
         var waiter = mlWaiter.waitOn(this);
-        httpConfig.url = self.baseUrl + httpConfig.url;
+        httpConfig.url = this.getBaseUrl() + httpConfig.url;
         promises.unshift($http(httpConfig));
         $q.all(promises).then(
           function (responses) {
-            this.onHttpResponse(
+            self.onHttpResponse(
               responses[0].data,
               httpMethod,
               responses.slice(1)

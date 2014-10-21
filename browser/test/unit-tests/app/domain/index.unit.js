@@ -3,13 +3,15 @@ define([
   './ssSession.unit',
   './ssQnaDoc.unit',
   './ssAnswer.unit',
-  './ssComment.unit'
+  './ssComment.unit',
+  './ssHasVoted.unit'
 ], function (
   ssSearch,
   ssSession,
   ssQnaDoc,
   ssAnswer,
-  ssComment
+  ssComment,
+  ssHasVoted
 ) {
 
   return function () {
@@ -20,6 +22,7 @@ define([
       ssQnaDoc();
       ssAnswer();
       ssComment();
+      ssHasVoted();
     });
 
   };
