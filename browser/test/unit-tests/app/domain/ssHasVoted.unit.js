@@ -3,48 +3,39 @@ define([
 ], function (mocks) {
   return function () {
     describe('ssHasVoted', function () {
-      var ssQnaDoc;
+      var ssHasVoted;
       var $httpBackend;
 
       beforeEach(function (done) {
         angular.mock.module('app');
         inject(
-          function (_$httpBackend_, _ssQnaDoc_) {
-            ssQnaDoc = _ssQnaDoc_;
+          function (_$httpBackend_, _ssHasVoted_) {
+            ssHasVoted = _ssHasVoted_;
             $httpBackend = _$httpBackend_;
             done();
           }
         );
       });
 
-      var validHasVotes = angular.copy(mocks.hasVotes);
-      // remove any exsting answers because test will add one
-      delete validQnaDoc.answers;
-
-      var validAnswer = {
-        text: 'This is \n\n\tsome answer text.'
+      var validHasVotes = mocks.hasVotes;
+      var contributorId = '12345';
+      var questionId = '67890';
+      var spec = {
+        contributorId: contributorId,
+        questionId: questionId
       };
 
       it(
-        'ssAnswer parent param should be an ssQnaDoc object',
-        function () {
-          var qnaDoc = ssQnaDoc.create(validQnaDoc);
-          var answer = ssAnswer.create(validAnswer, qnaDoc);
-          expect(answer.$ml.parent instanceof ssQnaDoc.object).to.be.true;
-        }
-      );
-
-      it(
-        'on POST, answer (in parent qnaDoc) should have text and ID',
+        'on POST, ssHasVotes should have a voteIds object property',
         function (done) {
-          var url = '/v1/questions/' + validQnaDoc.id + '/answers';
-          $httpBackend.expectPOST(url).respond(200, mocks.question);
-          var qnaDoc = ssQnaDoc.create(validQnaDoc);
-          var answer = ssAnswer.create(validAnswer, qnaDoc);
-          answer.post().$ml.waiting.then(
+          var url = '/v1/hasVoted?' +
+                    'contributorId=' + contributorId +
+                    '&questionId=' + questionId;
+          $httpBackend.expectPOST(url).respond(200, validHasVotes);
+          var hasVoted = ssHasVoted.create(spec);
+          hasVoted.post().$ml.waiting.then(
             function (data) {
-              expect(qnaDoc.answers[0].text).to.equal(validAnswer.text);
-              expect(qnaDoc.answers[0].id).to.exist;
+              expect(hasVoted.voteIds).to.be.object;
               done();
             }
           );

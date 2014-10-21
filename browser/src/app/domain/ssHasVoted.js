@@ -62,9 +62,9 @@ define(['app/module'], function (module) {
           id: 'http://marklogic.com/samplestack#hasVoted',
           //required: ['text'],
           properties: {
-            voteIds: {
-              type: 'object'
-            }
+            contributorId: { type: 'string' },
+            questionId: { type: 'string' },
+            voteIds: { type: 'object' }
           }
         })
       };
@@ -77,7 +77,7 @@ define(['app/module'], function (module) {
         switch (httpMethod) {
           case 'POST':
             return '/' + this.getResourceName(httpMethod) +
-            'contributorId=' + this.contributorId +
+            '?contributorId=' + this.contributorId +
             '&questionId=' + this.questionId;
           default:
             throw new Error(
@@ -88,9 +88,11 @@ define(['app/module'], function (module) {
 
       // Endpoint returns entire QnaDoc content, call parent method
       SsHasVotedObject.prototype.onResponsePOST = function (data) {
+        var voteIds = {};
         angular.forEach(data, function (value, index) {
-          this.voteIds.value = true;
+          voteIds[value] = true;
         });
+        this.voteIds = voteIds;
       };
 
       return mlModelBase.extend('SsHasVotedObject', SsHasVotedObject);
