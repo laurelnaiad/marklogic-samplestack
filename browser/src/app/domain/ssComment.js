@@ -40,7 +40,7 @@ define(['app/module'], function (module) {
       SsCommentObject.prototype.$mlSpec = {
         schema: mlSchema.addSchema({
           id: 'http://marklogic.com/samplestack#comment',
-          required: ['text'],
+          //required: ['text'], // this is breaking validation on comment save
           properties: {
             id: {
               type: 'string',

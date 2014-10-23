@@ -12,9 +12,9 @@ define(['app/module'], function (module) {
 
   module.factory('ssAnswer', [
 
-    '$q', 'mlModelBase', 'mlSchema', 'mlUtil',
+    '$q', 'mlModelBase', 'mlSchema', 'mlUtil', 'ssComment',
     function (
-      $q, mlModelBase, mlSchema, mlUtil
+      $q, mlModelBase, mlSchema, mlUtil, ssComment
     ) {
       /**
        * @ngdoc type
@@ -37,16 +37,17 @@ define(['app/module'], function (module) {
         mlModelBase.object.prototype
       );
 
-      Object.defineProperty(SsAnswerObject.prototype, 'hasVoted', {
-        get: function () {
-          return this.parent.hasVotedOn(this.id);
-        }
-      });
+      // TODO when hasVoted endpoint is working
+      // Object.defineProperty(SsAnswerObject.prototype, 'hasVoted', {
+      //   get: function () {
+      //     return this.parent.hasVotedOn(this.id);
+      //   }
+      // });
 
       SsAnswerObject.prototype.$mlSpec = {
         schema: mlSchema.addSchema({
           id: 'http://marklogic.com/samplestack#answer',
-          required: ['text'],
+          //required: ['text'], // this is breaking validation on answer save
           properties: {
             id: {
               type: 'string',
@@ -56,6 +57,23 @@ define(['app/module'], function (module) {
             text: { type: 'string' }
           }
         })
+      };
+
+      SsAnswerObject.prototype.mergeData = function (data) {
+
+        // Replace comments with ssComment objects
+        angular.forEach(data.comments, function (comment, index) {
+          var commentObj = ssComment.create(comment);
+          data.comments[index] = commentObj;
+        });
+        // Add ssComment object for new comment
+        if (data.comments) {
+          var newCommentObj = ssComment.create({}, this);
+          data.comments[data.comments.length] = newCommentObj;
+        }
+
+        mlUtil.merge(this, data);
+        this.testValidity();
       };
 
       SsAnswerObject.prototype.preconstruct = function (spec, parent) {

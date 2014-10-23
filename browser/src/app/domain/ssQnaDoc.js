@@ -71,11 +71,21 @@ define(['app/module'], function (module) {
           var answerObj = ssAnswer.create(answer);
           data.answers[index] = answerObj;
         });
+        // Add ssAnswer object for new answer
+        data.answers = data.answers || [];
+        var newAnswerObj = ssAnswer.create({}, this);
+        data.answers[data.answers.length] = newAnswerObj;
+
         // Replace comments with ssComment objects
         angular.forEach(data.comments, function (comment, index) {
           var commentObj = ssComment.create(comment);
           data.comments[index] = commentObj;
         });
+        // Add ssComment object for new comment
+        data.comments = data.comments || [];
+        var newCommentObj = ssComment.create({}, this);
+        data.comments[data.comments.length] = newCommentObj;
+
         mlUtil.merge(this, data);
         this.testValidity();
       };
@@ -86,15 +96,18 @@ define(['app/module'], function (module) {
       //   }
       // };
       //
-      SsQnaDocObject.prototype.hasVotedOn = function (id) {
-        return this.$ml.hasVotedObject.votes[id];
-      };
 
-      Object.defineProperty(SsQnaDocObject.prototype, 'hasVoted', {
-        get: function () {
-          return this.hasVotedOn(this.id);
-        }
-      });
+      // TODO when hasVoted endpoint is working
+      // SsQnaDocObject.prototype.hasVotedOn = function (id) {
+      //   return this.$ml.hasVotedObject.votes[id];
+      // };
+
+      // TODO when hasVoted endpoint is working
+      // Object.defineProperty(SsQnaDocObject.prototype, 'hasVoted', {
+      //   get: function () {
+      //     return this.hasVotedOn(this.id);
+      //   }
+      // });
 
       /**
        * @ngdoc method

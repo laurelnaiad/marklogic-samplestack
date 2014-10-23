@@ -45,11 +45,6 @@ define(['app/module'], function (module) {
               return answer.hasVoted !== true;
             };
 
-            // angular.forEach(doc.answers, function (answer, index) {
-            //   ssComment.create({}, doc).
-            //     attachScope($scope.doc.answers[index], 'newComment');
-            // });
-
           },
           function (error) {
             if (error.status === 401) {
@@ -62,8 +57,6 @@ define(['app/module'], function (module) {
             }
           }
         );
-        ssAnswer.create({}, doc).attachScope($scope, 'newAnswer');
-        ssComment.create({}, doc).attachScope($scope, 'newComment');
         $scope.addComment = false;
       };
 
@@ -83,10 +76,12 @@ define(['app/module'], function (module) {
         appRouting.go('^.explore', { q: $scope.searchbarText });
       };
 
-      $scope.saveAnswer = function () {
-        if ($scope.newAnswer.$ml.valid) {
-          $scope.newAnswer.post().$ml.waiting.then(function () {
-            $scope.newAnswer.text = ''; // Clear answer form field
+      $scope.saveAnswer = function (answer) {
+        if (answer.$ml.valid) {
+          answer.post().$ml.waiting.then(function () {
+            // Create a new empty answer object for answer form
+            var newAnswerObj = ssAnswer.create({}, $scope.doc);
+            $scope.doc.answers[$scope.doc.answers.length] = newAnswerObj;
             appRouting.go('^.qnaDoc', {id: $scope.doc.id});
           },
           function (error) {
@@ -102,10 +97,12 @@ define(['app/module'], function (module) {
         }
       };
 
-      $scope.saveComment = function () {
-        if ($scope.newComment.$ml.valid) {
-          $scope.newComment.post().$ml.waiting.then(function () {
-            $scope.newComment.text = ''; // Clear comment form field
+      $scope.saveComment = function (comment) {
+        if (comment.$ml.valid) {
+          comment.post().$ml.waiting.then(function () {
+            // Create a new empty comment object for comment form
+            var newCommentObj = ssComment.create({}, $scope.doc);
+            $scope.doc.comments[$scope.doc.comments.length] = newCommentObj;
             $scope.addComment = false; // Show link and hide form
             appRouting.go('^.qnaDoc', {id: $scope.doc.id});
           },
