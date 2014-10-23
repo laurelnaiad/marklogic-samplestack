@@ -26,14 +26,14 @@ define([
       };
 
       it(
-        'on POST, ssHasVotes should have a voteIds object property',
+        'on GET, ssHasVotes should have a voteIds object property',
         function (done) {
           var url = '/v1/hasVoted?' +
                     'contributorId=' + contributorId +
                     '&questionId=' + questionId;
-          $httpBackend.expectPOST(url).respond(200, validHasVotes);
+          $httpBackend.expectGET(url).respond(200, validHasVotes);
           var hasVoted = ssHasVoted.create(spec);
-          hasVoted.post().$ml.waiting.then(
+          hasVoted.getOne().$ml.waiting.then(
             function (data) {
               expect(hasVoted.voteIds).to.be.object;
               done();

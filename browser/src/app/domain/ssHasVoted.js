@@ -75,7 +75,7 @@ define(['app/module'], function (module) {
 
       SsHasVotedObject.prototype.getHttpUrl = function (httpMethod) {
         switch (httpMethod) {
-          case 'POST':
+          case 'GET':
             return '/' + this.getResourceName(httpMethod) +
             '?contributorId=' + this.contributorId +
             '&questionId=' + this.questionId;
@@ -87,7 +87,7 @@ define(['app/module'], function (module) {
       };
 
       // Endpoint returns entire QnaDoc content, call parent method
-      SsHasVotedObject.prototype.onResponsePOST = function (data) {
+      SsHasVotedObject.prototype.onResponseGET = function (data) {
         var voteIds = {};
         angular.forEach(data, function (value, index) {
           voteIds[value] = true;
