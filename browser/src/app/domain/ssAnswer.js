@@ -63,17 +63,26 @@ define(['app/module'], function (module) {
 
         // Replace comments with ssComment objects
         angular.forEach(data.comments, function (comment, index) {
-          var commentObj = ssComment.create(comment);
-          data.comments[index] = commentObj;
+          data.comments[index] = ssComment.create(comment, this);
         });
-        // Add ssComment object for new comment
-        if (data.comments) {
-          var newCommentObj = ssComment.create({}, this);
-          data.comments[data.comments.length] = newCommentObj;
-        }
+        // Add empty ssComment object for posting new comment
+        data.comments = data.comments || [];
+        data.comments[data.comments.length] = ssComment.create({}, this);
 
         mlUtil.merge(this, data);
         this.testValidity();
+      };
+
+      /**
+       * @ngdoc method
+       * @name SsAnswerObject#prototype.addComment
+       * @description Adds new ssComment object to end of comments array
+       * @param {object} data Comment data.
+       * @param {object} parent Comment parent.
+       */
+      SsAnswerObject.prototype.addComment = function (data, parent) {
+        this.comments = this.comments || []; // Ensure an comments array exists
+        this.comments[this.comments.length] = ssComment.create(data, parent);
       };
 
       SsAnswerObject.prototype.preconstruct = function (spec, parent) {

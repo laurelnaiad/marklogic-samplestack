@@ -45,6 +45,12 @@ define(['app/module'], function (module) {
               return answer.hasVoted !== true;
             };
 
+            $scope.showQuestionComment = false;
+            $scope.showAnswerComment = [];
+            angular.forEach($scope.doc.answers, function (answer, index) {
+              $scope.showAnswerComment[index] = false;
+            });
+
           },
           function (error) {
             if (error.status === 401) {
@@ -57,13 +63,17 @@ define(['app/module'], function (module) {
             }
           }
         );
-        $scope.addComment = false;
+
       };
 
       $scope.answersCountLabel = function () {
-        var count = $scope.doc  && $scope.doc.answers ?
-            $scope.doc.answers.length :
-            0;
+        var count = 0;
+        if ($scope.doc  && $scope.doc.answers) {
+          for (var i = 0; i < $scope.doc.answers.length; i++) {
+            // don't count empty answer object used for new answer
+            count += ($scope.doc.answers[i].id) ? 1 : 0;
+          }
+        }
         var plural = count !== 1;
         return count + (plural ? ' Answers' : ' Answer');
       };
@@ -79,10 +89,8 @@ define(['app/module'], function (module) {
       $scope.saveAnswer = function (answer) {
         if (answer.$ml.valid) {
           answer.post().$ml.waiting.then(function () {
-            // Create a new empty answer object for answer form
-            var newAnswerObj = ssAnswer.create({}, $scope.doc);
-            $scope.doc.answers[$scope.doc.answers.length] = newAnswerObj;
-            appRouting.go('^.qnaDoc', {id: $scope.doc.id});
+            // Create new empty answer object for answer form
+            $scope.doc.addAnswer({}, $scope.doc);
           },
           function (error) {
             if (error.status === 401) {
@@ -97,14 +105,33 @@ define(['app/module'], function (module) {
         }
       };
 
-      $scope.saveComment = function (comment) {
+      $scope.saveQuestionComment = function (comment) {
         if (comment.$ml.valid) {
           comment.post().$ml.waiting.then(function () {
-            // Create a new empty comment object for comment form
-            var newCommentObj = ssComment.create({}, $scope.doc);
-            $scope.doc.comments[$scope.doc.comments.length] = newCommentObj;
-            $scope.addComment = false; // Show link and hide form
-            appRouting.go('^.qnaDoc', {id: $scope.doc.id});
+            $scope.doc.addComment({}, $scope.doc);
+            // Show link and hide form
+            $scope.showQuestionComment = false;
+          },
+          function (error) {
+            if (error.status === 401) {
+              $scope.setLocalError(
+                'User does not have permission to post comments'
+              );
+            }
+            else {
+              throw new Error('Error occurred: ' + JSON.stringify(error));
+            }
+          });
+        }
+      };
+
+      $scope.saveAnswerComment = function (comment) {
+        if (comment.$ml.valid) {
+          var formIndex = this.$parent.$index;
+          comment.post().$ml.waiting.then(function () {
+            comment.$ml.parent.addComment({}, comment.parent);
+            // Show link and hide form
+            $scope.showAnswerComment[formIndex] = false;
           },
           function (error) {
             if (error.status === 401) {

@@ -67,27 +67,48 @@ define(['app/module'], function (module) {
         }
 
         // Replace answers with ssAnswer objects
+        var self = this;
         angular.forEach(data.answers, function (answer, index) {
-          var answerObj = ssAnswer.create(answer);
-          data.answers[index] = answerObj;
+          data.answers[index] = ssAnswer.create(answer, self);
         });
-        // Add ssAnswer object for new answer
+        // Add empty ssAnswer object for posting new answer
         data.answers = data.answers || [];
-        var newAnswerObj = ssAnswer.create({}, this);
-        data.answers[data.answers.length] = newAnswerObj;
+        data.answers[data.answers.length] = ssAnswer.create({}, this);
 
         // Replace comments with ssComment objects
         angular.forEach(data.comments, function (comment, index) {
-          var commentObj = ssComment.create(comment);
-          data.comments[index] = commentObj;
+          data.comments[index] = ssComment.create(comment, self);
         });
-        // Add ssComment object for new comment
+        // Add empty ssComment object for posting new comment
         data.comments = data.comments || [];
-        var newCommentObj = ssComment.create({}, this);
-        data.comments[data.comments.length] = newCommentObj;
+        data.comments[data.comments.length] = ssComment.create({}, this);
 
         mlUtil.merge(this, data);
         this.testValidity();
+      };
+
+      /**
+       * @ngdoc method
+       * @name SsQnaDocObject#prototype.addAnswer
+       * @description Adds new ssAnswer object to end of answers array
+       * @param {object} data Answer data.
+       * @param {object} parent Answer parent.
+       */
+      SsQnaDocObject.prototype.addAnswer = function (data, parent) {
+        this.answers = this.answers || []; // Ensure an answers array exists
+        this.answers[this.answers.length] = ssAnswer.create(data, parent);
+      };
+
+      /**
+       * @ngdoc method
+       * @name SsQnaDocObject#prototype.addComment
+       * @description Adds new ssComment object to end of comments array
+       * @param {object} data Comment data.
+       * @param {object} parent Comment parent.
+       */
+      SsQnaDocObject.prototype.addComment = function (data, parent) {
+        this.comments = this.comments || []; // Ensure an comments array exists
+        this.comments[this.comments.length] = ssComment.create(data, parent);
       };
 
       // SsQnaDocObject.prototype.postconstruct = function (spec, parent) {

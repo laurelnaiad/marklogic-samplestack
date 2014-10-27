@@ -63,9 +63,19 @@ define(['app/module'], function (module) {
       SsCommentObject.prototype.getHttpUrl = function (httpMethod) {
         switch (httpMethod) {
           case 'POST':
-            return '/' + this.$ml.parent.getResourceName(httpMethod) +
-            this.$ml.parent.getEndpointIdentifier(httpMethod) +
-            '/' + this.getResourceName(httpMethod);
+            // By default, build question-comment url
+            var url =
+              '/' + this.$ml.parent.getResourceName(httpMethod) +
+              this.$ml.parent.getEndpointIdentifier(httpMethod) +
+              '/' + this.getResourceName(httpMethod);
+            // Modify url in case of answer comment
+            if (this.$ml.parent.$ml.parent) {
+              url =
+                '/' + this.$ml.parent.$ml.parent.getResourceName(httpMethod) +
+                this.$ml.parent.$ml.parent.getEndpointIdentifier(httpMethod) +
+                url;
+            }
+            return url;
           default:
             throw new Error(
               'unsupported http method passed to getEndpoint: ' + httpMethod
