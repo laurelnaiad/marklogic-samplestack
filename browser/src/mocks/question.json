@@ -12,7 +12,7 @@
             "id": "sou1179593",
             "userName": "souser1179593@email.com"
           },
-          "text": "I tried that but than I get [object Object]"
+          "text": "This is \n\n\tsome comment text in an answer."
         }
       ],
       "creationDate": "2013-12-06T07:34:15.797",
@@ -35,7 +35,7 @@
         "id": "sou2864740",
         "userName": "souser2864740@email.com"
       },
-      "text": "This is \n\n\tsome comment text."
+      "text": "This is \n\n\tsome comment text in a question."
     }
   ],
   "creationDate": "2013-12-06T07:30:24.907",
