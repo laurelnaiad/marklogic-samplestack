@@ -104,12 +104,12 @@ define(['_marklogic/module'], function (module) {
        * derivation is defined. The default implementation is:
        *
        * ```javascript
-       * this.preconstruct(spec);
+       * this.preconstruct(spec, parent);
        * Object.defineProperty(this, '$ml', {
-       *   value: {}
+       *   value: { parent: parent }
        * });
-       * this.assignData(spec || {});
-       * this.postconstruct(spec);
+       * this.assignData(spec || {}, parent);
+       * this.postconstruct(spec, parent);
        * ```
        */
       var MlModel = function (spec, parent) {
@@ -178,17 +178,31 @@ define(['_marklogic/module'], function (module) {
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.assignData
+       * @description Assigns properties to model object. First deletes any
+       * existing properties.
+       * @param {object} data Data to merge.
+       */
       MlModel.prototype.assignData = function (data) {
         angular.forEach(this, function (val, key) {
           delete this[key];
         });
         this.mergeData(data);
-        this.testValidity();
+        this.testValidity(); // Based on schema, sets $ml validity flags
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.mergeData
+       * @description Merges new data into model object properties. Any
+       * existing data is retained.
+       * @param {object} data Data to merge.
+       */
       MlModel.prototype.mergeData = function (data) {
         mlUtil.merge(this, data);
-        this.testValidity();
+        this.testValidity(); // Based on schema, sets $ml validity flags
       };
 
       MlModel.prototype.onHttpResponse = function (
@@ -227,6 +241,13 @@ define(['_marklogic/module'], function (module) {
         return '/' + this.id;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getHttpUrl
+       * @description Returns URL string for accessing REST endpoint based
+       * on HTTP method.
+       * @param {string} httpMethod HTTP method.
+       */
       MlModel.prototype.getHttpUrl = function (httpMethod) {
         switch (httpMethod) {
           case 'PUT':
@@ -259,6 +280,13 @@ define(['_marklogic/module'], function (module) {
         return undefined;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getHttpData
+       * @description Returns data payload to be set to REST endpoint based
+       * on HTTP method.
+       * @param {string} httpMethod HTTP method.
+       */
       MlModel.prototype.getHttpData = function (httpMethod) {
         switch (httpMethod) {
           case 'PUT':

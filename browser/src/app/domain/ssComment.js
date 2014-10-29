@@ -60,15 +60,23 @@ define(['app/module'], function (module) {
         return 'comments';
       };
 
+      /**
+       * @ngdoc method
+       * @name SsCommentObject#prototype.getHttpUrl
+       * @description Returns URL string for accessing REST endpoint based
+       * on HTTP method. Overrides mlModelBase method since the referencing
+       * the parent object(s) in the URL is required.
+       * @param {string} httpMethod HTTP method.
+       */
       SsCommentObject.prototype.getHttpUrl = function (httpMethod) {
         switch (httpMethod) {
           case 'POST':
-            // By default, build question-comment url
+            // By default, for a question comment
             var url =
               '/' + this.$ml.parent.getResourceName(httpMethod) +
               this.$ml.parent.getEndpointIdentifier(httpMethod) +
               '/' + this.getResourceName(httpMethod);
-            // Modify url in case of answer comment
+            // An answer commment has (and the URL requires) an add'l parent
             if (this.$ml.parent.$ml.parent) {
               url =
                 '/' + this.$ml.parent.$ml.parent.getResourceName(httpMethod) +
@@ -83,6 +91,13 @@ define(['app/module'], function (module) {
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name SsCommentObject#prototype.onResponsePOST
+       * @description Overrides mlModelBase method. Since endpoint returns
+       * an entire QnaDoc object, the comment's parent method is called.
+       * @param {string} httpMethod HTTP method.
+       */
       // Endpoint returns entire QnaDoc content, call parent method
       SsCommentObject.prototype.onResponsePOST = function (data) {
         this.$ml.parent.onResponsePOST(data);

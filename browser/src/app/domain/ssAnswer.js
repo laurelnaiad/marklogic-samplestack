@@ -59,6 +59,13 @@ define(['app/module'], function (module) {
         })
       };
 
+      /**
+       * @ngdoc method
+       * @name SsAnswerObject#prototype.mergeData
+       * @description Sets up comment model objects on data, then merges
+       * data.
+       * @param {object} data Data to merge.
+       */
       SsAnswerObject.prototype.mergeData = function (data) {
 
         // Replace comments with ssComment objects
@@ -93,6 +100,14 @@ define(['app/module'], function (module) {
         return 'answers';
       };
 
+      /**
+       * @ngdoc method
+       * @name SsAnswerObject#prototype.getHttpUrl
+       * @description Returns URL string for accessing REST endpoint based
+       * on HTTP method. Overrides mlModelBase method since the referencing
+       * the parent object in the URL is required.
+       * @param {string} httpMethod HTTP method.
+       */
       SsAnswerObject.prototype.getHttpUrl = function (httpMethod) {
         switch (httpMethod) {
           case 'POST':
@@ -106,7 +121,13 @@ define(['app/module'], function (module) {
         }
       };
 
-      // Endpoint returns entire QnaDoc content, call parent method
+      /**
+       * @ngdoc method
+       * @name SsAnswerObject#prototype.onResponsePOST
+       * @description Overrides mlModelBase method. Since endpoint returns
+       * an entire QnaDoc object, the answer's parent method is called.
+       * @param {string} httpMethod HTTP method.
+       */
       SsAnswerObject.prototype.onResponsePOST = function (data) {
         this.$ml.parent.onResponsePOST(data);
       };

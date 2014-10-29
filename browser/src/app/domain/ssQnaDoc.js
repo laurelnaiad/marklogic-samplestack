@@ -60,6 +60,13 @@ define(['app/module'], function (module) {
         })
       };
 
+      /**
+       * @ngdoc method
+       * @name SsQnaDocObject#prototype.mergeData
+       * @description Sets hasVoted data on $ml, sets up answer and
+       * comment model objects on data, then merges data.
+       * @param {object} data Data to merge.
+       */
       SsQnaDocObject.prototype.mergeData = function (data) {
         if (data.hasVoted) {
           this.$ml.hasVotedObject = data.hasVoted;

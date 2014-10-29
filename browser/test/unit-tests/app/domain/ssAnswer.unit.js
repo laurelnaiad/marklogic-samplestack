@@ -55,7 +55,7 @@ define([
           answer.post().$ml.waiting.then(
             function (data) {
               // Here I want to instead reference qnaDoc via answer.$ml.parent
-              // But I don't have access to answer (???)
+              // But I don't have access to the answer (???)
               expect(qnaDoc.answers[0].text).to.equal(validAnswer.text);
               expect(qnaDoc.answers[0].id).to.exist;
               done();
