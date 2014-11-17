@@ -174,42 +174,11 @@ define(['app/module'], function (module) {
       };
 
       $scope.vote = function (val, item) {
-        var vote = ssVote.create({upDown: val}, item);
-        if (vote.$ml.valid) {
-          vote.post().$ml.waiting.then(function () {
-            // Do nothing more on success
-          },
-          function (error) {
-            if (error.status === 400) {
-              $scope.setLocalError(
-                error.data.message
-              );
-            }
-            else {
-              throw new Error('Error occurred: ' + JSON.stringify(error));
-            }
-          });
-        }
+        item.vote(val, $scope.store.session.userInfo);
       };
 
       $scope.accept = function (answer) {
-        window.console.log('Accept: ' + answer.id);
-        var acceptedAnswer = ssAcceptedAnswer.create({}, answer);
-        if (acceptedAnswer.$ml.valid) {
-          acceptedAnswer.post().$ml.waiting.then(function () {
-            // Do nothing more on success
-          },
-          function (error) {
-            if (error.status === 400) {
-              $scope.setLocalError(
-                error.data.message
-              );
-            }
-            else {
-              throw new Error('Error occurred: ' + JSON.stringify(error));
-            }
-          });
-        }
+        answer.accept();
       };
 
       $scope.setPageTitle('doc');
