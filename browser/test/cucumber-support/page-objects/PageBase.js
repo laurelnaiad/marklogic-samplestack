@@ -93,12 +93,49 @@ function PageBase () {
     }
   });
 
-
   self.login = function (userName, password) {
     return q.invoke(self, 'loginStart')
       .invoke('loginEnterUserName', userName)
       .invoke('loginEnterPassword', password)
       .invoke('loginSubmit');
+  };
+
+  /*
+   * Search Bar related lookups and operations added to Page Base
+   * so they can be accessed by the QnA page tests as well
+   */
+  Object.defineProperty(this, 'queryText', {
+    get: function () {
+      return element(by.model('searchbarText')).getText();
+    }
+  });
+
+  Object.defineProperty(self, 'searchbarTextElement', {
+    get: function () {
+      return element(by.model('searchbarText'));
+    }
+  });
+
+  Object.defineProperty(self, 'searchbarSumbmitElement', {
+    get: function () {
+      return element(by.css('.ss-search-bar-tools button'));
+    }
+  });
+
+  self.enterSearchText = function (text) {
+    return qself(self.searchbarTextElement
+      .clear()
+      .sendKeys(text)
+    );
+  };
+
+  self.searchSubmit = function () {
+    return self.searchbarSumbmitElement.click();
+  };
+
+  self.search = function (text) {
+    return self.enterSearchText(text)
+      .then(self.searchSubmit);
   };
 
   Object.defineProperty(self, 'accountInfoElement', {
@@ -182,8 +219,8 @@ function PageBase () {
   self.loginIfNecessary = function (userName, password) {
     return qself(self.userName.then(
       function (name) {
-        var before = name ? self.logout : null;
-        return q.when(before, q.invoke('login', userName, password));
+        return qself(self.logoutIfNecessary())
+            .invoke( "login", userName, password);
       }
     ));
   };
