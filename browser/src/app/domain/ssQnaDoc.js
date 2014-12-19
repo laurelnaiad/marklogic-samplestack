@@ -188,6 +188,10 @@ define(['app/module'], function (module) {
         var self = this;
 
         this.answers.sort(function (answer1, answer2) {
+          // do not sort empty answers, keep those as-is at end of array
+          if (answer1.id === undefined || answer2.id === undefined) {
+            return 0;
+          }
           if (answer1.id === self.acceptedAnswerId) {
             return -1;
           }
@@ -198,12 +202,24 @@ define(['app/module'], function (module) {
         });
 
         this.comments.sort(function (comment1, comment2) {
-          return comment1.createDate < comment2.creationDate;
+          // do not sort empty comments, keep those as-is at end of array
+          if (comment1.id === undefined || comment2.id === undefined) {
+            return 0;
+          }
+          else {
+            return comment1.creationDate > comment2.creationDate;
+          }
         });
 
         this.answers.forEach(function (answer) {
           answer.comments.sort(function (comment1, comment2) {
-            return comment1.createDate < comment2.creationDate;
+            // do not sort empty comments, keep those as-is at end of array
+            if (comment1.id === undefined || comment2.id === undefined) {
+              return 0;
+            }
+            else {
+              return comment1.creationDate > comment2.creationDate;
+            }
           });
         });
       };
