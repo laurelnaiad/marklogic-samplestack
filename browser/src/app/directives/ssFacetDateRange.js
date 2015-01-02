@@ -323,16 +323,14 @@ define(['app/module'], function (module) {
 
             scope.applyPickerDates = function () {
               var foundChange = false;
-              var dStart = mlUtil.moment(scope.pickerDateStart);
-              var dEnd = mlUtil.moment(scope.pickerDateEnd).add('d', 1);
-              if (dStart.isValid() && assignIfDifferent(
-                dStart,
+              if (scope.pickerDateStart && assignIfDifferent(
+                mlUtil.moment(scope.pickerDateStart),
                 scope.constraints.dateStart
               )) {
                 foundChange = true;
               }
-              if (dEnd.isValid() && assignIfDifferent(
-                dEnd,
+              if (scope.pickerDateEnd && assignIfDifferent(
+                mlUtil.moment(scope.pickerDateEnd).add('d', 1),
                 scope.constraints.dateEnd
               )) {
                 foundChange = true;
