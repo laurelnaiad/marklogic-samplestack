@@ -94,6 +94,32 @@ define(['app/module'], function (module) {
               // scope.chart.series = [ { data: scope.dateData} ];
             };
 
+            // get the actual series bar x coords for selected bars.
+            // pass moment object as start/end
+            var getSeriesWithinSelection = function (start,end) {
+              var i;
+              var pStart;
+              var pEnd;
+              start = start.startOf('month');
+              end = end.endOf('month'); // last day of month
+              var series = scope.chart.target.series;
+              if (series && series[0] && series[0].data.length) {
+                var allPoints = series[0].data;
+                for (i = 0; i < allPoints.length; i++) {
+                  var pointVal = mlUtil.moment(allPoints[i].x);
+                  if (pointVal >= start && pointVal <= end) {
+                    // then it's in our range, is it our start or end?
+                    if (!pStart) {
+                      pStart = pointVal.clone();
+                    }
+                    // will be overwritten till out of range
+                    pEnd = pointVal.clone();
+                  }
+                }
+              }
+              return { start: pStart, end: pEnd };
+            };
+
             // using scope.dateData and the constraints, assign the
             // selected/non-selected status of points on the chart and the
             // dateStart and dateEnd variables
@@ -156,10 +182,17 @@ define(['app/module'], function (module) {
                   // make the selection assignments based on whether a point
                   // is within bounds
                   for (i = 0; i < allPoints.length; i++) {
-                    // mamke a moment variable so we can compare
-                    var pointVal = mlUtil.moment(allPoints[i].x);
-                    var isPointIn = pointVal >= selectionStart &&
-                        pointVal < selectionEnd;
+                    // make a moment variable so we can compare
+                    var pointVal = mlUtil.moment(allPoints[i].x).utc();
+                    var sStart = selectionStart.clone().utc().startOf('month');
+                    var sEnd =
+                      (selectionEnd.clone().utc().format() ===
+                        selectionEnd.clone().utc().startOf('month').format()) ?
+                      selectionEnd : selectionEnd.clone().utc().endOf('month');
+
+                    var isPointIn =
+                      pointVal >= sStart &&
+                      pointVal < sEnd;
                     // assign point selected status. second param is whether
                     // or
                     // not
@@ -214,12 +247,18 @@ define(['app/module'], function (module) {
                 }
                 else {
                   newStart = mlUtil.moment(event.point.x);
-                  newEnd = mlUtil.moment(event.point.x).add('M', 1);
+                  newEnd =
+                      mlUtil.moment(event.point.x).utc().endOf('month').local();
                 }
-                if (assignIfDifferent(newStart, scope.constraints.dateStart)) {
+                var chartStartEnd = getSeriesWithinSelection(newStart,newEnd);
+                newStart = chartStartEnd.start;
+                newEnd = chartStartEnd.end;
+                if (newStart &&
+                    assignIfDifferent(newStart, scope.constraints.dateStart)) {
                   foundChange = true;
                 }
-                if (assignIfDifferent(newEnd, scope.constraints.dateEnd)) {
+                if (newEnd &&
+                    assignIfDifferent(newEnd, scope.constraints.dateEnd)) {
                   foundChange = true;
                 }
                 if (foundChange) {
@@ -276,7 +315,7 @@ define(['app/module'], function (module) {
                   formatter: function () {
                     /* jshint ignore:start */
                     return '<strong>' +
-                      mlUtil.moment(this.x).format('MMM YYYY') +
+                      mlUtil.moment(this.x).add('M', 1).format('MMM YYYY') +
                       '</strong>' + ': ' + this.y + ' questions';
                     /* jshint ignore:end */
                   }
@@ -313,7 +352,7 @@ define(['app/module'], function (module) {
               formatYear: 'yy',
               startingDay: 1,
               showWeeks: false,
-              showButtonBar: false              
+              showButtonBar: false
             };
 
             scope.pickerOpen = function (scopeVar) {
@@ -383,15 +422,9 @@ define(['app/module'], function (module) {
                 //         scope.chart.target.chartWidth / newData.length - 8;
                 scope.highchartsConfig.series = [ { data: newData }];
 
-                var dateToPickerStart = function (val) {
+                var dateToPickerDate = function (val) {
                   return val ?
-                      new Date(mlUtil.moment(val)) :
-                      null;
-                };
-
-                var dateToPickerEnd = function (val) {
-                  return val ?
-                      new Date(mlUtil.moment(val).subtract('d', 1)) :
+                      mlUtil.moment(val).utc() :
                       null;
                 };
 
@@ -399,13 +432,13 @@ define(['app/module'], function (module) {
                   var date;
 
                   scope.dateStartPlaceholder = mlUtil.moment(
-                    dateToPickerStart(newData[0].x)
-                  ).format('MM/DD/YYYY');
+                    dateToPickerDate(newData[0].x)
+                  ).utc().format('MM/DD/YYYY');
 
                   scope.dateEndPlaceholder = mlUtil.moment(
-                    dateToPickerEnd(newData[newData.length - 1].x)
-                  ).format('MM/DD/YYYY');
-                } 
+                    dateToPickerDate(newData[newData.length - 1].x)
+                  ).utc().format('MM/DD/YYYY');
+                }
                 else {
                   scope.dateStartPlaceholder = null;
                   scope.dateEndPlaceholder = null;
@@ -413,15 +446,15 @@ define(['app/module'], function (module) {
 
                 var pickerStart = scope.constraints.dateStart.value ?
                     mlUtil.moment(
-                      dateToPickerStart(scope.constraints.dateStart.value)
-                    ).format('MM/DD/YYYY') :
+                      dateToPickerDate(scope.constraints.dateStart.value)
+                    ).utc().format('MM/DD/YYYY') :
                     null;
                 scope.pickerDateStart = pickerStart;
 
                 var pickerEnd = scope.constraints.dateEnd.value ?
                     mlUtil.moment(
-                      dateToPickerEnd(scope.constraints.dateEnd.value)
-                    ).format('MM/DD/YYYY') :
+                      dateToPickerDate(scope.constraints.dateEnd.value)
+                    ).utc().format('MM/DD/YYYY') :
                     null;
                 scope.pickerDateEnd = pickerEnd;
               }, 100);
