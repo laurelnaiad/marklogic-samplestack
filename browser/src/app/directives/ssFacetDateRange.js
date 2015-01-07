@@ -106,7 +106,7 @@ define(['app/module'], function (module) {
               if (series && series[0] && series[0].data.length) {
                 var allPoints = series[0].data;
                 for (i = 0; i < allPoints.length; i++) {
-                  var pointVal = mlUtil.moment(allPoints[i].x);
+                  var pointVal = mlUtil.moment(allPoints[i].x).local();
                   if (pointVal >= start && pointVal <= end) {
                     // then it's in our range, is it our start or end?
                     if (!pStart) {
@@ -183,12 +183,12 @@ define(['app/module'], function (module) {
                   // is within bounds
                   for (i = 0; i < allPoints.length; i++) {
                     // make a moment variable so we can compare
-                    var pointVal = mlUtil.moment(allPoints[i].x).utc();
-                    var sStart = selectionStart.clone().utc().startOf('month');
+                    var pointVal = mlUtil.moment(allPoints[i].x).local();
+                    var sStart = selectionStart.clone().startOf('month');
                     var sEnd =
-                      (selectionEnd.clone().utc().format() ===
-                        selectionEnd.clone().utc().startOf('month').format()) ?
-                      selectionEnd : selectionEnd.clone().utc().endOf('month');
+                      (selectionEnd.clone().format() ===
+                        selectionEnd.clone().startOf('month').format()) ?
+                      selectionEnd : selectionEnd.clone().endOf('month');
 
                     var isPointIn =
                       pointVal >= sStart &&
@@ -242,13 +242,12 @@ define(['app/module'], function (module) {
                 var newEnd;
                 if (event.xAxis) {
                   newStart = mlUtil.moment(event.xAxis[0].min).startOf('d');
-                  newEnd = mlUtil.moment(event.xAxis[0].max)
-                      .startOf('d').add('d', 1);
+                  newEnd = mlUtil.moment(event.xAxis[0].max).startOf('d');
                 }
                 else {
                   newStart = mlUtil.moment(event.point.x);
                   newEnd =
-                      mlUtil.moment(event.point.x).utc().endOf('month').local();
+                      mlUtil.moment(event.point.x).endOf('month');
                 }
                 var chartStartEnd = getSeriesWithinSelection(newStart,newEnd);
                 newStart = chartStartEnd.start;
@@ -422,9 +421,15 @@ define(['app/module'], function (module) {
                 //         scope.chart.target.chartWidth / newData.length - 8;
                 scope.highchartsConfig.series = [ { data: newData }];
 
-                var dateToPickerDate = function (val) {
+                var dateToPickerStart = function (val) {
                   return val ?
-                      mlUtil.moment(val).utc() :
+                      mlUtil.moment(val) :
+                      null;
+                };
+
+                var dateToPickerEnd = function (val) {
+                  return val ?
+                      mlUtil.moment(val).subtract('d', 1) :
                       null;
                 };
 
@@ -432,12 +437,12 @@ define(['app/module'], function (module) {
                   var date;
 
                   scope.dateStartPlaceholder = mlUtil.moment(
-                    dateToPickerDate(newData[0].x)
-                  ).utc().format('MM/DD/YYYY');
+                    dateToPickerStart(newData[0].x)
+                  ).format('MM/DD/YYYY');
 
                   scope.dateEndPlaceholder = mlUtil.moment(
-                    dateToPickerDate(newData[newData.length - 1].x)
-                  ).utc().format('MM/DD/YYYY');
+                    dateToPickerEnd(newData[newData.length - 1].x)
+                  ).format('MM/DD/YYYY');
                 }
                 else {
                   scope.dateStartPlaceholder = null;
@@ -446,15 +451,15 @@ define(['app/module'], function (module) {
 
                 var pickerStart = scope.constraints.dateStart.value ?
                     mlUtil.moment(
-                      dateToPickerDate(scope.constraints.dateStart.value)
-                    ).utc().format('MM/DD/YYYY') :
+                      dateToPickerStart(scope.constraints.dateStart.value)
+                    ).format('MM/DD/YYYY') :
                     null;
                 scope.pickerDateStart = pickerStart;
 
                 var pickerEnd = scope.constraints.dateEnd.value ?
                     mlUtil.moment(
-                      dateToPickerDate(scope.constraints.dateEnd.value)
-                    ).utc().format('MM/DD/YYYY') :
+                      dateToPickerEnd(scope.constraints.dateEnd.value)
+                    ).format('MM/DD/YYYY') :
                     null;
                 scope.pickerDateEnd = pickerEnd;
               }, 100);
