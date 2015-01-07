@@ -5,10 +5,10 @@
   </button>
   <h4 class="modal-title">Samplestack Log In</h4>
 </div>
-<form ng-submit="authenticate()">
+<form ng-submit="authenticate()" novalidate>
   <div class="modal-body">
     <p
-      class="ss-login-failed has-error login-failed"
+      class="ss-login-failed alert alert-danger"
       ng-if="error && !(session.password && session.password.length)"
     >
       {{error}}
