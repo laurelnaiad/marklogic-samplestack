@@ -73,6 +73,23 @@ define(['testHelper','mocks/index'], function (helper, mocks) {
         }
       );
 
+      it(
+        'on col click, scope variables set',
+        function () {
+          var event = { point: scope.chart.target.series[0].points[2] };
+          scope.chart.target.series[0].points[2].firePointEvent('click', event);
+          scope.$apply();
+          var ds = ssSearchInstance.criteria.constraints.dateStart;
+          var de = ssSearchInstance.criteria.constraints.dateEnd;
+            ds.value = mlUtil.moment(ds.value);
+            de.value = mlUtil.moment(de.value);
+
+          expect(mlUtil.moment(scope.constraints.dateStart).format() ===
+                            "2009-08-01T00:00:00-07:00").to.eventually.be.true;
+          expect(mlUtil.moment(scope.constraints.dateEnd).format() ===
+                            "2009-08-31T23:59:59-07:00").to.eventually.be.true;
+        }
+      );
     });
 
   };

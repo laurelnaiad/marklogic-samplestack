@@ -4993,19 +4993,18 @@ h1 {
 
 /* answers */
 .ss-answer-wrapper {
-  padding-top: 14px; }
+  padding-top: 14px;
+  /* push answer anchors up to account for fixed navbar */ }
+  .ss-answer-wrapper .ss-answer-anchor {
+    position: relative;
+    top: -70px; }
   .ss-answer-wrapper .ss-answer-vote {
     padding-top: 6px; }
   .ss-answer-wrapper .ss-answer-inner {
     padding-top: 22px;
     border-bottom: 1px solid #ddd; }
-  .ss-answer-wrapper .ss-answer-comment, .ss-answer-wrapper .ss-answer-inner, .ss-answer-wrapper .ss-answer-user-info {
+  .ss-answer-wrapper .ss-answer-inner, .ss-answer-wrapper .ss-answer-user-info {
     padding-bottom: 14px; }
-  .ss-answer-wrapper .ss-answer-comment {
-    border-top: 1px dotted #ddd;
-    padding-top: 14px;
-    padding-left: 14px;
-    padding-right: 0; }
   .ss-answer-wrapper hr {
     margin: 0; }
 
@@ -5025,13 +5024,9 @@ h1 {
   margin-bottom: 7px; }
 
 .ss-add-comment div:first-child {
-  margin: 8px 0 8px 2px;
-  cursor: pointer; }
+  margin: 8px 0 8px 2px; }
 .ss-add-comment textarea {
-  display: block;
-  width: 600px;
-  height: 60px;
-  margin: 4px 0 8px 2px; }
+  margin-bottom: 10px; }
 
 /* used across different views */
 .form-group-textarea {
@@ -5299,23 +5294,30 @@ h1 {
 .highcharts {
   height: 240px; }
 
-.ss-filters-date header {
-  display: inline-block;
-  width: 100%; }
-  .ss-filters-date header h3 {
-    float: left;
-    position: relative; }
-  .ss-filters-date header .ss-clear-date {
-    cursor: pointer;
-    float: right;
-    margin: 21px 30px 0 0;
-    position: relative; }
 .ss-filters-date input {
-  display: inline-block;
-  margin: 0 6px;
-  padding: 1px;
-  text-align: center;
-  width: 33%; }
+  text-align: center; }
+
+.input-daterange .dropdown-menu table {
+  outline: none !important; }
+.input-daterange .dropdown-menu .btn {
+  border: 0px; }
+.input-daterange .dropdown-menu .btn:active, .input-daterange .dropdown-menu .btn:focus {
+  outline: none !important;
+  box-shadow: none; }
+.input-daterange .dropdown-menu .btn.active {
+  box-shadow: none;
+  background-color: #ffdb99;
+  border-color: #ffb733; }
+.input-daterange .dropdown-menu .btn.active:hover {
+  background-color: #ffc966;
+  border-color: orange; }
+.input-daterange .dropdown-menu .btn.active .text-info {
+  color: #333; }
+.input-daterange .dropdown-menu button.btn-info, .input-daterange .dropdown-menu button.btn-danger, .input-daterange .dropdown-menu button.btn-success {
+  border: 1px solid #ccc;
+  font-size: 10px;
+  color: #333;
+  background-color: white; }
 
 ss-facet-tags .tags-module-search-wrapper .tags-module-search {
   border: 1px solid #ccc;
@@ -5501,6 +5503,12 @@ ss-qna-doc-metadata .ss-comment-info {
   .ss-markdown-wrapper .nav-tabs li {
     /* ensure above toolbar container */
     z-index: 1000; }
+  .ss-markdown-wrapper .nav-tabs li a {
+    border: 1px solid #ddd;
+    color: #79b; }
+  .ss-markdown-wrapper .nav-tabs li.active a {
+    color: #333;
+    border-bottom-color: transparent; }
   .ss-markdown-wrapper .markdown-toolbar {
     position: relative;
     top: -60px;
