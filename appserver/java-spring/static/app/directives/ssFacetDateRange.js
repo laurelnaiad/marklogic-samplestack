@@ -1,3 +1,6 @@
+
+
+
 define(['app/module'], function (module) {
 
   /* jshint ignore:start */
@@ -273,6 +276,9 @@ define(['app/module'], function (module) {
                 },
 
                 tooltip: {
+                  backgroundColor:'#191919',
+                  borderColor:'#191919',
+                  style: { color: '#fff' },
                   formatter: function () {
                     /* jshint ignore:start */
                     return '<strong>' +
@@ -313,7 +319,7 @@ define(['app/module'], function (module) {
               formatYear: 'yy',
               startingDay: 1,
               showWeeks: false,
-              showButtonBar: false              
+              showButtonBar: false
             };
 
             scope.pickerOpen = function (scopeVar) {
@@ -405,7 +411,7 @@ define(['app/module'], function (module) {
                   scope.dateEndPlaceholder = mlUtil.moment(
                     dateToPickerEnd(newData[newData.length - 1].x)
                   ).format('MM/DD/YYYY');
-                } 
+                }
                 else {
                   scope.dateStartPlaceholder = null;
                   scope.dateEndPlaceholder = null;
