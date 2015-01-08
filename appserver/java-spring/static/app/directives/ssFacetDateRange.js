@@ -106,14 +106,14 @@ define(['app/module'], function (module) {
               if (series && series[0] && series[0].data.length) {
                 var allPoints = series[0].data;
                 for (i = 0; i < allPoints.length; i++) {
-                  var pointVal = mlUtil.moment(allPoints[i].x).local();
+                  var pointVal = mlUtil.moment(allPoints[i].x).add('d', 1);
                   if (pointVal >= start && pointVal <= end) {
                     // then it's in our range, is it our start or end?
                     if (!pStart) {
-                      pStart = pointVal.clone();
+                      pStart = pointVal.clone().startOf('month');
                     }
                     // will be overwritten till out of range
-                    pEnd = pointVal.clone();
+                    pEnd = pointVal.clone().endOf('month');
                   }
                 }
               }
@@ -162,7 +162,7 @@ define(['app/module'], function (module) {
                   // if there isnn't an actual constraint, we start selecting
                   // at the first point
                   if (!selectionStart) {
-                    selectionStart = allPoints[0].x;
+                    selectionStart = mlUtil.moment(allPoints[0].x);
                   }
 
                   // same principles for the end point as for the start point
@@ -176,14 +176,14 @@ define(['app/module'], function (module) {
                   if (!selectionEnd) {
                     // for to select to end by adding one to the date
                     selectionEnd =
-                        allPoints[allPoints.length - 1].x + 1;
+                        mlUtil.moment(allPoints[allPoints.length - 1].x + 1);
                   }
 
                   // make the selection assignments based on whether a point
                   // is within bounds
                   for (i = 0; i < allPoints.length; i++) {
                     // make a moment variable so we can compare
-                    var pointVal = mlUtil.moment(allPoints[i].x).local();
+                    var pointVal = mlUtil.moment(allPoints[i].x).add('d', 1);
                     var sStart = selectionStart.clone().startOf('month');
                     var sEnd =
                       (selectionEnd.clone().format() ===
@@ -245,9 +245,8 @@ define(['app/module'], function (module) {
                   newEnd = mlUtil.moment(event.xAxis[0].max).startOf('d');
                 }
                 else {
-                  newStart = mlUtil.moment(event.point.x);
-                  newEnd =
-                      mlUtil.moment(event.point.x).endOf('month');
+                  newStart = mlUtil.moment(event.point.x).add('d', 1);
+                  newEnd = mlUtil.moment(event.point.x).add('d', 1);
                 }
                 var chartStartEnd = getSeriesWithinSelection(newStart,newEnd);
                 newStart = chartStartEnd.start;
@@ -438,11 +437,11 @@ define(['app/module'], function (module) {
 
                   scope.dateStartPlaceholder = mlUtil.moment(
                     dateToPickerStart(newData[0].x)
-                  ).format('MM/DD/YYYY');
+                  ).add('d', 1).format('MM/DD/YYYY');
 
                   scope.dateEndPlaceholder = mlUtil.moment(
                     dateToPickerEnd(newData[newData.length - 1].x)
-                  ).format('MM/DD/YYYY');
+                  ).endOf('month').add('d', 1).format('MM/DD/YYYY');
                 }
                 else {
                   scope.dateStartPlaceholder = null;
