@@ -60,11 +60,12 @@ define(['app/module'], function (module) {
           '  class="input-sm form-control ng-valid-date" ' +
           '  datepicker-popup="MM/dd/yyyy" ' +
           '  datepicker-options="dateStartOptions" ' +
-          '  ng-change="applyPickerDates()" ' +
-          '  ng-click="pickerOpen(\'dateStartOpened\')" ' +
+          '  ng-model-onblur-onenter ' +
+          '  ng-change="applyPickerDates()"' +
+          '  ng-click="pickerOpen($event,\'Start\')" ' +
           '  is-open="dateStartOpened" ' +
           '  placeholder="{{dateStartPlaceholder}}" ' +
-          '  name="start" close-text="Close" />' +
+          '  name="start" parse-strict="parseStrict" close-text="Close" />' +
 
           '<span class="input-group-addon">to</span>' +
 
@@ -72,12 +73,13 @@ define(['app/module'], function (module) {
           '  class="input-sm form-control ng-valid-date" ' +
           '  datepicker-popup="MM/dd/yyyy" ' +
           '  datepicker-options="dateEndOptions" ' +
-          '  ng-change="applyPickerDates()"  ' +
-          '  ng-click="pickerOpen(\'dateEndOpened\')" ' +
+          '  ng-model-onblur-onenter ' +
+          '  ng-change="applyPickerDates()"' +
+          '  ng-click="pickerOpen($event,\'End\')" ' +
           '  is-open="dateEndOpened" ' +
           '  placeholder="{{dateEndPlaceholder}}" ' +
           '  class="form-control ng-valid-date"' +
-          '  close-text="Close" />' +
+          '   parse-strict="parseStrict" close-text="Close" />' +
           '</div>',
 
         scope: {
@@ -316,36 +318,91 @@ define(['app/module'], function (module) {
               showWeeks: false,
               showButtonBar: false
             };
+            scope.parseStrict = true;
 
-            scope.pickerOpen = function (scopeVar) {
-              scope[scopeVar] = true;
-              return false;
+            scope.closePickers = function () {
+              scope['dateStartOpened'] = false;
+              scope['dateEndOpened'] = false;
+            };
+
+            // pickerOpen triggered on input click event
+            // event - click event object
+            // picker - either 'Start' or 'End', depending on which clicked
+            scope.pickerOpen = function (event,picker) {
+              var el = angular.element(event.target);
+              var scopeVar = 'pickerDate' + picker;
+              var openVar = 'date' + picker + 'Opened';
+              var closeVar = (picker === 'Start') ?
+                                'dateEndOpened' : 'dateStartOpened';
+
+              // store selected input and model to later validation
+              if (scope.selectedInputModel !== scopeVar) {
+                scope.selectedInput = el;
+                scope.selectedInputModel = scopeVar;
+              }
+              scope[openVar] = true;
+              scope[closeVar] = false;
+              event.preventDefault();
+              event.stopPropagation();
             };
 
             scope.applyPickerDates = function () {
+              var el = scope.selectedInput;
+              var model = scope.selectedInputModel;
+
+              // case invalid date format, so bound scope undefined
+              // reset value to previously valid value
+              if (!scope[model] && el.val()) {
+                el.val(scope.lastValid[model]);
+              }
+
+              // If a valid but out-of-order date is manually
+              // entered, replace the opposite field with the same date.
+              if (scope.pickerDateStart && scope.pickerDateEnd
+                    && (mlUtil.moment(scope.pickerDateStart)
+                                    > mlUtil.moment(scope.pickerDateEnd)
+                    || mlUtil.moment(scope.pickerDateEnd)
+                                    < mlUtil.moment(scope.pickerDateStart)) ) {
+                var oVar = (model === 'pickerDateStart') ?
+                                  'pickerDateEnd' : 'pickerDateStart';
+                scope[oVar] = mlUtil.moment(scope[model]).format('MM/DD/YYYY');
+              }
+
               var foundChange = false;
-              var dStart = mlUtil.moment(scope.pickerDateStart);
-              var dEnd = mlUtil.moment(scope.pickerDateEnd).add('d', 1);
-              if (dStart.isValid() && assignIfDifferent(
-                dStart,
+              if (scope.pickerDateStart && assignIfDifferent(
+                mlUtil.moment(scope.pickerDateStart),
                 scope.constraints.dateStart
               )) {
                 foundChange = true;
               }
-              if (dEnd.isValid() && assignIfDifferent(
-                dEnd,
+              if (scope.pickerDateEnd && assignIfDifferent(
+                mlUtil.moment(scope.pickerDateEnd).add('d', 1),
                 scope.constraints.dateEnd
               )) {
                 foundChange = true;
               }
               if (foundChange) {
                 scope.$emit('criteriaChange');
+                scope.closePickers();
               }
             };
 
           },
 
           post: function (scope) {
+            scope.lastValid = [];
+            scope.$watch('pickerDateStart', function (newValue, oldValue) {
+              if (newValue) {
+                scope.lastValid['pickerDateStart'] =
+                                  mlUtil.moment(newValue).format('MM/DD/YYYY');
+              }
+            });
+            scope.$watch('pickerDateEnd', function (newValue, oldValue) {
+              if (newValue) {
+                scope.lastValid['pickerDateEnd'] =
+                                  mlUtil.moment(newValue).format('MM/DD/YYYY');
+              }
+            });
             scope.$on('newResults', function () {
 
 
@@ -431,4 +488,33 @@ define(['app/module'], function (module) {
       }; // end return
     }
   ]); // end directive
+
+  module.directive('ngModelOnblurOnenter', function () {
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      priority: 1,
+      link: function (scope, elm, attr, ngModelCtrl) {
+        if (attr.type === 'radio' || attr.type === 'checkbox') {
+          return;
+        }
+
+        elm.unbind('input').unbind('keydown').unbind('change');
+        elm.bind('blur', function () {
+          scope.$apply(function () {
+            ngModelCtrl.$setViewValue(elm.val());
+          });
+        });
+
+        elm.bind('keydown', function (event) {
+          if (event.keyCode === 13) {
+            scope.$apply(function () {
+              ngModelCtrl.$setViewValue(elm.val());
+            });
+          }
+        });
+      }
+    };
+  });
+
 });
