@@ -394,13 +394,15 @@ define(['app/module'], function (module) {
             scope.$watch('pickerDateStart', function (newValue, oldValue) {
               if (newValue) {
                 scope.lastValid['pickerDateStart'] =
-                                  mlUtil.moment(newValue).format('MM/DD/YYYY');
+                                  mlUtil.moment(new Date(newValue))
+                                      .format('MM/DD/YYYY');
               }
             });
             scope.$watch('pickerDateEnd', function (newValue, oldValue) {
               if (newValue) {
                 scope.lastValid['pickerDateEnd'] =
-                                  mlUtil.moment(newValue).format('MM/DD/YYYY');
+                                  mlUtil.moment(new Date(newValue))
+                                      .format('MM/DD/YYYY');
               }
             });
             scope.$on('newResults', function () {
