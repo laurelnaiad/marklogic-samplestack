@@ -17,6 +17,7 @@ require.config({
     'ng-markdown': 'deps/ngMarkdown/wizMarkdown/wizMarkdown<%=options.min%>',
     'marked': 'deps/marked/lib/marked<%=options.min%>',
     'angular-marked': 'deps/angular-marked/angular-marked<%=options.min%>',
+    'angular-shims-placeholder': 'deps/angular-shims-placeholder/dist/angular-shims-placeholder<%=options.min%>',
     'jquery': 'deps/jquery/dist/jquery<%=options.min%>',
     'highcharts': 'deps/highcharts/highcharts<%=options.min%>',
     'highcharts-ng': 'deps/highcharts-ng/dist/highcharts-ng<%=options.min%>',
@@ -41,6 +42,7 @@ require.config({
     'ng-markdown': { deps: ['angular', 'angular-sanitize'] },
     'angular-marked': { deps: ['angular'] },
     'highlightjs': { exports: 'hljs' },
+    'angular-shims-placeholder': { deps: ['angular'] },
     'ng-tags-input': { deps: ['angular'] },
     'jstzdetect': { exports: 'jstz' }
   }
@@ -67,6 +69,7 @@ define(
     'angular-marked',
     'angular-sanitize',
     'ng-markdown',
+    'angular-shims-placeholder',
     'ng-tags-input',
 
     '_marklogic/marklogic'
@@ -95,6 +98,7 @@ define(
       'hc.marked',
       'ngSanitize',
       'wiz.markdown',
+      'ng.shims.placeholder',
       'ngTagsInput',
 
       '_marklogic'
