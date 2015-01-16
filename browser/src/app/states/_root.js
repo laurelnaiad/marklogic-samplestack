@@ -9,6 +9,7 @@ define(['app/module'], function (module) {
     'mlAuth',
     'loginDialog',
     'contributorDialog',
+    'allTagsDialog',
     function (
       $scope,
       $rootScope,
@@ -16,7 +17,8 @@ define(['app/module'], function (module) {
       $log,
       mlAuth,
       loginDialog,
-      contributorDialog
+      contributorDialog,
+      allTagsDialog
     ) {
       $rootScope.loading = false;
       $scope.setPageTitle = function (title) {
@@ -29,6 +31,10 @@ define(['app/module'], function (module) {
 
       $scope.$on('showContributor', function (evt, args) {
         contributorDialog(args.contributorId);
+      });
+
+      $scope.$on('showAllTags', function (evt, args) {
+        allTagsDialog(args.unselTags, args.selTags);
       });
 
       // convert spaces to dashes and encode dashes so that

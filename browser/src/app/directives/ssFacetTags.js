@@ -157,7 +157,19 @@ define(['app/module'], function (module) {
         scope.unselTags = {};
         scope.$on('newResults', resetSelections);
 
+        // On all-tags click, dispatch event to _root.js
+        scope.showAllTagsDialog = function () {
+          scope.$emit(
+            'showAllTags',
+            {
+              unselTags: scope.toArray(scope.unselTags),
+              selTags: scope.toArray(scope.selTags)
+            }
+          );
+        };
+
       }
+
     };
   });
 });
