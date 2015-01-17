@@ -104,20 +104,10 @@
             ng-repeat="sort in sorts"
             ng-click="setSort()"
             ng-class="{
-              'ss-sort-active': sort.active,
-              'ss-sort-inactive': !sort.active
+              'active': sort === selectedSort
             }"
           >
-            <a
-              href=""
-              role="tab"
-              data-toggle="tab"
-              ng-class="{
-                'ss-sort-selected': (
-                  sort.value[0] === getSelectedSort()
-                )
-              }"
-            >{{sort.label}}</a>
+            <a href="" role="tab">{{sort.label}}</a>
           </li>
         </ul><!-- nav-tabs -->
 
