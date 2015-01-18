@@ -54,7 +54,7 @@ define(['app/module'], function (module) {
       for (var i = 0; i < numCols; i++) {
         $scope.arrCols.push(i);
       }
-      $scope.tagsPerCol = 2;
+      $scope.tagsPerCol = 6;
 
       // Paging settings
       $scope.currentPage = 1; // initial
