@@ -57,9 +57,13 @@ define(['app/module'], function (module) {
       $scope.tagsPerCol = 2;
 
       // Paging settings
-      $scope.currentPage = 0;
+      $scope.currentPage = 1; // initial
+      $scope.maxSize = 5;
       $scope.pageSize = numCols * $scope.tagsPerCol;
       $scope.totalPages = Math.ceil($scope.tags.length / $scope.pageSize);
+      $scope.updatePage = function (currentPage) {
+        $scope.currentPage = currentPage;
+      };
 
       // Sort settings
       $scope.sorts = [
