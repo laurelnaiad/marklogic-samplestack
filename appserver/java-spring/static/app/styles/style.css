@@ -5058,7 +5058,11 @@ h1 {
 
 /* styles for login dialog */
 .ss-dialog-all-tags .ss-column {
-  width: 190px; }
+  width: 185px; }
+.ss-dialog-all-tags .ss-column ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
 .ss-dialog-all-tags .ss-paging {
   float: left; }
 .ss-dialog-all-tags .ss-submit {

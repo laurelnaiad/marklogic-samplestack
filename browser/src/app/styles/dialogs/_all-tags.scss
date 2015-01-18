@@ -1,7 +1,13 @@
 .ss-dialog-all-tags {
 
   .ss-column {
-    width: 190px;
+    width: 185px;
+  }
+
+  .ss-column ul {
+    margin:0;
+    padding:0;
+    list-style: none;
   }
 
   .ss-paging {
