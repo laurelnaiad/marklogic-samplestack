@@ -64,12 +64,12 @@ define(['app/module'], function (module) {
       // Sort settings
       $scope.sorts = [
         {
-          label: 'count',
-          value: ['-count', 'name']
+          label: 'Name',
+          value: ['name']
         },
         {
-          label: 'name',
-          value: ['name']
+          label: 'Count',
+          value: ['-count', 'name']
         }
       ];
       $scope.selectedSort = $scope.sorts[1]; // Default sort
