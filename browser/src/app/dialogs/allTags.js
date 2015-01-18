@@ -122,7 +122,7 @@ define(['app/module'], function (module) {
 
       $scope.setSort = function () {
         $scope.selectedSort = this.sort;
-        $scope.currentPage = 0; // TODO not working, paging stays same???
+        $scope.currentPage = 1;
       };
 
       /**

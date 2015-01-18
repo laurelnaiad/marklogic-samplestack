@@ -5058,11 +5058,13 @@ h1 {
 
 /* styles for login dialog */
 .ss-dialog-all-tags .ss-column {
-  width: 185px; }
+  width: 190px; }
 .ss-dialog-all-tags .ss-column ul {
   margin: 0;
   padding: 0;
   list-style: none; }
+.ss-dialog-all-tags .ss-column li.checkbox {
+  margin-top: 0; }
 .ss-dialog-all-tags .ss-column label {
   font-size: 12px; }
 .ss-dialog-all-tags .ss-paging {

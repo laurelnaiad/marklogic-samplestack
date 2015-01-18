@@ -1,13 +1,17 @@
 .ss-dialog-all-tags {
 
   .ss-column {
-    width: 185px;
+    width: 190px;
   }
 
   .ss-column ul {
     margin:0;
     padding:0;
     list-style: none;
+  }
+
+  .ss-column li.checkbox {
+    margin-top: 0;
   }
 
   .ss-column label {
