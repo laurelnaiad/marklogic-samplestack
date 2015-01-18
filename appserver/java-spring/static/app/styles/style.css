@@ -5063,6 +5063,8 @@ h1 {
   margin: 0;
   padding: 0;
   list-style: none; }
+.ss-dialog-all-tags .ss-column label {
+  font-size: 12px; }
 .ss-dialog-all-tags .ss-paging {
   float: left; }
 .ss-dialog-all-tags .ss-submit {
