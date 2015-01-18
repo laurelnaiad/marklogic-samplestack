@@ -33,10 +33,6 @@ define(['app/module'], function (module) {
         contributorDialog(args.contributorId);
       });
 
-      $scope.$on('showAllTags', function (evt, args) {
-        allTagsDialog(args.unselTags, args.selTags);
-      });
-
       // convert spaces to dashes and encode dashes so that
       // we will tend to have a prettier url
       $scope.dasherize = function (str) {
