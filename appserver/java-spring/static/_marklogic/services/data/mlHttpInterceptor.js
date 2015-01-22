@@ -49,8 +49,8 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
        */
       this.$get = [
         // we inject injector in order to avoid circular dependency on $http
-        '$injector', '$q', 'mlUtil',
-        function ($injector, $q, mlUtil) {
+        '$injector', '$q', '$cookies', 'mlUtil',
+        function ($injector, $q, $cookies, mlUtil) {
 
           var $http;
           var outstanding;
@@ -65,9 +65,47 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
           // whether or not we need to get csrf before doing what the app
           // actually wants
           var mustGetCsrf = function (config) {
+            if (config.url.indexOf('/v1/') >= 0) {
+              var defVal = $http.defaults.headers.common[self.headerName];
+              var stored;
+              if (!defVal &&
+                config.method === 'GET' &&
+                config.url === self.csrfUrl
+              ) {
+                // we're trying to get csrf -- do we have a cookie for that?
+                stored = $cookies[self.headerName];
+                if (stored) {
+                  // just restore it
+                  $http.defaults.headers.common[self.headerName] = stored;
+                  return false;
+                }
+              }
+              // no restoration -- is now the time?
+              var needNow = !defVal &&
+              config.method === 'POST' &&
+              config.url === self.csrfUrl;
 
-            return csrfMethods[config.method]
-                && !$http.defaults.headers.common[self.headerName];
+              if (!needNow) {
+                // we think we have a good situation, but are the cookies
+                // consistent?
+                if (
+                  (
+                    $cookies['JSESSIONID'] ||
+                    $cookies['sessionID']
+                  ) && !$cookies[self.headerName]
+                ) {
+                  // in fact we still need CSRF token
+                  delete $cookies['JSESSIONID'];
+                  delete $cookies['sessionID'];
+                  needNow = true;
+                }
+              }
+
+              return needNow;
+            }
+            else {
+              return false;
+            }
           };
 
           // return a promise to have set the csrf header default. To do this,
@@ -85,18 +123,26 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
               var deferred = $q.defer();
               $http(requestConfig).then(
                 function (response) {
+                  outstanding = null;
                   // if the server doesn't give us a CSRF token, we should
                   // we complain? TODO
                   var token = response.headers(self.headerName);
                   if (token){
                     $http.defaults.headers.common[self.headerName] = token;
+                    $cookies[self.headerName] = token;
+                    deferred.resolve(token);
                   }
                   else {
-                    $http.defaults.headers.common[self.headerName] = 'dummy';
+                    deferred.reject(
+                      new Error(
+                        'unable to get CSRF token -- ' &&
+                        'Server did not include a token'
+                      )
+                    );
                   }
-                  deferred.resolve(token);
                 },
                 function (reason) {
+                  outstanding = null;
                   deferred.reject(
                     new Error('unable to get CSRF token', reason)
                   );
@@ -139,6 +185,24 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
                   return config;
                 }
               }
+            },
+
+            response: function (response) {
+              var token = response.headers(self.headerName);
+              if (token) {
+                $http.defaults.headers.common[self.headerName] = token;
+                $cookies[self.headerName] = token;
+              }
+
+              if (response.status === 401 || response.status === 403) {
+                // load up two addiional dependencies via injector to avoiid
+                // circular dependencies
+                var mlAuth = mlAuth || $injector.get('mlAuth');
+                // this will reset who's who (and further add to the spaghetti
+                // of our auth code -- TODO: unwind the spaghetti)
+                mlAuth.restoreSession();
+              }
+              return response;
             },
 
             responseError: function (rejection) {

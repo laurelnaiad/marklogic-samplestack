@@ -56,13 +56,16 @@ define(['app/module'], function (module) {
       SsSessionObject.prototype.onResponsePOST =
           SsSessionObject.prototype.onResponseGET = function (data) {
             delete this.password;
-            data = {
-              id: data.id,
-              username: data.userName,
-              role: data.role,
-              userInfo: data
-            };
-            this.assignData(data);
+
+            if (data.userName) {
+              data = {
+                id: data.id,
+                username: data.userName,
+                role: data.role,
+                userInfo: data
+              };
+              this.assignData(data);
+            }
           };
 
       return mlModelBase.extend('SsSessionObject', SsSessionObject);

@@ -39,16 +39,20 @@ define(['_marklogic/module'], function (module) {
         '$rootScope',
         '$q',
         '$window',
-        '$cookieStore',
+        '$cookies',
         '$timeout',
+        '$log',
+        '$http',
         'mlStore',
         function (
           $injector,
           $rootScope,
           $q,
           $window,
-          $cookieStore,
+          $cookies,
           $timeout,
+          $log,
+          $http,
           mlStore
         ) {
           var sessionModel = $injector.get(this.sessionModel);
@@ -103,10 +107,10 @@ define(['_marklogic/module'], function (module) {
             if (!mlStore.session) {
               var sessionId;
               try {
-                sessionId = $cookieStore.get('sessionId');
+                sessionId = $cookies.sessionId;
               }
               catch (err) {
-                $rootScope.log(err);
+                $log.warn(err);
               }
 
               if (sessionId) {
@@ -124,11 +128,11 @@ define(['_marklogic/module'], function (module) {
                     }
                     else {
                       try {
-                        $cookieStore.put('sessionId', sess.id);
+                        $cookies['sessionId'] = sess.id;
                         mlStore.session = sess;
                       }
                       catch (err) {
-                        $rootScope.log(err);
+                        $log.warn(err);
                       }
 
                       deferred.resolve(sess);
@@ -180,10 +184,10 @@ define(['_marklogic/module'], function (module) {
                 }
                 else {
                   try {
-                    $cookieStore.put('sessionId', sess.id);
+                    $cookies.sessionId = sess.id;
                     mlStore.session = sess;
                   }
-                  catch (err) { $rootScope.log(err); }
+                  catch (err) { $log.warn(err); }
                   deferred.resolve(sess);
                   onSessionChange();
                 }
@@ -207,7 +211,10 @@ define(['_marklogic/module'], function (module) {
             var deferred = $q.defer();
 
             var successHandler = function () {
-              $cookieStore.remove('sessionId');
+              angular.forEach($cookies, function (cookie, name) {
+                delete $cookies[name];
+              });
+              delete $http.defaults.headers.common['X-CSRF-TOKEN'];
               delete mlStore.session;
               deferred.resolve();
               onSessionChange();
@@ -219,16 +226,18 @@ define(['_marklogic/module'], function (module) {
             var sessionId;
 
             try {
-              sessionId = $cookieStore.get('sessionId');
+              sessionId = $cookies['sessionId'];
               sessionModel.del(sessionId).then(
                 successHandler,
-                deferred.reject
+                function (reason) {
+                  $log.warn(reason);
+                  successHandler();
+                }
               );
             }
             catch (err) {
-              $rootScope.log(err);
-              // we can't log out of a session we can't identify
-              deferred.reject(err);
+              $log.warn(err);
+              successHandler();
             }
 
             return deferred.promise;

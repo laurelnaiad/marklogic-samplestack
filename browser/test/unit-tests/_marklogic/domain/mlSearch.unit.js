@@ -74,7 +74,6 @@ define([
       //     }
       //   });
       //
-      //   helper.setExpectCsrf($httpBackend);
       //   /* jshint ignore:start */
       //   $httpBackend.expectPOST('/v1/search', {
       //     "query":{
@@ -123,7 +122,6 @@ define([
       });
 
       it('should POST a text-only query', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST(/\/v1\/search$/)
             .respond(200, mocks.searchResponse);
 
@@ -145,7 +143,6 @@ define([
       it(
         'should POST a query without a criterion if value is not truthy',
         function (done) {
-          helper.setExpectCsrf($httpBackend);
           $httpBackend.expectPOST(
             /\/v1\/search$/,
             {
@@ -181,7 +178,6 @@ define([
       );
 
       it('should POST a query with a text constraint', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST(
           /\/v1\/search$/,
           {
@@ -228,7 +224,6 @@ define([
       it(
         'should POST a query with no text constraint and still have "q"',
         function (done) {
-          helper.setExpectCsrf($httpBackend);
           $httpBackend.expectPOST(
             /\/v1\/search$/,
             {
@@ -256,7 +251,6 @@ define([
       );
 
       it('should POST a query with an enum constraint', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST(
           /\/v1\/search$/,
           {
@@ -306,7 +300,6 @@ define([
       });
 
       it('should POST a query with a date constraint', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST(
           /\/v1\/search$/,
           {
@@ -351,7 +344,6 @@ define([
       });
 
       it('should POST a query with a boolean constraint', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST(
           /\/v1\/search$/,
           {
@@ -626,7 +618,6 @@ define([
             facetValues.count = facetValues.count * 2;
           });
         });
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST(/\/v1\/search$/).respond(mocks.searchResponse);
         $httpBackend.expectPOST(/\/v1\/search$/).respond(mocks.searchResponse);
 
@@ -671,7 +662,6 @@ define([
               facetValues.count = facetValues.count * 2;
             });
           });
-          helper.setExpectCsrf($httpBackend);
           $httpBackend.expectPOST(/\/v1\/search$/)
               .respond(mocks.searchResponse);
           $httpBackend.expectPOST(/\/v1\/search$/)
