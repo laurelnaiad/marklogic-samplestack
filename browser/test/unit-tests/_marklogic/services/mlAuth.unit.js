@@ -6,7 +6,7 @@ define(['testHelper'], function (helper) {
       var $httpBackend;
       var mlAuth;
       var mlStore;
-      var $cookieStore;
+      var $cookies;
       var mlSession;
       var $rootScope;
       var $timeout;
@@ -19,7 +19,7 @@ define(['testHelper'], function (helper) {
         inject(
           function (
             _$httpBackend_,
-            _$cookieStore_,
+            _$cookies_,
             _mlStore_,
             _mlAuth_,
             _mlSession_,
@@ -29,7 +29,7 @@ define(['testHelper'], function (helper) {
             $httpBackend = _$httpBackend_;
             mlAuth = _mlAuth_;
             mlStore = _mlStore_;
-            $cookieStore = _$cookieStore_;
+            $cookies = _$cookies_;
             mlSession = _mlSession_;
             $rootScope = _$rootScope_;
             $timeout = _$timeout_;
@@ -75,13 +75,13 @@ define(['testHelper'], function (helper) {
         // have a valid MlUserModel instance
         session.$ml.valid.should.be.true;
         mlStore.session.should.deep.eql(session);
-        $cookieStore.get('sessionId').should.equal('seven');
+        $cookies['sessionId'].should.equal('seven');
       };
 
       var testSessionBadness = function () {
         // got the data back
         mlStore.should.not.have.property('session');
-        expect($cookieStore.get('sessionId')).not.to.be.ok;
+        expect($cookies['sessionId']).not.to.be.ok;
       };
 
       describe('authenticate', function () {
@@ -137,7 +137,7 @@ define(['testHelper'], function (helper) {
             mlAuth.restoreSession().then(
               function (session) {
                 expect(session).be.undefined;
-                $cookieStore.get('sessionId').should.equal('seven');
+                $cookies['sessionId'].should.equal('seven');
                 done();
               },
               function (reason) {
@@ -151,7 +151,7 @@ define(['testHelper'], function (helper) {
         it('should do nothing if no session info', function (done) {
           doAuthenticate(function (session) {
             mlStore.session = null;
-            $cookieStore.remove('sessionId');
+            delete $cookies['sessionId'];
 
             mlAuth.restoreSession().then(
               function (session) {

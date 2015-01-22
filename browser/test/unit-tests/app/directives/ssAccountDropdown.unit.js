@@ -71,7 +71,10 @@ define([
           var session = ssSession.create({
             username: 'joeUser',
           });
-          session.onResponsePOST(validUser);
+          // hack b/c we have a lower/upper case issue in this test
+          myUser = _.clone(validUser);
+          myUser.userName = myUser.username;
+          session.onResponsePOST(myUser);
           scope.store = {
             session: session
           };

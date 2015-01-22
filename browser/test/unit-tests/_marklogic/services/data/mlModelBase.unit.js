@@ -409,7 +409,6 @@ define(['testHelper'], function (helper) {
       });
 
       it('the service should support del from a spec', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectDELETE('/v1/example/1').respond({});
         var promise = impl1.del({ id: '1'});
         promise.then(
@@ -426,7 +425,6 @@ define(['testHelper'], function (helper) {
       });
 
       it('the service should support del from an args list', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectDELETE('/v1/example/1').respond({});
         var promise = impl1.del('1');
         promise.then(
@@ -443,7 +441,6 @@ define(['testHelper'], function (helper) {
       });
 
       it('should support post from an instance', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST('/v1/example').respond({
           id: '1'
         });
@@ -465,7 +462,6 @@ define(['testHelper'], function (helper) {
       });
 
       it('the service should support post from spec', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPOST('/v1/example').respond({
           id: '1'
         });
@@ -486,7 +482,6 @@ define(['testHelper'], function (helper) {
       });
 
       it('should support put from instance', function (done) {
-        helper.setExpectCsrf($httpBackend);
         $httpBackend.expectPUT('/v1/example/1').respond({});
         var inst = impl1.create({
           id: '1',
