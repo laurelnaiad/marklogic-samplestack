@@ -43,6 +43,7 @@ define(['_marklogic/module'], function (module) {
         '$cookieStore',
         '$timeout',
         '$log',
+        '$http',
         'mlStore',
         function (
           $injector,
@@ -53,6 +54,7 @@ define(['_marklogic/module'], function (module) {
           $cookieStore,
           $timeout,
           $log,
+          $http,
           mlStore
         ) {
           var sessionModel = $injector.get(this.sessionModel);
@@ -214,6 +216,7 @@ define(['_marklogic/module'], function (module) {
               angular.forEach($cookies, function (cookie, name) {
                 $cookieStore.remove(name);
               });
+              delete $http.defaults.headers.common['X-CSRF-TOKEN'];
               delete mlStore.session;
               deferred.resolve();
               onSessionChange();
