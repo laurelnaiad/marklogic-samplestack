@@ -22,6 +22,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -91,6 +92,7 @@ public class SamplestackSecurityConfigurer {
 		   		.headers()
 		   			.xssProtection()
 		   			.cacheControl();
+		
 		http
 		   .authorizeRequests()
 			    .antMatchers(HttpMethod.GET, "/v1/session", "/v1/questions/**",
@@ -102,7 +104,9 @@ public class SamplestackSecurityConfigurer {
 				.authenticated().and().authorizeRequests().anyRequest()
 				.denyAll();
 		// keep the same session before and after login.
-		http.sessionManagement().sessionFixation().none();
+		http.sessionManagement()
+			.sessionFixation().none()
+			.sessionCreationPolicy(SessionCreationPolicy.NEVER);
 		// customize Spring boot form login to work with rich client expectations.
 		http.formLogin()
 				.loginProcessingUrl("/v1/session")

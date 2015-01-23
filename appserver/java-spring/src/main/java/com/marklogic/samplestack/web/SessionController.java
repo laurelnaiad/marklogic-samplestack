@@ -17,8 +17,10 @@ package com.marklogic.samplestack.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,6 +62,14 @@ public class SessionController {
 
 		// not logged in
 		if (ClientRole.securityContextRole() == ClientRole.SAMPLESTACK_GUEST)  {
+			// explicitly make a session
+			CsrfToken token = (CsrfToken) request.getAttribute("_csrf");
+			HttpSession session = request.getSession();
+			if (token != null) {
+				response.setHeader("X-CSRF-HEADER", token.getHeaderName());
+				response.setHeader("X-CSRF-PARAM", token.getParameterName());
+				response.setHeader(token.getHeaderName(), token.getToken());
+			}
 			return errors.makeJsonResponse(200, "New Session");
 		}
 		else {
