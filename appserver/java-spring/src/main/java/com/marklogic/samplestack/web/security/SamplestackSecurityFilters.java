@@ -39,8 +39,10 @@ class SamplestackSecurityFilters extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		CsrfToken token = (CsrfToken) request.getAttribute("_csrf");
-		// do not include token on any CORS options call.
-		if (token != null && !request.getMethod().equals("OPTIONS")) {
+		// do not include token if no session on any CORS options call.
+		if (request.getSession(false) != null 
+				&& token != null && 
+				!request.getMethod().equals("OPTIONS")) {
 			response.setHeader("X-CSRF-HEADER", token.getHeaderName());
 			response.setHeader("X-CSRF-PARAM", token.getParameterName());
 			response.setHeader(token.getHeaderName(), token.getToken());
