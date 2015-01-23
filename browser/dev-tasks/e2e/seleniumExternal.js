@@ -5,7 +5,7 @@ module.exports = {
   start: function (args, cb) {
     ctx.setActiveServer('selenium', {
       close: function (cb) { cb(); },
-      url: url.parse(args.seleniumAddress)
+      url: ctx.options.addresses.seleniumServer.href
     });
     ctx.seleniumStarted = true;
     cb();
