@@ -15,11 +15,19 @@
  */
 package com.marklogic.samplestack.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 
 /**
  * Wraps security violations for Samplestack.
  */
 @SuppressWarnings("serial")
+@ResponseStatus(HttpStatus.FORBIDDEN)
 public class SamplestackSecurityException extends RuntimeException {
+
+	public SamplestackSecurityException(String message) {
+		super(message);
+	}
 
 }

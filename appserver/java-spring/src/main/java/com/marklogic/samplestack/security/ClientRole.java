@@ -35,10 +35,10 @@ public enum ClientRole {
 		switch(this) {
     	case SAMPLESTACK_CONTRIBUTOR: return "marklogic.writer"; 
     	case SAMPLESTACK_GUEST: return "marklogic.guest";
-    	default: throw new SamplestackSecurityException();
+    	default: throw new SamplestackSecurityException("Unsupported Role.");
 		}
 	}
-	
+
 	/**
 	 * Gets the name of the user parameter for this ClientRole.
 	 * @return username parameter used in build.gradle to configure the database connection.
@@ -46,7 +46,7 @@ public enum ClientRole {
 	public String getUserParam() {
 		return getPrefix() + ".user";
 	}
-	
+
 	/**
 	 * Gets the name of the password parameter for this ClientRole.
 	 * @return username parameter used in build.gradle to configure the database connection.
