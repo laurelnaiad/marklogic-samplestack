@@ -24,8 +24,8 @@ define(['testHelper'], function (helper) {
         });
 
         it('should NOT set CSRF prior to POSTing', function (done) {
-          $httpBackend.expectPOST('/v1/anything').respond(200);
-          var resp = $http.post('/v1/anything');
+          $httpBackend.expectPOST('/v1/session').respond(200);
+          var resp = $http.post('/v1/session');
           resp.then(
             function () {
               $http.defaults.headers.common
@@ -53,8 +53,8 @@ define(['testHelper'], function (helper) {
 
         it('should set CSRF prior to POSTing', function (done) {
           helper.setExpectCsrf($httpBackend);
-          $httpBackend.expectPOST('/v1/anything').respond(200);
-          var resp = $http.post('/v1/anything');
+          $httpBackend.expectPOST('/v1/session').respond(200);
+          var resp = $http.post('/v1/session');
           resp.then(
             function () {
               $http.defaults.headers.common['X-CSRF-TOKEN']
@@ -69,7 +69,7 @@ define(['testHelper'], function (helper) {
         it('should supply CSRF when POSTing', function () {
           helper.setExpectCsrf($httpBackend);
           $httpBackend.expectPOST(
-            '/v1/something',
+            '/v1/session',
             null,
             function (headers) {
               var hasCsrf = headers['X-CSRF-TOKEN'] === 'some token';
@@ -77,12 +77,14 @@ define(['testHelper'], function (helper) {
             }
           ).respond(200);
 
-          var resp = $http.post('/v1/something');
+          var resp = $http.post('/v1/session');
           $httpBackend.flush();
           resp.should.eventually.have.property('status', 200);
         });
 
-        it('should only make one request to get CSRF', function (done) {
+        // this test isn't particularly valid as written if we only
+        // get CSRF token when POSTing session
+        xit('should only make one request to get CSRF', function (done) {
           helper.setExpectCsrf($httpBackend);
           $httpBackend.expectPOST('/v1/first').respond(200);
           $httpBackend.expectPUT('/v1/second').respond(200);
@@ -100,27 +102,39 @@ define(['testHelper'], function (helper) {
           $httpBackend.flush();
         });
 
-        it('shouldn\'t get in the way if no CSRF', function () {
+        it('should reject if no CSRF', function (done) {
           // second parameter makes CSRF not come back from backend
           helper.setExpectCsrf($httpBackend, true);
-          $httpBackend.expectPOST(
-            '/v1/something',
-            null,
-            function (headers) {
-              return !headers['X-CSRF-TOKEN'];
-            }
-          ).respond(200);
+          // $httpBackend.expectPOST(
+          //   '/v1/session',
+          //   null,
+          //   function (headers) {
+          //     return !headers['X-CSRF-TOKEN'];
+          //   }
+          // ).respond(200);
 
-          var resp = $http.post('/v1/something');
+          var resp = $http.post('/v1/session').then(
+            function () {
+              assert(
+                false,
+                'should not have been posting session without CSRF token'
+              );
+              done();
+            },
+            function () {
+              assert(true);
+              done();
+            }
+          );
           $httpBackend.flush();
-          resp.should.eventually.have.property('status', 200);
+          // resp.should.eventually.have.property('status', 200);
         });
 
         it('shouldn\'t go crazy on error', function (done) {
           // second parameter makes CSRF not come back from backend
 
           $httpBackend.expectGET('/v1/session').respond(400);
-          var resp = $http.post('/v1/something');
+          var resp = $http.post('/v1/session');
           resp.then(
             function () {
               assert(false, 'should not have succeeded');
