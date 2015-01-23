@@ -42,6 +42,7 @@ define(['_marklogic/module'], function (module) {
         '$cookies',
         '$cookieStore',
         '$timeout',
+        '$log',
         'mlStore',
         function (
           $injector,
@@ -51,6 +52,7 @@ define(['_marklogic/module'], function (module) {
           $cookies,
           $cookieStore,
           $timeout,
+          $log,
           mlStore
         ) {
           var sessionModel = $injector.get(this.sessionModel);
@@ -226,13 +228,15 @@ define(['_marklogic/module'], function (module) {
               sessionId = $cookieStore.get('sessionId');
               sessionModel.del(sessionId).then(
                 successHandler,
-                deferred.reject
+                function (reason) {
+                  $log.warn(reason);
+                  successHandler();
+                }
               );
             }
             catch (err) {
-              $rootScope.log(err);
-              // we can't log out of a session we can't identify
-              deferred.reject(err);
+              $log.warn(err);
+              successHandler();
             }
 
             return deferred.promise;
