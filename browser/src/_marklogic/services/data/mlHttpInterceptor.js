@@ -65,9 +65,12 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
           // whether or not we need to get csrf before doing what the app
           // actually wants
           var mustGetCsrf = function (config) {
+            return !$http.defaults.headers.common[self.headerName] &&
+              config.method === 'POST' &&
+              config.url === self.csrfUrl;
 
-            return csrfMethods[config.method]
-                && !$http.defaults.headers.common[self.headerName];
+            // return csrfMethods[config.method]
+            //     && !$http.defaults.headers.common[self.headerName];
           };
 
           // return a promise to have set the csrf header default. To do this,
@@ -90,11 +93,16 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
                   var token = response.headers(self.headerName);
                   if (token){
                     $http.defaults.headers.common[self.headerName] = token;
+                    deferred.resolve(token);
                   }
                   else {
-                    $http.defaults.headers.common[self.headerName] = 'dummy';
+                    deferred.reject(
+                      new Error(
+                        'unable to get CSRF token -- ' &&
+                        'Server did not include a token'
+                      )
+                    );
                   }
-                  deferred.resolve(token);
                 },
                 function (reason) {
                   deferred.reject(
