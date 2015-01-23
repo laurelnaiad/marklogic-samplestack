@@ -39,6 +39,7 @@ define(['_marklogic/module'], function (module) {
         '$rootScope',
         '$q',
         '$window',
+        '$cookies',
         '$cookieStore',
         '$timeout',
         'mlStore',
@@ -47,6 +48,7 @@ define(['_marklogic/module'], function (module) {
           $rootScope,
           $q,
           $window,
+          $cookies,
           $cookieStore,
           $timeout,
           mlStore
@@ -207,7 +209,9 @@ define(['_marklogic/module'], function (module) {
             var deferred = $q.defer();
 
             var successHandler = function () {
-              $cookieStore.remove('sessionId');
+              angular.forEach($cookies, function (cookie, name) {
+                $cookieStore.remove(name);
+              });
               delete mlStore.session;
               deferred.resolve();
               onSessionChange();
