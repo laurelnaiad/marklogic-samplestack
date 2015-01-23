@@ -68,7 +68,10 @@ define(['_marklogic/module'], function (module) {
       };
 
       MlSessionObject.prototype.onResponseGET = function (data) {
-        // throw away the superfluous body that Spring returns
+        if (data.username) {
+          mlModelBase.object.prototype.onResponseGET.call(this, data);
+        }
+        // otherwise throw away the superfluous body that Spring returns
       };
 
       MlSessionObject.prototype.onResponsePOST = function (data) {
