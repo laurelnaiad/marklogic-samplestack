@@ -49,8 +49,8 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
        */
       this.$get = [
         // we inject injector in order to avoid circular dependency on $http
-        '$injector', '$q', 'mlUtil',
-        function ($injector, $q, mlUtil) {
+        '$injector', '$q', '$cookieStore', 'mlUtil',
+        function ($injector, $q, $cookieStore, mlUtil) {
 
           var $http;
           var outstanding;
@@ -65,9 +65,35 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
           // whether or not we need to get csrf before doing what the app
           // actually wants
           var mustGetCsrf = function (config) {
-            return !$http.defaults.headers.common[self.headerName] &&
-              config.method === 'POST' &&
-              config.url === self.csrfUrl;
+
+            var defVal = $http.defaults.headers.common[self.headerName];
+            var stored;
+            if (!defVal &&
+                config.method === 'GET' &&
+                config.url === self.csrfUrl
+            ) {
+              // we're trying to get csrf -- do we have a cookie for that?
+              stored = $cookieStore.get(self.headerName);
+              if (stored) {
+                // just restore it
+                $http.defaults.headers.common[self.headerName] = stored;
+                return false;
+              }
+            }
+            // no restoration -- is now the time?
+            var needNow = !defVal &&
+                config.method === 'POST' &&
+                config.url === self.csrfUrl;
+
+            if (needNow) {
+              stored = $cookieStore.get(self.headerName);
+              if (stored) {
+                dontHave = false;
+                $http.defaults.headers.common[self.headerName] = stored;
+              }
+            }
+
+            return needNow;
 
             // return csrfMethods[config.method]
             //     && !$http.defaults.headers.common[self.headerName];
@@ -93,6 +119,7 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
                   var token = response.headers(self.headerName);
                   if (token){
                     $http.defaults.headers.common[self.headerName] = token;
+                    $cookieStore.put(self.headerName, token);
                     deferred.resolve(token);
                   }
                   else {
