@@ -85,18 +85,7 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
                 config.method === 'POST' &&
                 config.url === self.csrfUrl;
 
-            if (needNow) {
-              stored = $cookieStore.get(self.headerName);
-              if (stored) {
-                dontHave = false;
-                $http.defaults.headers.common[self.headerName] = stored;
-              }
-            }
-
             return needNow;
-
-            // return csrfMethods[config.method]
-            //     && !$http.defaults.headers.common[self.headerName];
           };
 
           // return a promise to have set the csrf header default. To do this,
