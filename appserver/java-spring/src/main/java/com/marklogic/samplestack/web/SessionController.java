@@ -68,7 +68,7 @@ public class SessionController {
 		// not logged in
 		if (ClientRole.securityContextRole() == ClientRole.SAMPLESTACK_GUEST)  {
 			HttpSession session = request.getSession();
-			if (request.getHeader("X-CSRF-TOKEN") == null && ! session.isNew()) {
+			if (request.getHeader("X-CSRF-TOKEN") == null) {
 				session.invalidate();
 				session = request.getSession();
 				CsrfToken replacementToken = csrfTokenRepository.generateToken(request);
