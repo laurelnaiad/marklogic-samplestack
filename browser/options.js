@@ -6,11 +6,13 @@ var defaults = {
 
 
   addresses: {
-    // this configuration makes use of CORS and does not use the node proxy
-    middleTierRestServer: url.parse('http://localhost:8090'),
 
-    // this ccnfig would use the proxy running on the same port as the webapp
-    // middleTierRestServer: url.parse('/'),
+    // ** whether or not to use CORS **
+    // this config makes use of CORS and does not use the node proxy
+    // middleTierRestServer: url.parse('http://localhost:8090'),
+
+    // this ccnfig uses the proxy running on the same port as the webapp
+    middleTierRestServer: url.parse('/'),
 
     // the middle tier
     appServer: url.parse('http://localhost:8090'),
