@@ -40,7 +40,6 @@ define(['_marklogic/module'], function (module) {
         '$q',
         '$window',
         '$cookies',
-        '$cookieStore',
         '$timeout',
         '$log',
         '$http',
@@ -51,7 +50,6 @@ define(['_marklogic/module'], function (module) {
           $q,
           $window,
           $cookies,
-          $cookieStore,
           $timeout,
           $log,
           $http,
@@ -109,10 +107,10 @@ define(['_marklogic/module'], function (module) {
             if (!mlStore.session) {
               var sessionId;
               try {
-                sessionId = $cookieStore.get('sessionId');
+                sessionId = $cookies.sessionId;
               }
               catch (err) {
-                $rootScope.log(err);
+                $log.warn(err);
               }
 
               if (sessionId) {
@@ -130,11 +128,11 @@ define(['_marklogic/module'], function (module) {
                     }
                     else {
                       try {
-                        $cookieStore.put('sessionId', sess.id);
+                        $cookies['sessionId'] = sess.id;
                         mlStore.session = sess;
                       }
                       catch (err) {
-                        $rootScope.log(err);
+                        $log.warn(err);
                       }
 
                       deferred.resolve(sess);
@@ -186,10 +184,10 @@ define(['_marklogic/module'], function (module) {
                 }
                 else {
                   try {
-                    $cookieStore.put('sessionId', sess.id);
+                    $cookies.sessionId = sess.id;
                     mlStore.session = sess;
                   }
-                  catch (err) { $rootScope.log(err); }
+                  catch (err) { $log.warn(err); }
                   deferred.resolve(sess);
                   onSessionChange();
                 }
@@ -214,7 +212,7 @@ define(['_marklogic/module'], function (module) {
 
             var successHandler = function () {
               angular.forEach($cookies, function (cookie, name) {
-                $cookieStore.remove(name);
+                delete $cookies[name];
               });
               delete $http.defaults.headers.common['X-CSRF-TOKEN'];
               delete mlStore.session;
@@ -228,7 +226,7 @@ define(['_marklogic/module'], function (module) {
             var sessionId;
 
             try {
-              sessionId = $cookieStore.get('sessionId');
+              sessionId = $cookies['sessionId'];
               sessionModel.del(sessionId).then(
                 successHandler,
                 function (reason) {
