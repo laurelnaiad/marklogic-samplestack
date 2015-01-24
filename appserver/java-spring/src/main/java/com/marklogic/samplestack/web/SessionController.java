@@ -21,6 +21,8 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,6 +52,9 @@ public class SessionController {
 	@Autowired 
 	private ContributorService contributorService;
 
+	@Autowired
+	private CsrfTokenRepository csrfTokenRepository;
+	
 	/**
 	 * Exposes endpoint that returns CSRF token information and a session for use in login.
 	 * @param request The Http Request.
@@ -62,13 +67,15 @@ public class SessionController {
 
 		// not logged in
 		if (ClientRole.securityContextRole() == ClientRole.SAMPLESTACK_GUEST)  {
-			// explicitly make a session
-			CsrfToken token = (CsrfToken) request.getAttribute("_csrf");
 			HttpSession session = request.getSession();
-			if (token != null) {
-				response.setHeader("X-CSRF-HEADER", token.getHeaderName());
-				response.setHeader("X-CSRF-PARAM", token.getParameterName());
-				response.setHeader(token.getHeaderName(), token.getToken());
+			if (request.getHeader("X-CSRF-TOKEN") == null && ! session.isNew()) {
+				session.invalidate();
+				session = request.getSession();
+				CsrfToken replacementToken = csrfTokenRepository.generateToken(request);
+                csrfTokenRepository.saveToken(replacementToken, request, response);
+				response.setHeader("X-CSRF-HEADER", replacementToken.getHeaderName());
+				response.setHeader("X-CSRF-PARAM", replacementToken.getParameterName());
+				response.setHeader(replacementToken.getHeaderName(), replacementToken.getToken());
 			}
 			return errors.makeJsonResponse(200, "New Session");
 		}
