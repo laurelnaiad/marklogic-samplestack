@@ -187,6 +187,15 @@ define(['_marklogic/module', 'moment'], function (module, moment) {
               }
             },
 
+            response: function (response) {
+              var token = response.headers(self.headerName);
+              if (token) {
+                $http.defaults.headers.common[self.headerName] = token;
+                $cookies[self.headerName] = token;
+              }
+              return response;
+            },
+
             responseError: function (rejection) {
               var timeoutMsg =
                   '$http response.status === 0. This may indicate a timeout. ' +
