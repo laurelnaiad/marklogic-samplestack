@@ -36,8 +36,13 @@ public class CsrfRequestMatcher implements RequestMatcher {
 			} else {
 				return true;
 			}
-		// but otherwise protect all REST API calls
+		// we but otherwise protect all REST API calls
 		} else {
+			// escape hatch -- make a new session if you request /v1/session.
+			// don't require CSRF
+			if (request.getMethod().equals("GET") && sessionMatcher.matches(request) && request.getHeader("X-CSRF-TOKEN") == null) {
+				return false;
+			}
 			if (allRESTMatcher.matches(request)) {
 				return true;
 			}
