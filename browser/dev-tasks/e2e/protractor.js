@@ -7,6 +7,14 @@ var Runner = require('protractor/lib/runner');
 
 var ctx = require('../context');
 
+// under travis, remove WIN7 browsers
+// they are too slow in sauce and travis times out
+if (process.env['TRAVIS_JOB_NUMBER']) {
+  _.remove(ctx.options.supportedBrowsers, function (key) {
+    return key.indexOf('win7') >= 0;
+  });
+}
+
 var ptorConfig = {
   stackTrace: false,
   getPageTimeout: 180000,
