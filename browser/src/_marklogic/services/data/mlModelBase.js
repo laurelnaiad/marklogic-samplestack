@@ -410,9 +410,12 @@ define(['_marklogic/module'], function (module) {
         aborter.requestComplete = false;
         $timeout(function () {
           if (!aborter.requestComplete) {
-            waiter.reject('$http timed out and Angular lost the promise');
+            throw new Error(
+              '$http operation seems to have timed out (and Angular seems ' +
+              'to have lost the promise'
+            );
           }
-        }, httpConfig.timeout + 2000);
+        }, 50);
 
         $q.all(promises).then(
           function (results) {
