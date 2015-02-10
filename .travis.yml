@@ -11,6 +11,7 @@ addons:
 # used across forks/branches.
 
 before_install:
+  - sudo sysctl net.ipv4
   - npm -v
   - node -v
 
