@@ -68,6 +68,9 @@ define(['app/module'], function (module) {
           scope.relatedShown = null;
           scope.relatedActive = true;
 
+          // For controlling related-tags dialog
+          scope.control = {};
+
           var resetSelections = function () {
             // Start by moving all tags in results to unsel array
             scope.unselTags = angular.copy(scope.results);
@@ -76,6 +79,10 @@ define(['app/module'], function (module) {
               if (!tag.count) {
                 delete scope.unselTags[tag.name];
               }
+              // Add method for showing related
+              tag.showRel = function (tag) {
+                window.console.log('showing related');
+              };
             });
             scope.selTags = {};
             if (scope.criteria.values) {
@@ -188,8 +195,11 @@ define(['app/module'], function (module) {
               scope.relatedActive = true;
               return;
             }
-            // Display tag container
+
+            // Populate and display tag container
             scope.relatedShown = tag;
+            scope.control[tag.name].openRelated();
+
             // Close on outside clicks
             if (scope.relatedShown) {
               $window.onclick = function (event) {

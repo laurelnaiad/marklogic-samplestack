@@ -44,12 +44,15 @@
     <div
       class="checkbox"
       ng-repeat="tag in toArray(selTags) | orderBy:sort"
-      ng-click="showRelated(tag);$event.stopPropagation();"
+      ng-click="
+        showRelated(tag);$event.stopPropagation();
+      "
     >
       <ss-related-tags
         ng-show="tag === relatedShown"
         criteria="criteria"
         tag="tag"
+        control="control"
       ></ss-related-tags>
       <label
           title="Constrain results to selected tag"
@@ -74,12 +77,15 @@
       ng-repeat="tag in toArray(unselTags) |
                  orderBy:sort |
                  limitTo:tagLimit"
-      ng-click="showRelated(tag);$event.stopPropagation();"
+      ng-click="
+        showRelated(tag);$event.stopPropagation();
+      "
     >
       <ss-related-tags
         ng-show="tag === relatedShown"
         criteria="criteria"
         tag="tag"
+        control="control"
       ></ss-related-tags>
       <label
           title="Constrain results to selected tag"

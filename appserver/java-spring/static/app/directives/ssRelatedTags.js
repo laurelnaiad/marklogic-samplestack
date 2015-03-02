@@ -33,28 +33,31 @@ define([
       templateUrl: '/app/directives/ssRelatedTags.html',
       scope: {
         criteria: '=',       // Tags in the selection criteria
-        tag: '='
+        tag: '=',
+        control: '='
       },
       link: function (scope, element, attrs) {
 
-        scope.loading = true;
-
-        // Populate container
         scope.relatedTags = null;
-        var tagsSearch = ssTagsSearch.create({
-          criteria: {
-            tagsQuery: {
-              start: 1,
-              pageLength: 10,
-              relatedTo: scope.tag.name,
-              sort: 'frequency'
+        scope.loading = true;
+        scope.control[scope.tag.name] = {};
+
+        scope.control[scope.tag.name].openRelated = function () {
+          var tagsSearch = ssTagsSearch.create({
+            criteria: {
+              tagsQuery: {
+                start: 1,
+                pageLength: 100,
+                relatedTo: scope.tag.name,
+                sort: 'frequency'
+              }
             }
-          }
-        });
-        tagsSearch.post().$ml.waiting.then(function () {
-          scope.relatedTags = tagsSearch.results.items;
-          scope.loading = false;
-        });
+          });
+          tagsSearch.post().$ml.waiting.then(function () {
+            scope.relatedTags = tagsSearch.results.items;
+            scope.loading = false;
+          });
+        };
 
         // Set clicked tag as only tag in criteria
         scope.selectRelated = function (selTag) {
