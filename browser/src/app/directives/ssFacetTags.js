@@ -210,6 +210,18 @@ define(['app/module'], function (module) {
             }
           };
 
+         /**
+          * Hide related-tags popup on mouseleave event
+          * @param {object} tag The selected tag object
+          */
+          scope.hideRelated = function (tag) {
+            // If popup currently shown, hide
+            if (scope.relatedShown === tag) {
+              scope.relatedShown = null;
+              return;
+            }
+          };
+
         }
 
       };

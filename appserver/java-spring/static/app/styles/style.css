@@ -5803,10 +5803,11 @@ ss-qna-doc-metadata .ss-comment-info {
 ss-related-tags {
   position: absolute;
   left: 315px;
-  top: -50px;
+  top: -2px;
   width: 162px;
   border: solid 1px #ddd;
   border-radius: 5px;
+  background-color: #fff;
   z-index: 999; }
   ss-related-tags .ss-related-title {
     height: 50px;
@@ -5825,6 +5826,8 @@ ss-related-tags {
     padding: 11px;
     background-color: #eee;
     border-bottom: solid 1px #ddd;
+    border-left: solid 1px #ddd;
+    border-right: solid 1px #ddd;
     background-color: #fff;
     overflow-y: scroll;
     height: 105px;
@@ -5833,6 +5836,13 @@ ss-related-tags {
     width: 100%;
     font-size: 12px;
     line-height: 22px; }
+  ss-related-tags .ss-related-none-found {
+    padding: 11px;
+    background-color: #f2f2f2;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    height: 50px; }
   ss-related-tags .spinner {
     height: 70px;
     left: 5px; }

@@ -80,6 +80,7 @@
       ng-click="
         showRelated(tag);$event.stopPropagation();
       "
+      ng-mouseleave="hideRelated(tag);"
     >
       <ss-related-tags
         ng-show="tag === relatedShown"
