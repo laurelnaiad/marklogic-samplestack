@@ -34,15 +34,18 @@ define([
       scope: {
         criteria: '=',       // Tags in the selection criteria
         tag: '=',
-        control: '='
+        show: '='
       },
       link: function (scope, element, attrs) {
 
         scope.relatedTags = null;
         scope.loading = true;
-        scope.control[scope.tag.name] = {};
 
-        scope.control[scope.tag.name].openRelated = function () {
+       /**
+        * Populate and show related-tag popup. Uses ssTagsSearch to
+        * retrieve tag data.
+        */
+        scope.show = function () {
           var tagsSearch = ssTagsSearch.create({
             criteria: {
               tagsQuery: {
@@ -59,7 +62,9 @@ define([
           });
         };
 
-        // Set clicked tag as only tag in criteria
+       /**
+        * Set clicked tag as only tag in criteria then initiate new search.
+        */
         scope.selectRelated = function (selTag) {
           scope.criteria.values = [selTag.name];
           scope.$emit('criteriaChange');

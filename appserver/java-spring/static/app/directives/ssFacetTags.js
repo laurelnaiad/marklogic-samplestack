@@ -68,8 +68,8 @@ define(['app/module'], function (module) {
           scope.relatedShown = null;
           scope.relatedActive = true;
 
-          // For controlling related-tags dialog
-          scope.control = {};
+          // For controlling related-tags popup
+          scope.show = {};
 
           var resetSelections = function () {
             // Start by moving all tags in results to unsel array
@@ -79,10 +79,6 @@ define(['app/module'], function (module) {
               if (!tag.count) {
                 delete scope.unselTags[tag.name];
               }
-              // Add method for showing related
-              tag.showRel = function (tag) {
-                window.console.log('showing related');
-              };
             });
             scope.selTags = {};
             if (scope.criteria.values) {
@@ -183,24 +179,29 @@ define(['app/module'], function (module) {
             scope.$emit('browseTags');
           };
 
-          // @see http://stackoverflow.com/a/21151625/3682288
+         /**
+          * Show related-tags popup for a selected tag
+          * @param {object} tag The selected tag object
+          */
           scope.showRelated = function (tag) {
-            // If currently shown, hide
+            // If popup currently shown, hide
             if (scope.relatedShown === tag) {
               scope.relatedShown = null;
               return;
             }
             // Don't show if flag is false
+            // Avoids showing related tags on checkbox or label click
             if (scope.relatedActive === false) {
               scope.relatedActive = true;
               return;
             }
 
-            // Populate and display tag container
+            // Populate and display popup
+            scope.show[tag.name]();
             scope.relatedShown = tag;
-            scope.control[tag.name].openRelated();
 
-            // Close on outside clicks
+            // Close popup on outside clicks
+            // @see http://stackoverflow.com/a/21151625/3682288
             if (scope.relatedShown) {
               $window.onclick = function (event) {
                   scope.relatedShown = null;
