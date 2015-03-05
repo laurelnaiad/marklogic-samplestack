@@ -54,13 +54,6 @@ var shellCmd = function (cwd, command, signal, cb) {
         signaled = true;
         return cb(null, child);
       }
-      // else {
-      //   process.stdout.write(
-      //     'signaled' + signaled +
-      //     ' signal' + signal + ' ' +
-      //     data
-      //   );
-      // }
     }
   };
   child.stdout.on('data', goodOutput);
@@ -89,15 +82,6 @@ var start = function (args, cb) {
   var dirForMiddle = path.join(
     ctx.paths.projectRoot, 'appserver/java-spring'
   );
-  //
-  // var seedFile = path.resolve(
-  //   process.cwd(), '..', 'seed-data' + customSeed + '.tgz'
-  // );
-  //
-  // var dbLoadParam = customSeed ?
-  //     ' -PseedDataUrl=file://' + seedFile :
-  //     '';
-  // var loadCmd = gradleCmd + ' dbLoad' + dbLoadParam + ' --stacktrace';
 
   async.series([
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
@@ -108,9 +92,6 @@ var start = function (args, cb) {
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' seedDataFetch', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' seedDataExtract', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbLoad', null),
-    // shellCmd.bind(
-    //   null, dirForMiddle, loadCmd, null
-    // ),
     shellCmd.bind(
       null,
       dirForMiddle,

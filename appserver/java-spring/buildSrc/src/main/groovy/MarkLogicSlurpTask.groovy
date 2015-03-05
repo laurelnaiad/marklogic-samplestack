@@ -14,7 +14,7 @@ import com.marklogic.client.io.DocumentMetadataHandle.Capability
 
 public class MarkLogicSlurpTask extends MarkLogicTask {
 
-    File seedDirectory 
+    File seedDirectory
 
 	private writerClient() {
 		RESTClient client = new RESTClient("http://" + config.marklogic.rest.host + ":" + config.marklogic.rest.port)
@@ -29,26 +29,26 @@ public class MarkLogicSlurpTask extends MarkLogicTask {
         params.path = "/v1/graphs"
         params.queryString = "graph="+uri
         params.contentType = "application/n-triples"
-		params.body = new String(rdftriples.getBytes("UTF-8"))
+		params.body = rdftriples.newReader("UTF-8")
         client.put(params)
     }
 
     @TaskAction
     void load() {
 		RESTClient client = writerClient()
-        def jsonFiles = project.fileTree(seedDirectory).matching { include '**/*.json' 
+        def jsonFiles = project.fileTree(seedDirectory).matching { include '**/*.json'
 include '**/*.nt'}
         def BATCH_SIZE = 300
         def numWritten = 0
         def writeSet = docMgr.newWriteSet()
         def acceptedPermissionMetadata = new DocumentMetadataHandle().withPermission("samplestack-guest", Capability.READ)
         def pojoCollectionMetadata = new DocumentMetadataHandle().withCollections("com.marklogic.samplestack.domain.Contributor").withPermission("samplestack-guest", Capability.READ)
-        jsonFiles.each { 
+        jsonFiles.each {
             def pattern = Pattern.compile(".*" + seedDirectory.name)
             def docUri = it.path.replaceAll(pattern, "").replaceAll("\\\\", "/")
             if (it.path.contains("dbpedia")) {
                 logger.info("PUT RDF data to graph " + docUri)
-                putRdf(client, docUri, it.text)
+                putRdf(client, docUri, it)
             }
             else {
                 logger.info("Adding a JSON object: " + docUri)
