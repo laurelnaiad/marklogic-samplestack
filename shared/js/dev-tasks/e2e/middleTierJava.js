@@ -105,6 +105,8 @@ var start = function (args, cb) {
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbConfigure', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' test', null),
+    shellCmd.bind(null, dirForMiddle, gradleCmd + ' seedDataFetch', null),
+    shellCmd.bind(null, dirForMiddle, gradleCmd + ' seedDataExtract', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbLoad', null),
     // shellCmd.bind(
     //   null, dirForMiddle, loadCmd, null
