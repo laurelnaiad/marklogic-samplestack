@@ -89,15 +89,15 @@ var start = function (args, cb) {
   var dirForMiddle = path.join(
     ctx.paths.projectRoot, 'appserver/java-spring'
   );
-
-  var seedFile = path.resolve(
-    process.cwd(), '..', 'seed-data' + customSeed + '.tgz'
-  );
-
-  var dbLoadParam = customSeed ?
-      ' -PseedDataUrl=file://' + seedFile :
-      '';
-  var loadCmd = gradleCmd + ' dbLoad' + dbLoadParam + ' --stacktrace';
+  //
+  // var seedFile = path.resolve(
+  //   process.cwd(), '..', 'seed-data' + customSeed + '.tgz'
+  // );
+  //
+  // var dbLoadParam = customSeed ?
+  //     ' -PseedDataUrl=file://' + seedFile :
+  //     '';
+  // var loadCmd = gradleCmd + ' dbLoad' + dbLoadParam + ' --stacktrace';
 
   async.series([
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
@@ -105,9 +105,10 @@ var start = function (args, cb) {
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbConfigure', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' test', null),
-    shellCmd.bind(
-      null, dirForMiddle, loadCmd, null
-    ),
+    shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbLoad', null),
+    // shellCmd.bind(
+    //   null, dirForMiddle, loadCmd, null
+    // ),
     shellCmd.bind(
       null,
       dirForMiddle,
