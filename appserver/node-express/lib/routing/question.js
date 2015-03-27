@@ -67,6 +67,41 @@ module.exports = function (app, mw) {
     }
   };
 
+  var handleVotes = function (db, spec, txid) {
+    console.log("handleVotes - " + txid);
+    console.log("spec");
+    console.log(JSON.stringify(spec));
+    console.log("db");
+    console.log(JSON.stringify(db));
+
+    return db.qnaDoc.getUniqueContent(
+      null, { id: spec.questionId }
+    )
+    .then(function (doc) {
+      var step1;
+      var step2;
+      var contentContributorId;
+
+      contentContributorId = doc.owner.id;
+      spec.voteChange = spec.operation === 'upvotes' ? 1 : -1;
+      notAlreadyVoted(doc, spec.contributor);
+      spec.operation = 'voteQuestion';
+      console.log("step1 - " + txid);
+      step1 = db.qnaDoc.patch(txid, spec);
+      console.log("step2 - " + txid);
+      step2 = db.contributor.patchReputation(
+        txid, contentContributorId, spec.voteChange
+      );
+      return [step1, step2]
+    })
+    .then(function (promises) {
+      return Promise.all(promises);
+    })
+    .then(function (responses) {
+      return responses[0];  // the first item in the array is the spec we want (this is returned as a response to the browser)
+    });
+  };
+
   /*
    * Route for the following requests
    *
@@ -85,9 +120,6 @@ module.exports = function (app, mw) {
 
       spec.contributor = _.omit(req.user, 'roles');
 
-      var txid;
-      txid = undefined;
-
       /* Generalized response handler */
       var responder = function(resultSpec) {
         return req.db.qnaDoc.getUniqueContent(
@@ -98,63 +130,32 @@ module.exports = function (app, mw) {
         })
       };
 
-      /* Takes Promise.all( [ array of promises] ) */
-      var execAsTransaction = function(exec) {
-        req.db.transactions.open().result()
-        .then(function(res) {
-          txid = res.txid;
-          return exec();
-        })
-        .then(function () {
-          return req.db.transactions.commit(txid).result();
-        })
-        .catch(function (err) {
-          return req.db.transactions.rollback(txid).result()
-          // .thenThrow(err);
-          .then(function () {
-            next({ status: err.statusCode || 500, error: err });
-          });
-        });
-      };
+      var actionPromise;
 
-      return req.db.qnaDoc.getUniqueContent(
-        null, { id: spec.questionId }
-      )
-      .then(function (doc) {
-        var contentContributorId = doc.owner.id;
-        switch (spec.operation) {
-          case 'upvotes':
-          case 'downvotes':
-            var step1, step2;
-            spec.voteChange = spec.operation === 'upvotes' ? 1 : -1;
-            notAlreadyVoted(doc, spec.contributor);
-            spec.operation = 'voteQuestion';
-            step1 = req.db.qnaDoc.patch(txid, spec);
-            step2 = req.db.contributor.patchReputation(
-              txid, contentContributorId, spec.voteChange
-            );
+      switch (spec.operation) {
+        case 'upvotes':
+        case 'downvotes':
+          console.log("req.db");
+          console.log(req.db);
+          actionPromise = req.db.execAsTransaction(
+            handleVotes.bind(null, req.db, spec)
+          );
+          break;
+        case 'comments':
+          spec.operation = 'addQuestionComment';
+          spec.content = req.body;
+          return req.db.qnaDoc.patch(txid, spec);
+          break;
+        case 'answers':
+          spec.operation = 'addAnswer';
+          spec.content = req.body;
+          return req.db.qnaDoc.patch(txid, spec);
+          break;
+        default:
+          throw new errs.unsupportedMethod(req);
+      }
 
-            return execAsTransaction(function() {
-              return Promise.all([step1, step2])
-              .then(function (responses) {
-                return responses[0];  // the first item in the array is the spec we want (this is returned as a response to the browser)
-              });
-            });
-            break;
-          case 'comments':
-            spec.operation = 'addQuestionComment';
-            spec.content = req.body;
-            return req.db.qnaDoc.patch(txid, spec);
-            break;
-          case 'answers':
-            spec.operation = 'addAnswer';
-            spec.content = req.body;
-            return req.db.qnaDoc.patch(txid, spec);
-            break;
-          default:
-            throw new errs.unsupportedMethod(req);
-        }
-      })
+      return actionPromise
       .then(responder)
       .catch(function (err) {
         next({ status: err.statusCode || 500, error: err });

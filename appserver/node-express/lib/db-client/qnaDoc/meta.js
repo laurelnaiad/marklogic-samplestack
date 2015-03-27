@@ -7,6 +7,9 @@ module.exports = {
   },
   serverResponseToSpec: function (resp) {
     var docID;
+    console.log('serverResponseToSpec - resp:')
+    console.log(resp)
+
     if (resp && resp.uri) {
       docID = resp.uri.replace('/questions/','').replace('.json','');
     }
