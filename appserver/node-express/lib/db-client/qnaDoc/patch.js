@@ -41,7 +41,7 @@ module.exports = function (txid, spec) {
         voteCountUp,
         itemTallyChange
       ]
-    }).result();
+    }).result(meta.serverResponseToSpec);
   };
 
   var patchQuestionVote = function (txid, contributor, questionId, voteChange) {
@@ -87,7 +87,7 @@ module.exports = function (txid, spec) {
         pb.insert('/array-node("answers")', 'last-child', answer),
         pb.replace('/lastActivityDate', now)
       ]
-    }).result();
+    }).result(meta.serverResponseToSpec);
   };
 
 
@@ -109,7 +109,7 @@ module.exports = function (txid, spec) {
         pb.insert('/array-node("comments")', 'last-child', comment)
       ]
     }
-    ).result();
+    ).result(meta.serverResponseToSpec);
   };
 
   var patchAnswerAddComment = function (
@@ -134,7 +134,7 @@ module.exports = function (txid, spec) {
           comment
         )
       ]
-    }).result();
+    }).result(meta.serverResponseToSpec);
   };
 
   var patchAnswerAccept = function (txid, contributor, questionId, answerId) {
@@ -148,7 +148,7 @@ module.exports = function (txid, spec) {
           pb.replace('/lastActivityDate', moment())
         ]
       }
-    ).result();
+    ).result(meta.serverResponseToSpec);
   };
 
   switch (spec.operation) {

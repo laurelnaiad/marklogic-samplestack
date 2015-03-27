@@ -75,7 +75,6 @@ module.exports = function (app, mw) {
    * /v1/questions/{id}/answers
    */
   app.post('/v1/questions/:questionId/:operation', [
-    //fd044632-55eb-4c91-9300-7578cee12eb3
     mw.auth.tryReviveSession,
     mw.auth.associateBestRole.bind(app, ['contributors']),
     mw.parseBody.json,
@@ -87,74 +86,80 @@ module.exports = function (app, mw) {
       spec.contributor = _.omit(req.user, 'roles');
 
       var txid;
-      // return req.db.transactions.open().result()
-      // .then(function (transactionId) {
-        // txid = transactionId;
       txid = undefined;
 
-      // TODO: b/c we need to know the contributor of the content
-      // item we need to do a around trip -- two extra round
-      // trips = mmore performant to do this in a server extension
-      return req.db.transactions.open().result()
-      .then(function (response) {
-        txid = response.txid;
+      /* Generalized response handler */
+      var responder = function(resultSpec) {
         return req.db.qnaDoc.getUniqueContent(
-          txid, { id: spec.questionId }
+          null, resultSpec
         )
-        .then(function (doc) {
-          var contentContributorId = doc.owner.id;
-          switch (spec.operation) {
-            case 'upvotes':
-            case 'downvotes':
-              spec.voteChange = spec.operation === 'upvotes' ?
-                  1 :
-                  -1;
-              notAlreadyVoted(doc, spec.contributor);
-              spec.operation = 'voteQuestion';
-              promises.push(req.db.qnaDoc.patch(txid, spec));
-              promises.push(
-                req.db.contributor.patchReputation(
-                  txid, contentContributorId, spec.voteChange
-                )
-              );
-              break;
-            case 'comments':
-              spec.operation = 'addQuestionComment';
-              spec.content = req.body;
-              promises.push(req.db.qnaDoc.patch(txid, spec));
-              break;
-            case 'answers':
-              spec.operation = 'addAnswer';
-              spec.content = req.body;
-              promises.push(req.db.qnaDoc.patch(txid, spec));
-              break;
-            default:
-              throw new errs.unsupportedMethod(req);
-          }
+        .then(function (response) {
+          return res.status(200).send(response);
+        })
+      };
 
-          return Promise.all(promises);
+      /* Takes Promise.all( [ array of promises] ) */
+      var execAsTransaction = function(exec) {
+        req.db.transactions.open().result()
+        .then(function(res) {
+          txid = res.txid;
+          return exec();
         })
         .then(function () {
-          return req.db.transactions.commit(txid).result()
-          .then(function () {
-            return req.db.qnaDoc.getUniqueContent(
-              null, { id: spec.questionId }
-            );
-          })
-          .then(function (question) {
-            return res.status(200).send(question);
-          });
+          return req.db.transactions.commit(txid).result();
         })
         .catch(function (err) {
           return req.db.transactions.rollback(txid).result()
+          // .thenThrow(err);
           .then(function () {
             next({ status: err.statusCode || 500, error: err });
           });
         });
+      };
+
+      return req.db.qnaDoc.getUniqueContent(
+        null, { id: spec.questionId }
+      )
+      .then(function (doc) {
+        var contentContributorId = doc.owner.id;
+        switch (spec.operation) {
+          case 'upvotes':
+          case 'downvotes':
+            var step1, step2;
+            spec.voteChange = spec.operation === 'upvotes' ? 1 : -1;
+            notAlreadyVoted(doc, spec.contributor);
+            spec.operation = 'voteQuestion';
+            step1 = req.db.qnaDoc.patch(txid, spec);
+            step2 = req.db.contributor.patchReputation(
+              txid, contentContributorId, spec.voteChange
+            );
+
+            return execAsTransaction(function() {
+              return Promise.all([step1, step2])
+              .then(function (responses) {
+                return responses[0];  // the first item in the array is the spec we want (this is returned as a response to the browser)
+              });
+            });
+            break;
+          case 'comments':
+            spec.operation = 'addQuestionComment';
+            spec.content = req.body;
+            return req.db.qnaDoc.patch(txid, spec);
+            break;
+          case 'answers':
+            spec.operation = 'addAnswer';
+            spec.content = req.body;
+            return req.db.qnaDoc.patch(txid, spec);
+            break;
+          default:
+            throw new errs.unsupportedMethod(req);
+        }
       })
+      .then(responder)
       .catch(function (err) {
         next({ status: err.statusCode || 500, error: err });
       });
+
     }
   ]);
 
@@ -205,7 +210,7 @@ module.exports = function (app, mw) {
                   -1;
               notAlreadyVoted(answer, spec.contributor);
               spec.operation = 'voteAnswer';
-              promises.push(txid, req.db.qnaDoc.patch(txid, spec));
+              promises.push(req.db.qnaDoc.patch(txid, spec));
               promises.push(
                 req.db.contributor.patchReputation(
                   txid, contentContributorId, spec.voteChange
