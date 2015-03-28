@@ -5,16 +5,6 @@ module.exports = {
   getUri: function (id) {
     return this.baseUri + id + '.json';
   },
-  serverResponseToSpec: function (resp) {
-    var docID;
-    console.log('serverResponseToSpec - resp:')
-    console.log(resp)
-
-    if (resp && resp.uri) {
-      docID = resp.uri.replace('/questions/','').replace('.json','');
-    }
-    return { id : docID };
-  },
   template: {
     question: {
       accepted:false,

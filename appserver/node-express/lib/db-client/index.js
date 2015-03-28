@@ -8,15 +8,15 @@ var execAsTransaction = function(ex) {
   return this.transactions.open().result()
   .then(function(resp) {
     txid = resp.txid;
-    console.log("execAsTransaction - " + txid);
+    console.log('execAsTransaction - txid: ' + txid);
     return ex(txid);
   })
   .then(function () {
-    console.log("execAsTransaction - COMMIT");
+    console.log('execAsTransaction - COMMIT');
     return this.transactions.commit(txid).result();
   })
   .catch(function (err) {
-    console.log("execAsTransaction - ROLLBACK");
+    console.log('execAsTransaction - ROLLBACK');
     return this.transactions.rollback(txid).result()
     .thenThrow(err);
   });
