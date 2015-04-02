@@ -150,6 +150,25 @@ module.exports = function (app, mw) {
     }
   ]);
 
+  /**
+   * Check if a contributor has not already voted on a question or answer.
+   * @param  {Object} content Content for the question or answer being
+   * checked.
+   * @param  {Object} contributor Contributor objectExample:
+   *   {"id":"cf99542d-f024-4478-a6dc-7e723a51b040",
+   *    "displayName":"JoeUser"}
+   * @return {[type]}
+   */
+  var notAlreadyVoted = function (content, contributor) {
+    var already = content.upvotingContributorIds.indexOf(contributor.id) >= 0 ||
+    content.downvotingContributorIds.indexOf(contributor.id) >= 0;
+    if (already) {
+      throw errs.alreadyVoted(content, contributor);
+    }
+    else {
+      return;
+    }
+  };
 
   /*
    * Route for the following requests
