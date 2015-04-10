@@ -40,7 +40,7 @@
         >
           <i
             class="glyphicon glyphicon-remove"
-            ng-click="selected = null"
+            ng-click="clearText()"
           ></i>
         </div>
         <div class="tags-modal-search-icon">
@@ -117,7 +117,7 @@
       ng-change="updatePage(currentPage)"
       max-size="maxSize"
       boundary-links="true"
-      rotate="true"
+      rotate="false"
       ng-class="{ 'missing-count': tagsCount === undefined }"
     ></pagination>
 
