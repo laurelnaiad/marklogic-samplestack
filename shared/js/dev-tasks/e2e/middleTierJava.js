@@ -40,7 +40,7 @@ var shellCmd = function (cwd, command, signal, cb) {
   process.chdir(backupWd);
   if (signal) {
     process.on('exit', function () {
-      child.kill();
+      child.kill('SIGINT');
     });
   }
 
@@ -140,7 +140,7 @@ var start = function (args, cb) {
         mtServer.on('exit', function () {
           cb();
         });
-        mtServer.kill();
+        mtServer.kill('SIGINT');
       }
     });
 
