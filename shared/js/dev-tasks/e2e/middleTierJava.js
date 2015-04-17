@@ -23,8 +23,6 @@ var $ = helper.$;
 var ctx = require('../context');
 var options = ctx.options;
 
-var shell = require('shelljs');
-
 var childProcess = require('child_process');
 var chalk = require('chalk');
 var gradleCmd = /^win/.test(process.platform) ? 'gradlew.bat' : './gradlew';
@@ -34,13 +32,18 @@ var customSeed = require('yargs').argv.seed;
 
 var shellCmd = function (cwd, command, signal, cb) {
   process.stdout.write(chalk.green('\n' + command + '\n'));
-  var backupWd = process.cwd();
-  process.chdir(cwd);
-  var child = shell.exec(command, { async: true, silent: true });
-  process.chdir(backupWd);
+  // var backupWd = process.cwd();
+  // process.chdir(cwd);
+  var commandSplit = command.split(' ');
+  var child = childProcess.spawn(
+    commandSplit[0],
+    commandSplit.slice(1),
+    { cwd: cwd }
+  );
+
   if (signal) {
     process.on('exit', function () {
-      child.kill('SIGINT');
+      child.kill('SIGTERM');
     });
   }
 
@@ -64,9 +67,9 @@ var shellCmd = function (cwd, command, signal, cb) {
     var message = '';
     outBuff += data;
     if (outBuff.indexOf('\n') > -1) {
-      message = outBuff.substr(0, outBuff.indexOf('\n') + 1);
-      outBuff = outBuff.substr(outBuff.indexOf('\n') + 1);
-      if (!signaled && signal && data.indexOf(signal) > -1) {
+      message = outBuff.substr(0, outBuff.toString().indexOf('\n') + 1);
+      outBuff = outBuff.substr(outBuff.toString().indexOf('\n') + 1);
+      if (!signaled && signal && data.toString().indexOf(signal) > -1) {
         signaled = true;
         return cb(null, child);
       }
@@ -101,7 +104,6 @@ var pokeServer = function (cb) {
 var start = function (args, cb) {
   var async = require('async');
   console.log(chalk.magenta('reconfiguring database, starting app server'));
-  var pwd = shell.pwd();
   var dirForMiddle = path.join(
     ctx.paths.projectRoot, 'appserver/java-spring'
   );
@@ -140,7 +142,7 @@ var start = function (args, cb) {
         mtServer.on('exit', function () {
           cb();
         });
-        mtServer.kill('SIGINT');
+        mtServer.kill('SIGTERM');
       }
     });
 
