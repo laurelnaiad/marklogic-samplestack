@@ -91,6 +91,7 @@ var shellCmd = function (cwd, command, signal, cb) {
   });
 };
 
+var mtServer;
 
 var pokeServer = function (cb) {
   var request = require('request');
@@ -99,6 +100,23 @@ var pokeServer = function (cb) {
     { json: {} },
     cb
   );
+};
+
+var closeServer = function (cb) {
+  var closed = false;
+  mtServer.on('exit', function () {
+    if (!closed) {
+      cb();
+      closed = true;
+    }
+  });
+  mtServer.on('close', function () {
+    if (!closed) {
+      cb();
+      closed = true;
+    }
+  });
+  mtServer.kill('SIGTERM');
 };
 
 var start = function (args, cb) {
@@ -139,24 +157,9 @@ var start = function (args, cb) {
       hasStarted = true;
       console.log(' ');
       $.util.log(chalk.green('detected middle tier started'));
-      var mtServer = results[results.length - 1];
+      mtServer = results[results.length - 1];
       ctx.setActiveServer('middle-tier', {
-        close: function (cb) {
-          var closed = false;
-          mtServer.on('exit', function () {
-            if (!closed) {
-              cb();
-              closed = true;
-            }
-          });
-          mtServer.on('close', function () {
-            if (!closed) {
-              cb();
-              closed = true;
-            }
-          });
-          mtServer.kill('SIGTERM');
-        }
+        close: closeServer
       });
 
       pokeServer(function () {
@@ -169,5 +172,6 @@ var start = function (args, cb) {
 };
 
 module.exports = {
-  start: start
+  start: start,
+  close: closeServer
 };
