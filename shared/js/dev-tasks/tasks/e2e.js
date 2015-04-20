@@ -129,16 +129,19 @@ myTasks.push({
 
       protractorRun(function (err) {
         haveClosed = true;
-        err = err ? new Error(err) : null;
         ctx.closeActiveServers(function () {
-          console.log('callback e2e task');
-          cb(err);
+          process.exit(err);
+          // console.log('callback e2e task');
+          // cb(err);
         });
       });
     }
     catch (err) {
       haveClosed = true;
-      ctx.closeActiveServers(function () { cb(err); });
+      ctx.closeActiveServers(function () {
+        console.log(err);
+        process.exit(1);
+      });
     }
   }
 });
