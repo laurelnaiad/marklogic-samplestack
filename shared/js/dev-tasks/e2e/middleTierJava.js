@@ -120,14 +120,14 @@ var start = function (args, cb) {
   var hasStarted = false;
 
   async.series([
-    shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
-    shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbTeardown', null),
-    shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
-    shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbConfigure', null),
-    shellCmd.bind(null, dirForMiddle, gradleCmd + ' test', null),
-    shellCmd.bind(
-      null, dirForMiddle, loadCmd, null
-    ),
+    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
+    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbTeardown', null),
+    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
+    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbConfigure', null),
+    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' test', null),
+    // shellCmd.bind(
+    //   null, dirForMiddle, loadCmd, null
+    // ),
     shellCmd.bind(
       null,
       dirForMiddle,
