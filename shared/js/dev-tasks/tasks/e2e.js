@@ -130,9 +130,10 @@ myTasks.push({
       protractorRun(function (err) {
         haveClosed = true;
         ctx.closeActiveServers(function () {
-          process.exit(err);
-          // console.log('callback e2e task');
-          // cb(err);
+          console.log('callback e2e task');
+          setTimeout(function () {
+            cb(err);
+          }, 500);
         });
       });
     }
@@ -140,7 +141,9 @@ myTasks.push({
       haveClosed = true;
       ctx.closeActiveServers(function () {
         console.log(err);
-        process.exit(1);
+        setTimeout(function () {
+          cb(err);
+        }, 500);
       });
     }
   }
