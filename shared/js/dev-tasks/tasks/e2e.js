@@ -131,8 +131,9 @@ myTasks.push({
         haveClosed = true;
         ctx.closeActiveServers(function () {
           console.log('callback e2e task');
+          cb(err);
           setTimeout(function () {
-            cb(err);
+            process.exit();
           }, 500);
         });
       });
@@ -141,8 +142,9 @@ myTasks.push({
       haveClosed = true;
       ctx.closeActiveServers(function () {
         console.log(err);
+        cb(err);
         setTimeout(function () {
-          cb(err);
+          process.exit();
         }, 500);
       });
     }
