@@ -114,6 +114,10 @@ myTasks.push({
     try {
       var haveClosed = false;
 
+      require('gulp').doneCallback = function (err) {
+        process.exit(err ? 1 : 0);
+      };
+      
       process.on('exit', function (err) {
         if (!haveClosed) {
           err = err ? new Error(err) : null;
