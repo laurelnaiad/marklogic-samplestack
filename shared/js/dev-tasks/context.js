@@ -136,7 +136,7 @@ var deployBuilt = function (cb) {
 
 var closeServer = function (server, cb) {
   var closed = false;
-  var onClosed = function () {
+  var onClosed = function (arg) {
     if (!closed) {
       closed = true;
       try {
@@ -146,14 +146,24 @@ var closeServer = function (server, cb) {
     }
   };
   try {
-    server.on('end', onClosed);
-    server.on('close', onClosed);
-    server.on('exit', onClosed);
+    if (server.on) {
+      // a standard node process
+      server.on('end', onClosed);
+      server.on('close', onClosed);
+      server.on('exit', onClosed);
+    }
     if (server.close) {
+      // a manually managed process of ours
       server.close(onClosed);
     }
     else {
-      server.kill();
+      if (server.kill) {
+        server.kill();
+      }
+      else {
+        // this isn't really an external process
+        cb();
+      }
     }
   }
   catch (err) {
@@ -376,7 +386,7 @@ self = module.exports = {
         listener.on('error', function (err) {
           console.log(err);
         });
-        self.setActiveServer(port, server);
+        self.setActiveServer(port, listener);
 
         return server;
       }

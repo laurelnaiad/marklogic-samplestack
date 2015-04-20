@@ -86,7 +86,7 @@ var shellCmd = function (cwd, command, signal, cb) {
 
   child.stderr.on('data', function (data) {
     if (!signaled) {
-      process.stdout.write(chalk.red('\n' + data.trim()));
+      process.stdout.write(chalk.red('\n' + data.toString().trim()));
     }
   });
 };
@@ -117,6 +117,8 @@ var start = function (args, cb) {
       '';
   var loadCmd = gradleCmd + ' dbLoad' + dbLoadParam + ' --stacktrace';
 
+  var hasStarted = false;
+
   async.series([
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
     shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbTeardown', null),
@@ -133,24 +135,36 @@ var start = function (args, cb) {
       'marklogic.samplestack.Application - Started Application'
     ),
   ], function (err, results) {
-    console.log(' ');
-    $.util.log(chalk.green('detected middle tier started'));
-    var mtServer = results[results.length - 1];
-    ctx.setActiveServer('middle-tier', {
-      close: function (cb) {
-        console.log('shutting down Java middle tier');
-        mtServer.on('exit', function () {
-          cb();
-        });
-        mtServer.kill('SIGTERM');
-      }
-    });
+    if (!hasStarted) {
+      hasStarted = true;
+      console.log(' ');
+      $.util.log(chalk.green('detected middle tier started'));
+      var mtServer = results[results.length - 1];
+      ctx.setActiveServer('middle-tier', {
+        close: function (cb) {
+          var closed = false;
+          mtServer.on('exit', function () {
+            if (!closed) {
+              cb();
+              closed = true;
+            }
+          });
+          mtServer.on('close', function () {
+            if (!closed) {
+              cb();
+              closed = true;
+            }
+          });
+          mtServer.kill('SIGTERM');
+        }
+      });
 
-    pokeServer(function () {
-      console.log(chalk.magenta('preparations complete'));
-      cb(err);
+      pokeServer(function () {
+        console.log(chalk.magenta('preparations complete'));
+        cb(err);
 
-    });
+      });
+    }
   });
 };
 

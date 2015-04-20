@@ -33,7 +33,7 @@ var args = {
   toFile: false,
   middleTier: 'external', // or 'java' or 'node',
   browser: 'chrome'
-      // or 'chrome' or 'firefox' or 'ie' or 'phantomjs'
+  // or 'chrome' or 'firefox' or 'ie' or 'phantomjs'
 };
 
 _.merge(args, require('yargs').argv);
@@ -112,21 +112,30 @@ myTasks.push({
   deps: ['build', 'selenium-start', 'middle-tier-start'],
   func: function (cb) {
     try {
+      var haveClosed = false;
 
-      process.on('exit', ctx.closeActiveServers);
+      process.on('exit', function (err) {
+        if (!haveClosed) {
+          err = err ? new Error(err) : null;
+          ctx.closeActiveServers(function () { cb(err); });
+          haveClosed = true;
+        }
+      });
 
       ctx.startServer(
         ctx.paths.browser.buildDir,
         ctx.options.envs.e2e.addresses.webApp.port
       );
 
-      protractorRun(function () {
-        process.kill('SIGINT');
+      protractorRun(function (err) {
+        haveClosed = true;
+        err = err ? new Error(err) : null;
+        ctx.closeActiveServers(function () { cb(err); });
       });
-      cb();
     }
     catch (err) {
-      cb(err);
+      haveClosed = true;
+      ctx.closeActiveServers(function () { cb(err); });
     }
   }
 });
