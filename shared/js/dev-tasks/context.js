@@ -296,6 +296,7 @@ self = module.exports = {
         }),
         // when all have called back, call back the caller
         function () {
+          console.log('calling back');
           activeServers = null;
           closing = false;
           callback();
