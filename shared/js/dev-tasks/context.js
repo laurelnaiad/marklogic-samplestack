@@ -281,6 +281,7 @@ self = module.exports = {
             closeServer(
               server,
               function (err) {
+                console.log('shut down ' + key);
                 if (err && err.toString().indexOf('isRunning')) {
                   cb();
                   closed = true;
