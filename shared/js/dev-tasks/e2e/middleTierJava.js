@@ -121,8 +121,8 @@ var closeServer = function (cb) {
       closed = true;
     }
   });
-  mtServer.kill('SIGTERM');
-  console.log('SIGTERM');
+  mtServer.kill();
+  console.log('kill');
 };
 
 var start = function (args, cb) {
