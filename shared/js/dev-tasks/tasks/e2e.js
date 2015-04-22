@@ -117,7 +117,7 @@ myTasks.push({
       require('gulp').doneCallback = function (err) {
         process.exit(err ? 1 : 0);
       };
-      
+
       process.on('exit', function (err) {
         if (!haveClosed) {
           err = err ? new Error(err) : null;
@@ -134,7 +134,6 @@ myTasks.push({
       protractorRun(function (err) {
         haveClosed = true;
         ctx.closeActiveServers(function () {
-          console.log('callback e2e task');
           cb(err);
           setTimeout(function () {
             process.exit();

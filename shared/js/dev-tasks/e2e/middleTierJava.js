@@ -106,7 +106,6 @@ var closeServer = function (cb) {
   var streamClosedCount = 0;
 
   var streamOnClosed = function () {
-    console.log('a stream closed');
     if (++streamClosedCount === 2) {
       cb();
     }
@@ -114,26 +113,7 @@ var closeServer = function (cb) {
 
   mtServer.stdout.on('close', streamOnClosed);
   mtServer.stderr.on('close', streamOnClosed);
-  //
-  // console.log('closeServer (enter)');
-  // mtServer.on('exit', function () {
-  //   console.log('closeServer (on exit)');
-  //   if (!closed) {
-  //     console.log('on exit, was not already closed');
-  //     cb();
-  //     closed = true;
-  //   }
-  // });
-  // mtServer.on('close', function () {
-  //   console.log('closeServer (on close)');
-  //   if (!closed) {
-  //     console.log('on close, was not already closed');
-  //     cb();
-  //     closed = true;
-  //   }
-  // });
   require('tree-kill')(mtServer.pid, 'SIGKILL');
-  console.log('kill');
 };
 
 var start = function (args, cb) {
@@ -155,18 +135,24 @@ var start = function (args, cb) {
   var hasStarted = false;
 
   async.series([
-    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
-    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbTeardown', null),
-    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbInit', null),
-    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbConfigure', null),
-    // shellCmd.bind(null, dirForMiddle, gradleCmd + ' test', null),
-    // shellCmd.bind(
-    //   null, dirForMiddle, loadCmd, null
-    // ),
+    shellCmd.bind(
+      null, dirForMiddle, gradleCmd + ' dbInit', null
+    ),
+    shellCmd.bind(
+      null, dirForMiddle, gradleCmd + ' dbTeardown', null
+    ),
+    shellCmd.bind(
+      null, dirForMiddle, gradleCmd + ' dbInit', null
+    ),
+    shellCmd.bind(null, dirForMiddle, gradleCmd + ' dbConfigure', null),
+    shellCmd.bind(null, dirForMiddle, gradleCmd + ' test', null),
+    shellCmd.bind(
+      null, dirForMiddle, loadCmd, null
+    ),
     shellCmd.bind(
       null,
       dirForMiddle,
-      gradleCmd + ' bootrun --no-daemon',
+      gradleCmd + ' bootrun',
       'marklogic.samplestack.Application - Started Application'
     ),
   ], function (err, results) {

@@ -277,11 +277,10 @@ self = module.exports = {
                 }
                 catch (err) { console.log(err); }
               }
-            }, 10000);
+            }, 1000);
             closeServer(
               server,
               function (err) {
-                console.log('shut down ' + key);
                 if (err && err.toString().indexOf('isRunning')) {
                   cb();
                   closed = true;
