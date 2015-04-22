@@ -155,7 +155,7 @@ var start = function (args, cb) {
     shellCmd.bind(
       null,
       dirForMiddle,
-      gradleCmd + ' bootrun',
+      gradleCmd + ' bootrun --no-daemon',
       'marklogic.samplestack.Application - Started Application'
     ),
   ], function (err, results) {
