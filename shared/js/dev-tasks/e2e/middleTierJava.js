@@ -148,7 +148,7 @@ var start = function (args, cb) {
       null, dirForMiddle, gradleCmd + ' dbConfigure --no-daemon', null
     ),
     shellCmd.bind(
-      null, dirForMiddle, gradleCmd + ' test  --no-daemon', null
+      null, dirForMiddle, gradleCmd + ' test --no-daemon', null
     ),
     shellCmd.bind(
       null, dirForMiddle, loadCmd, null

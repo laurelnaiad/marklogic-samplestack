@@ -37,7 +37,8 @@ var currentPage;
 browser.getCapabilities().then(function (cap) {
   browser.caps = cap.caps_;
 });
-browser.driver.manage().window().maximize();
+browser.manage().window().setSize(1600, 1200);
+// browser.driver.manage().window().maximize();
 
 function World (callback) {
   self = this;
