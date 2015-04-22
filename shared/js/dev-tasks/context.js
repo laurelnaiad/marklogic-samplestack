@@ -277,7 +277,7 @@ self = module.exports = {
                 }
                 catch (err) { console.log(err); }
               }
-            }, 1000);
+            }, 10000);
             closeServer(
               server,
               function (err) {
