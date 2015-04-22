@@ -41,12 +41,12 @@ var shellCmd = function (cwd, command, signal, cb) {
     { cwd: cwd }
   );
 
-  // if (signal) {
-  //   process.on('exit', function () {
-  //     child.kill('SIGTERM');
-  //   });
-  // }
-  //
+  if (signal) {
+    process.on('exit', function () {
+      require('tree-kill')(child.pid, 'SIGKILL');
+    });
+  }
+
   child.on('close', function (exitCode) {
     child.kill();
     if (exitCode && !signaled) {
@@ -132,7 +132,7 @@ var closeServer = function (cb) {
   //     closed = true;
   //   }
   // });
-  mtServer.kill('SIGTERM');
+  require('tree-kill')(mtServer.pid, 'SIGKILL');
   console.log('kill');
 };
 
