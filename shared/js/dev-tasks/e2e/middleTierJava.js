@@ -132,7 +132,7 @@ var closeServer = function (cb) {
   //     closed = true;
   //   }
   // });
-  mtServer.kill();
+  mtServer.kill('SIGTERM');
   console.log('kill');
 };
 
