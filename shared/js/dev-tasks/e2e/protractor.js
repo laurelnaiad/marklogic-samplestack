@@ -19,6 +19,7 @@ var fs = require('fs');
 var cp = require('child_process');
 
 var _ = require('lodash');
+var chalk = require('chalk');
 var Runner = require('protractor/lib/runner');
 
 var ctx = require('../context');
@@ -57,6 +58,16 @@ var ptorConfig = {
 
 
 var go = function (args, cb) {
+  if (['linux', 'freebsd', 'sunos'].indexOf(process.platform) >= 0) {
+    if (!process.env.DESKTOP_VERSION) {
+      console.log(
+        chalk.yellow(
+          'Skipping e2e tests because there is no desktop environment'
+        )
+      );
+      return cb();
+    }
+  }
 
   if (args.browser === 'ie') {
     var sjs = require('shelljs');
