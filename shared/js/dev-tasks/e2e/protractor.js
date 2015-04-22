@@ -58,17 +58,6 @@ var ptorConfig = {
 
 
 var go = function (args, cb) {
-  if (['linux', 'freebsd', 'sunos'].indexOf(process.platform) >= 0) {
-    if (!process.env.DESKTOP_VERSION) {
-      console.log(
-        chalk.yellow(
-          'Skipping e2e tests because there is no desktop environment'
-        )
-      );
-      return cb();
-    }
-  }
-
   if (args.browser === 'ie') {
     var sjs = require('shelljs');
     sjs.exec(

@@ -36,6 +36,20 @@ var args = {
   // or 'chrome' or 'firefox' or 'ie' or 'phantomjs'
 };
 
+var skipNoDesktop = function (task) {
+  if (['linux', 'freebsd', 'sunos'].indexOf(process.platform) >= 0) {
+    if (!process.env.DESKTOP_SESSION) {
+      console.log(
+        chalk.yellow(
+          'Skipping task ' + task + ' because there is no desktop environment'
+        )
+      );
+      return true;
+    }
+  }
+  return false;
+};
+
 _.merge(args, require('yargs').argv);
 
 if (!args.tags) {
@@ -48,6 +62,9 @@ if (args.sauce && args.selenium !== 'external') {
 }
 
 var seleniumStart = function (cb) {
+  if (skipNoDesktop('selenium-start')) {
+    return cb();
+  }
   var seleniumHandler;
   switch (args.selenium) {
     case 'external':
@@ -71,6 +88,9 @@ var seleniumStart = function (cb) {
 };
 
 var middleTierStart = function (cb) {
+  if (skipNoDesktop('middle-tier-start')) {
+    return cb();
+  }
   var middleTierHandler;
   switch (args.middleTier) {
     case 'external':
@@ -112,6 +132,9 @@ myTasks.push({
   deps: ['build', 'selenium-start', 'middle-tier-start'],
   func: function (cb) {
     try {
+      if (skipNoDesktop('e2e')) {
+        return cb();
+      }
       var haveClosed = false;
 
       require('gulp').doneCallback = function (err) {
