@@ -104,19 +104,25 @@ var pokeServer = function (cb) {
 
 var closeServer = function (cb) {
   var closed = false;
+  console.log('closeServer (enter)');
   mtServer.on('exit', function () {
+    console.log('closeServer (on exit)');
     if (!closed) {
+      console.log('on exit, was not already closed');
       cb();
       closed = true;
     }
   });
   mtServer.on('close', function () {
+    console.log('closeServer (on close)');
     if (!closed) {
+      console.log('on close, was not already closed');
       cb();
       closed = true;
     }
   });
   mtServer.kill('SIGTERM');
+  console.log('SIGTERM');
 };
 
 var start = function (args, cb) {
