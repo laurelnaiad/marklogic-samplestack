@@ -151,7 +151,7 @@ var start = function (args, cb) {
       null, dirForMiddle, gradleCmd + ' test --no-daemon', null
     ),
     shellCmd.bind(
-      null, dirForMiddle, loadCmd, null
+      null, dirForMiddle, loadCmd + ' --no-daemon', null
     ),
     shellCmd.bind(
       null,
