@@ -41,12 +41,12 @@ var shellCmd = function (cwd, command, signal, cb) {
     { cwd: cwd }
   );
 
-  if (signal) {
-    process.on('exit', function () {
-      child.kill('SIGTERM');
-    });
-  }
-
+  // if (signal) {
+  //   process.on('exit', function () {
+  //     child.kill('SIGTERM');
+  //   });
+  // }
+  //
   child.on('close', function (exitCode) {
     child.kill();
     if (exitCode && !signaled) {
@@ -103,24 +103,35 @@ var pokeServer = function (cb) {
 };
 
 var closeServer = function (cb) {
-  var closed = false;
-  console.log('closeServer (enter)');
-  mtServer.on('exit', function () {
-    console.log('closeServer (on exit)');
-    if (!closed) {
-      console.log('on exit, was not already closed');
+  var streamClosedCount = 0;
+
+  var streamOnClosed = function () {
+    console.log('a stream closed');
+    if (++streamClosedCount === 2) {
       cb();
-      closed = true;
     }
-  });
-  mtServer.on('close', function () {
-    console.log('closeServer (on close)');
-    if (!closed) {
-      console.log('on close, was not already closed');
-      cb();
-      closed = true;
-    }
-  });
+  };
+
+  mtServer.stdout.on('close', streamOnClosed);
+  mtServer.stderr.on('close', streamOnClosed);
+  //
+  // console.log('closeServer (enter)');
+  // mtServer.on('exit', function () {
+  //   console.log('closeServer (on exit)');
+  //   if (!closed) {
+  //     console.log('on exit, was not already closed');
+  //     cb();
+  //     closed = true;
+  //   }
+  // });
+  // mtServer.on('close', function () {
+  //   console.log('closeServer (on close)');
+  //   if (!closed) {
+  //     console.log('on close, was not already closed');
+  //     cb();
+  //     closed = true;
+  //   }
+  // });
   mtServer.kill();
   console.log('kill');
 };
