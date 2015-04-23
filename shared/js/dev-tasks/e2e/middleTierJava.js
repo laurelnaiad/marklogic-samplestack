@@ -113,7 +113,13 @@ var closeServer = function (cb) {
 
   mtServer.stdout.on('close', streamOnClosed);
   mtServer.stderr.on('close', streamOnClosed);
-  require('tree-kill')(mtServer.pid, 'SIGKILL');
+
+  if (process.platform === 'darwin') {
+    mtServer.kill('SIGTERM');
+  }
+  else {
+    require('tree-kill')(mtServer.pid, 'SIGKILL');
+  }
 };
 
 var start = function (args, cb) {
