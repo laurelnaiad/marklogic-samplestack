@@ -265,6 +265,10 @@ self = module.exports = {
         // server in activeServers (and thus attempt close them all in parallel)
         _.map(activeServers, function (server, key) {
           return function (cb) {
+            var waitTime = 1000;
+            if (key === 'middle-tier') {
+              waitTime = 3000; //java is slow to exit
+            }
             $.util.log(chalk.green('shutting down ' + key));
             var closed = false;
             setTimeout(function () {
@@ -277,7 +281,7 @@ self = module.exports = {
                 }
                 catch (err) { console.log(err); }
               }
-            }, 1000);
+            }, waitTime);
             closeServer(
               server,
               function (err) {
