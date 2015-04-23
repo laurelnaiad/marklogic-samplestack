@@ -88,9 +88,6 @@ var seleniumStart = function (cb) {
 };
 
 var middleTierStart = function (cb) {
-  if (skipNoDesktop('middle-tier-start')) {
-    return cb();
-  }
   var middleTierHandler;
   switch (args.middleTier) {
     case 'external':
