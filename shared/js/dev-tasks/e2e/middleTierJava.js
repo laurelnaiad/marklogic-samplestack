@@ -118,7 +118,7 @@ var closeServer = function (cb) {
     require('tree-kill')(mtServer.pid, 'SIGKILL');
   }
   else {
-    mtServer.kill('SIGTERM');
+    mtServer.kill();
   }
 };
 
