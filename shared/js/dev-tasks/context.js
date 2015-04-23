@@ -267,7 +267,7 @@ self = module.exports = {
           return function (cb) {
             var waitTime = 1000;
             if (key === 'middle-tier') {
-              waitTime = 3000; //java is slow to exit
+              waitTime = 5000; //java is slow to exit
             }
             $.util.log(chalk.green('shutting down ' + key));
             var closed = false;
