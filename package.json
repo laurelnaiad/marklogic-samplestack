@@ -9,7 +9,7 @@
   },
   "engines": {
     "npm": ">=2.1.1",
-    "node": ">=0.10.33 <0.11"
+    "node": ">=0.10.33"
   },
   "main": "main.js",
   "scripts": {
