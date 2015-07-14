@@ -48,7 +48,7 @@ console.log = function () {
   if (noLogTask(args)) {
     return;
   }
-  if (args[1] && args[1].match(/Using gulpfile/)) {
+  if (args[1] && args[1].match && args[1].match(/Using gulpfile/)) {
     return;
   }
   consoleLogOrig.apply(console, args);

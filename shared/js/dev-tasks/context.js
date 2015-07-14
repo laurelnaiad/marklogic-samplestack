@@ -220,7 +220,8 @@ self = module.exports = {
   paths:  {
     projectRoot: projectRoot,
     middle: {
-      lib: path.join(serverRootDir, 'lib')
+      lib: path.join(serverRootDir, 'lib'),
+      unitSrcDir: path.join(serverRootDir, 'test/unit-tests')
     },
     browser: {
       rootDir: browserRootDir,
@@ -285,6 +286,7 @@ self = module.exports = {
             closeServer(
               server,
               function (err) {
+                console.log('....... 289')
                 if (err && err.toString().indexOf('isRunning')) {
                   cb();
                   closed = true;

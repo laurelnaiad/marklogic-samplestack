@@ -1,0 +1,70 @@
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var path = require('path');
+
+var chalk = require('chalk');
+
+var helper = require('../helper');
+
+var gulp = require('gulp');
+
+// make it easier to get to plugins
+var $ = helper.$;
+var ctx = require('../context');
+
+
+
+
+module.exports = function (opts, cb) {
+  var done = false;
+  var finalize = function () {
+    console.log('finalize');
+    if (!done) {
+      done = true;
+      cb();
+    }
+    // ctx.closeActiveServer(ctx.options.addresses.unitCoverage.port, cb);
+  };
+
+  var errFinalize = function (err) {
+    console.log('errFinalize');
+    if (ctx.currentTask === 'node-unit') {
+      if (!done) {
+        done = true;
+        cb(err);
+      }
+    }
+  };
+
+  // TODO - CHANGE PATHS
+
+  // ctx.startIstanbulServer(
+  //   ctx.paths.browser.unitDir,
+  //   ctx.options.addresses.unitCoverage.port
+  // );
+  var myOpts = opts || {};
+  // myOpts.silent = true;
+  var stream = gulp.src(ctx.paths.middle.unitSrcDir + '/**/*', { read: false });
+    // clear screen
+  process.stdout.write('\u001b[2J');
+  // set cursor position
+  process.stdout.write('\u001b[1;3H' + chalk.blue('\nNode Unit Tests:'));
+  stream = stream.pipe($.mocha(myOpts));
+  stream.on('error', errFinalize);
+  stream.on('end', finalize);
+  stream.on('finish', finalize);
+};

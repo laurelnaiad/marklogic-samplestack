@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var mp = require('./lib/master-process');
-mp.run();
-module.exports = mp;
+module.exports = function() {
+
+  describe('contributor',function() {
+    it('contributor true',function() {
+      expect(true).to.be.true;
+    });
+  });
+
+};
