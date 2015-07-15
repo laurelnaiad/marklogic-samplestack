@@ -1,18 +1,18 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /*
 http://ldapjs.org/examples.html
@@ -64,12 +64,24 @@ var SUFFIX = 'dc=samplestack,dc=org';
 var db = {};
 var server = ldap.createServer();
 
-var stop = function () {
+var stop = function (cb) {
   try {
-    console.log('Stopping LDAP worker...');
-    server.close();
+    if (server) {
+      // console.log('Stopping LDAP worker...');
+      server.close();
+      server = null;
+      // console.log('closed');
+    }
+    if (cb) {
+      cb();
+    }
   }
-  catch (e) {}
+  catch (e) {
+    console.log(e);
+    if (cb) {
+      cb(e);
+    }
+  }
 };
 process.on('exit', stop);
 
@@ -234,7 +246,7 @@ var start = function () {
         }
       };
 
-      console.log('Samplestack LDAP server up at: %s', server.url);
+      // console.log('Samplestack LDAP server up at: %s', server.url);
     }
   );
 };

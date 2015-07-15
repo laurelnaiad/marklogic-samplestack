@@ -40,19 +40,28 @@ module.exports = [{
     else {
       // TODO: read alternative reporter(s) from minimist in order to support
       // test harness automation
+      if (ctx.currentTask === 'node-unit') {
+        var adds = ctx.options.addresses;
+        ctx.startServer(ctx.paths.browser.buildDir, adds.webApp.port);
+      }
+
       runUnit({}, function (err) {
-        console.log('runUnit cb()');
-        console.log(ctx.currentTask);
         if (ctx.currentTask === 'node-unit') {
-          console.log("ctx.currentTask === 'node-unit'");
-          cb();
+          ctx.closeActiveServers(function () {
+            cb();
+            process.exit(err ? 1 : 0);
+          });
         }
         else {
           ctx.deployBuilt(function (err) {
             if (err) {
-              return cb(err);
+              cb(err);
+              process.exit(err ? 1 : 0);
             }
-            cb();
+            else {
+              cb();
+              process.exit(0);
+            }
           });
         }
       });

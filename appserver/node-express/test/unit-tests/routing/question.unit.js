@@ -31,9 +31,8 @@ module.exports = function() {
 
       request
         .post('/v1/questions/11111111/upvotes')
-        .send({"upDown":1})
+        .send({ upDown: 1 })
         .end(function(err, res) {
-          console.log('end');
           res.status.should.equal(401);
           done();
         });

@@ -120,11 +120,12 @@ var stop = function () {
     stopCluster();
   }
   else {
-    console.log('ssWorker.close()');
-    ssWorker.close();
+    ssWorker.stop();
+    ssWorker = null;
   }
   if (ldapWorker) {
     ldapWorker.stop();
+    ldapWorker = null;
   }
 };
 
