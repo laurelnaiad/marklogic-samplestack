@@ -19,21 +19,6 @@ var Promise = require('bluebird');
 var businessLogic = require('../business-logic');
 
 module.exports = function (app, mw) {
-
-  var getAndRespond = function (req, res, next, docSpec) {
-    return req.db.qnaDoc.getUniqueContent(
-      null, docSpec
-    )
-    .then(function (content) {
-      if (content) {
-        res.status(200).send(content);
-      }
-      else {
-        res.status(401).send();
-      }
-    });
-  };
-
   /*
    * ROUTE DEFINITIONS
    */
@@ -58,7 +43,7 @@ module.exports = function (app, mw) {
     mw.auth.associateBestRole.bind(app, ['contributors', 'default']),
 
     function (req, res, next) {
-      return getAndRespond(req, res, next, { id: req.params.id })
+      return businessLogic.getAndRespond(req, res, next, { id: req.params.id })
       .catch(next);
     }
   ]);
@@ -72,7 +57,7 @@ module.exports = function (app, mw) {
       return req.db.qnaDoc.post(
         null, _.omit(req.user, 'roles'), req.body
       )
-      .then(getAndRespond.bind(null, req, res, next));
+      .then(businessLogic.getAndRespond.bind(null, req, res, next));
     }
   ]);
 
@@ -89,7 +74,6 @@ module.exports = function (app, mw) {
     mw.parseBody.json,
 
     function (req, res, next) {
-      console.log('question op');
       var spec = _.clone(req.params);
       var promises = [];
 
@@ -115,7 +99,7 @@ module.exports = function (app, mw) {
       }
 
       return actionPromise
-      .then(getAndRespond.bind(null, req, res, next))
+      .then(businessLogic.getAndRespond.bind(null, req, res, next))
       .catch(next);
 
     }
@@ -159,7 +143,7 @@ module.exports = function (app, mw) {
       }
 
       return actionPromise
-      .then(getAndRespond.bind(null, req, res, next))
+      .then(businessLogic.getAndRespond.bind(null, req, res, next))
       .catch(next);
     }
   ]);

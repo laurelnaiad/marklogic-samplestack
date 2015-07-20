@@ -13,35 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports = function() {
-  var sandbox;
-  var Promise = require('bluebird');
-  var stub = function() {
-    // stubs.dbClient();
-  };
+var options = sharedRequire('js/options');
+var ldapOpts = options.middleTier.ldap;
+var ldapHost = ldapOpts.hostname + ':' + ldapOpts.port;
+var ldapBaseURL = ldapOpts.protocol + '://' + ldapHost;
 
-  describe('auth',function() {
-    it('createSession',function() {
-      expect(true).to.be.true;
-    });
+var setup = function() {
+  nock(ldapBaseURL)
+        .persist()
+        .get('/users/1')
+        .reply(200, {
+          _id: '123ABC',
+          _rev: '946B7D1C',
+          username: 'pgte',
+          email: 'pedro.teixeira@gmail.com'
+         });
+};
 
-    it('tryReviveSession',function() {
-      expect(true).to.be.true;
-    });
-
-    it('login',function() {
-      expect(true).to.be.true;
-    });
-
-    it('associateBestRole',function() {
-      expect(true).to.be.true;
-    });
-
-    it('logout',function() {
-      expect(true).to.be.true;
-    });
-
-
+var teardown = function() {
+  nock.removeInterceptor({
+    hostname : ldapHost
   });
+};
 
+module.exports = {
+  setup: setup,
+  teardown: teardown
 };

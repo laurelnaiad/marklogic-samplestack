@@ -13,35 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports = function() {
-  var sandbox;
-  var Promise = require('bluebird');
-  var stub = function() {
-    // stubs.dbClient();
-  };
+var _ = require('lodash');
+var stubs = {};
+var submodules = require('requireindex')(__dirname);
+_.each(submodules, function(stub, key) {
+  stubs[key] = stub;
+});
 
-  describe('auth',function() {
-    it('createSession',function() {
-      expect(true).to.be.true;
-    });
-
-    it('tryReviveSession',function() {
-      expect(true).to.be.true;
-    });
-
-    it('login',function() {
-      expect(true).to.be.true;
-    });
-
-    it('associateBestRole',function() {
-      expect(true).to.be.true;
-    });
-
-    it('logout',function() {
-      expect(true).to.be.true;
-    });
-
-
-  });
-
-};
+module.exports = stubs;

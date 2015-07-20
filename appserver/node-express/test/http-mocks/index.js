@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports = function() {
+var _ = require('lodash');
+var mocks = {};
+var submodules = require('requireindex')(__dirname);
+_.each(submodules, function(mock, key) {
+  mocks[key] = mock;
+});
 
-  describe('parseBody',function() {
-    it('parse the body',function() {
-      expect(true).to.be.true;
-    });
-  });
-
-};
+module.exports = mocks;

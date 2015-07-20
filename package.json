@@ -68,7 +68,7 @@
     "mocha-phantomjs": "^3.5.3",
     "mocha-sauce": "0.0.3",
     "monitor-dashboard": "^0.6.7",
-    "nock": "^2.6.0",
+    "nock": "^2.8.0",
     "node-sass": "^3.2.0",
     "open": "^0.0.5",
     "phantomjs": "^1.9.17",

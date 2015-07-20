@@ -32,7 +32,6 @@ var ctx = require('../context');
 module.exports = function (opts, cb) {
   var done = false;
   var finalize = function () {
-    console.log('finalize');
     if (!done) {
       done = true;
       cb();
@@ -41,7 +40,6 @@ module.exports = function (opts, cb) {
   };
 
   var errFinalize = function (err) {
-    console.log('errFinalize');
     if (ctx.currentTask === 'node-unit') {
       if (!done) {
         done = true;

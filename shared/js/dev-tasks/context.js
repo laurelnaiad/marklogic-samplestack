@@ -86,7 +86,6 @@ var deployBuilt = function (cb) {
     // TODO: these "patterns" are sloppy b/c not rooted
     return path.indexOf('index.html') < 0 && path.indexOf('application.js') < 0;
   };
-
   // clear the dir
   rimraf(dest, function (err) {
     if (err) {
@@ -286,7 +285,6 @@ self = module.exports = {
             closeServer(
               server,
               function (err) {
-                console.log('....... 289')
                 if (err && err.toString().indexOf('isRunning')) {
                   cb();
                   closed = true;
@@ -399,6 +397,68 @@ self = module.exports = {
       else {
         return self.getActiveServer(port);
       }
+    }
+  },
+
+  // ctx.startIstanbulServer(
+  //   ctx.paths.browser.unitDir, ===> browser Unit Files Func
+  //   ctx.paths.
+  //   ctx.options.addresses.unitCoverage.port
+  // );
+  startTestServer: function (nodeMatcher, browserMatcher, port) {
+    if (!self.getActiveServer(port)) {
+      var express = require('express');
+      var im = require('istanbul-middleware');
+      var bodyParser = require('body-parser');
+      var app = express();
+      var url = require('url');
+
+      // instrument the files that should be instrumented for the SERVER
+      im.hookLoader(nodeMatcher);
+      app.use('/coverage', require('connect-livereload')({
+        port: options.liveReloadPorts.unitCoverage
+      }));
+      app.use('/coverage', im.createHandler());
+      app.use(im.createClientHandler(
+        path.resolve(browserMatcher),
+        {
+          matcher: function (req) {
+            // cover js files that aren't .unit.js and are not ext dependencies
+            var parsed = url.parse(req.url).pathname;
+            if (!/\.js$/.test(parsed)) {
+              return false;
+            }
+            if (parsed.match(/index\.js/)) {
+              // its a modules index file
+              return false;
+            }
+            if (!(parsed.match(/^\/.+\/.+\//))) {
+              // it's not deep enough to be the code we really want to test
+              return false;
+            }
+            if (parsed.match(/^\/mocks\//)) {
+              // it's part of the mocks modules
+              return false;
+            }
+            var isBrowserify = /\.browserify\.js$/.test(parsed);
+            var isTestCode = /\.unit\.js$/.test(parsed);
+            // console.log(parsed + ' is test code: ' + isTestCode);
+            var isDependency = /^\/deps\//.test(parsed);
+            // console.log(parsed + ' is dep. code: ' + isDependency);
+            return !(isTestCode || isBrowserify || isDependency);
+          }
+          // pathTransformer: function (req) {
+          // }
+        }
+      ));
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(bodyParser.json());
+
+      app.use(express['static'](path.resolve(testerPath)));
+      var httpServer = require('http').createServer(app);
+      httpServer.listen(port,'0.0.0.0');
+
+      self.setActiveServer(port, httpServer);
     }
   },
 
