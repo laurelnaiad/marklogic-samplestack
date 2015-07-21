@@ -33,6 +33,7 @@ global.agent1 = request.agent('http://localhost:3000');
 global.agent2 = request.agent('http://localhost:3000');
 global.request = request('http://localhost:3000');
 global.contributor = { username: 'joe@example.com', password: 'joesPassword' };
+global.mluser = { username: 'admin', password: 'admin' };
 
 var dbClient = require('./db-client');
 var middleware = require('./middleware');

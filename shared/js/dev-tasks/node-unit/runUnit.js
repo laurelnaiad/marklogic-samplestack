@@ -40,6 +40,7 @@ module.exports = function (opts, cb) {
   };
 
   var errFinalize = function (err) {
+    console.log(err);
     if (ctx.currentTask === 'node-unit') {
       if (!done) {
         done = true;

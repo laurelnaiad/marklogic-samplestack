@@ -21,6 +21,16 @@ var mlBaseURL = mlProto + '://' + mlHost;
 
 var setup = function() {
 
+  /* KEEP ALIVE */
+  nock(mlBaseURL)
+    .persist()
+    .head('/v1/ping')
+    .reply(401, "", { server: 'MarkLogic',
+    'www-authenticate': 'Digest realm="public", qop="auth", nonce="f28c234fee6c1f559566ad8597ff5da6", opaque="9e7c46bd42351495"',
+    'content-type': 'application/json; charset=utf-8',
+    connection: 'Keep-Alive',
+    'keep-alive': 'timeout=5' });
+
   /* CONTRIBUTOR */
   nock(mlBaseURL)
     .persist()

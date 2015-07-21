@@ -19,15 +19,15 @@ var ldapHost = ldapOpts.hostname + ':' + ldapOpts.port;
 var ldapBaseURL = ldapOpts.protocol + '://' + ldapHost;
 
 var setup = function() {
-  nock(ldapBaseURL)
-        .persist()
-        .get('/users/1')
-        .reply(200, {
-          _id: '123ABC',
-          _rev: '946B7D1C',
-          username: 'pgte',
-          email: 'pedro.teixeira@gmail.com'
-         });
+  // nock(ldapBaseURL)
+  //       .persist()
+  //       .get('/users/1')
+  //       .reply(200, {
+  //         _id: '123ABC',
+  //         _rev: '946B7D1C',
+  //         username: 'pgte',
+  //         email: 'pedro.teixeira@gmail.com'
+  //        });
 };
 
 var teardown = function() {

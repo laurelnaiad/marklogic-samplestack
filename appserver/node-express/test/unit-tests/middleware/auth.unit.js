@@ -21,6 +21,17 @@ module.exports = function() {
   };
 
   describe('auth',function() {
+
+    // sandbox.stub(db,'getBoundClient', function (spec) {
+    //   return {
+    //     contributor: {
+    //       getUniqueContent: sandbox.mock(function() {
+    //         return new Promise.resolve(contributorDoc);
+    //       })
+    //     }
+    //   }
+    // });
+
     it('createSession',function() {
       expect(true).to.be.true;
     });

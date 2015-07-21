@@ -16,6 +16,9 @@
 module.exports = function() {
   var sandbox;
   var Promise = require('bluebird');
+  var db = require('../../../lib/db-client');
+  var middleware = require('../../../lib/middleware');
+  var authStubs = require('../../stubs/auth');
   var contributorDoc = {
     aboutMe: "Twitter: [@maryadmin](http://twitter.com/maryadmin)\nDisclaimer: This is not me.  MaryAdmin _doesn't exist_!\n",
     displayName: "MaryAdmin",
@@ -31,37 +34,6 @@ module.exports = function() {
   var patchReputationResp = contributorDoc;
   var patchVoteCountResp = contributorDoc;
 
-  var stub = function() {
-    var stubbedContributorObj = function(connection) {
-      var funcs = {
-        patchReputation: function (spec) {
-          return new Promise(function (resolve) {
-            // TODO: check proper response
-            return resolve(patchReputationResp);
-          });
-        },
-        patchVoteCount: function (spec) {
-          return new Promise(function (resolve) {
-            // TODO: check proper response
-            return resolve(patchVoteCountResp);
-          });
-        },
-        getUniqueContent: function (spec) {
-          return new Promise(function (resolve) {
-            return resolve(getUniqueContentResp);
-          });
-        }
-      };
-      var self = {};
-      _.each(funcs, function (func, name) {
-        self[name] = func.bind(connection);
-      });
-      return self;
-    };
-
-    stubs.dbClient(sandbox, { contributor: stubbedContributorObj });
-  };
-
   describe('contributor',function() {
 
     beforeEach(function () {
@@ -72,17 +44,31 @@ module.exports = function() {
       sandbox.restore();
     });
 
-    it('GET contributor', function(done) {
-      stub();
+    describe('GET contributor', function() {
+      it('calls dbClient GET contributor', function(done) {
+        // spy getUniqueContent to ensure it was called
+        console.log(authStubs);
+        var myStubs = authStubs.getStubsForVisitor(sandbox);
+        console.log('getStubsForVisitor called');
 
-      agent1
-        .get('/v1/contributors/' + contributorDoc.id)
-        .send({ upDown: 1 })
-        .end(function(err, res) {
-          res.status.should.equal(200);
-          res.body.id.should.equal(contributorDoc.id);
-          done();
+
+        // var mock = sandbox.mock(middleware.auth);
+        // mock.expects("tryReviveSession").once();
+        // mock.expects("associateBestRole").once();
+
+        agent1
+          .get('/v1/contributors/' + contributorDoc.id)
+          .end(function(err, res) {
+            myStubs.tryReviveSession.calledOnce.should.equal(true);
+            myStubs.associateBestRole.calledOnce.should.equal(true);
+            // mock.verify();
+            // mock.restore();
+            res.status.should.equal(200);
+            res.body.id.should.equal(contributorDoc.id);
+            done();
+          });
         });
+
     });
 
   });

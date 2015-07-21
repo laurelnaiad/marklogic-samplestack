@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var search = require('../../../lib/db-client/search');
-
 module.exports = function() {
   var sandbox;
+  var db = require('../../../lib/db-client');
+  var connection = db.getGenericClient(mluser.username, mluser.password);
+  var search = require('../../../lib/db-client/search')(connection);
 
   describe('search',function() {
 
     beforeEach(function () {
       sandbox = sinon.sandbox.create();
-      httpMocks.marklogic.setup();
+      // httpMocks.marklogic.setup();
     });
 
     afterEach(function () {
       sandbox.restore();
-      httpMocks.marklogic.teardown();
+      // httpMocks.marklogic.teardown();
     });
 
     it('simple', function(done) {
@@ -39,9 +40,13 @@ module.exports = function() {
         }
       };
 
-      // TODO: How can we get a connection??
-      // var resp = search(connection)(searchReqSimpleReq);
-      // resp.total.should.eventually.equal(searchResp.total);
+      var resp = search(searchReqSimpleReq);
+      // resp.then(function (response) {
+      //   console.log('response');
+      //   console.log(response);
+      // });
+
+      // resp.search.qtext[0].should.eventually.equal(searchResp.search.qtext[0]);
       // resp.results[0].index.should.eventually.equal(searchResp.results[0].index);
       // resp.results[0].content.id.should.eventually.equal(searchResp.results[0].content.id);
       done();
