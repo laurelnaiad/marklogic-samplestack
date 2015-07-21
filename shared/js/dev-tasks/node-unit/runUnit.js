@@ -26,9 +26,6 @@ var gulp = require('gulp');
 var $ = helper.$;
 var ctx = require('../context');
 
-
-
-
 module.exports = function (opts, cb) {
   var done = false;
   var finalize = function () {
@@ -40,9 +37,9 @@ module.exports = function (opts, cb) {
   };
 
   var errFinalize = function (err) {
-    console.log(err);
-    if (ctx.currentTask === 'node-unit') {
-      if (!done) {
+    console.log(err.toString());
+    if (!done) {
+      if (ctx.currentTask === 'node-unit') {
         done = true;
         cb(err);
       }
@@ -62,8 +59,8 @@ module.exports = function (opts, cb) {
   process.stdout.write('\u001b[2J');
   // set cursor position
   process.stdout.write('\u001b[1;3H' + chalk.blue('\nNode Unit Tests:'));
-  stream = stream.pipe($.mocha(myOpts));
-  stream.on('error', errFinalize);
-  stream.on('end', finalize);
-  stream.on('finish', finalize);
+  stream = stream.pipe($.mocha(myOpts))
+    .once('error', errFinalize)
+    .once('end', finalize);
+
 };

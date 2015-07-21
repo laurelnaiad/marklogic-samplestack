@@ -22,25 +22,31 @@ var sinon = require('sinon');
 var ctx = require('../../../../shared/js/dev-tasks/context.js');
 var adds = ctx.options.addresses;
 var nock = require('nock');
+var path = require('path');
 // nock.recorder.rec();
 
 global.nock = nock;
 global.sinon = sinon;
-global.stubs = require('../stubs');
-global.httpMocks = require('../http-mocks');
 global.expect = chai.expect;
-global.agent1 = request.agent('http://localhost:3000');
-global.agent2 = request.agent('http://localhost:3000');
-global.request = request('http://localhost:3000');
-global.contributor = { username: 'joe@example.com', password: 'joesPassword' };
-global.mluser = { username: 'admin', password: 'admin' };
+global.agent = request.agent('http://localhost:3000');
+global.libRequire = function (mod) {
+  return require(path.resolve(__dirname, '../../lib', mod));
+};
 
-var dbClient = require('./db-client');
-var middleware = require('./middleware');
-var routing = require('./routing');
+// global.request = request('http://localhost:3000');
 
+// var dbClient = require('./db-client');
+// var middleware = require('./middleware');
+// var routing = require('./routing');
+//
+var modules = require('requireindex')(__dirname);
 describe('node-express/lib', function () {
-  dbClient();
-  middleware();
-  routing();
+  Object.keys(modules).forEach(function (mod) {
+    if (mod !== 'mocks') {
+      modules[mod]();
+    }
+  });
+  // dbClient();
+  // middleware();
+  // routing();
 });

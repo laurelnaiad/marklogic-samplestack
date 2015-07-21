@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 module.exports = function() {
-  var sandbox;
-  var Promise = require('bluebird');
-  var db = require('../../../lib/db-client');
-  var middleware = require('../../../lib/middleware');
-  var authStubs = require('../../stubs/auth');
-  var contributorDoc = {
-    aboutMe: "Twitter: [@maryadmin](http://twitter.com/maryadmin)\nDisclaimer: This is not me.  MaryAdmin _doesn't exist_!\n",
-    displayName: "MaryAdmin",
-    id: "9611450a-0663-45a5-8a08-f1c71320475e",
-    originalId: null,
-    location: "Barrow",
-    reputation: 101,
-    userName: "mary@example.com",
-    voteCount: 5,
-    websiteUrl: "http://website.com/grechaw"
-  };
-  var getUniqueContentResp = contributorDoc;
-  var patchReputationResp = contributorDoc;
-  var patchVoteCountResp = contributorDoc;
 
   describe('contributor',function() {
+
+    var sandbox;
+    var Promise = require('bluebird');
+    var mocks = require('../mocks');
+
+    var contributorDoc;
+    /* jshint ignore:start */
+    contributorDoc = {
+      aboutMe: "Twitter: [@maryadmin](http://twitter.com/maryadmin)\nDisclaimer: This is not me.  MaryAdmin _doesn't exist_!\n",
+      displayName: "MaryAdmin",
+      id: "9611450a-0663-45a5-8a08-f1c71320475e",
+      originalId: null,
+      location: "Barrow",
+      reputation: 101,
+      userName: "mary@example.com",
+      voteCount: 5,
+      websiteUrl: "http://website.com/grechaw"
+    };
+    /* jshint ignore:end */
+    var getUniqueContentResp = contributorDoc;
+    var patchReputationResp = contributorDoc;
+    var patchVoteCountResp = contributorDoc;
 
     beforeEach(function () {
       sandbox = sinon.sandbox.create();
@@ -44,30 +47,36 @@ module.exports = function() {
       sandbox.restore();
     });
 
-    describe('GET contributor', function() {
-      it('calls dbClient GET contributor', function(done) {
-        // spy getUniqueContent to ensure it was called
-        console.log(authStubs);
-        var myStubs = authStubs.getStubsForVisitor(sandbox);
-        console.log('getStubsForVisitor called');
+    describe('/v1/contributors', function() {
 
+      describe('GET', function() {
 
-        // var mock = sandbox.mock(middleware.auth);
-        // mock.expects("tryReviveSession").once();
-        // mock.expects("associateBestRole").once();
+        it('it works for visitors', function (done) {
+          var dbClient = {
+            contributor: {
+              getUniqueContent: sandbox.spy(function() {
+                return Promise.resolve(contributorDoc);
+              })
+            }
+          };
+          var myStubs = mocks.middleware.auth.impersonateVisitor(
+            sandbox, dbClient
+          );
 
-        agent1
+          agent
           .get('/v1/contributors/' + contributorDoc.id)
           .end(function(err, res) {
             myStubs.tryReviveSession.calledOnce.should.equal(true);
             myStubs.associateBestRole.calledOnce.should.equal(true);
-            // mock.verify();
-            // mock.restore();
+            dbClient.contributor.getUniqueContent.calledOnce
+              .should.equal(true);
             res.status.should.equal(200);
-            res.body.id.should.equal(contributorDoc.id);
+            res.body.should.deep.equal(contributorDoc);
             done();
           });
         });
+
+      });
 
     });
 

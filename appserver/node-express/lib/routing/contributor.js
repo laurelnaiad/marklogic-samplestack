@@ -33,8 +33,12 @@ module.exports = function (app, mw) {
   // ]);
 
   app.get('/v1/contributors/:id', [
-    function (req, res, next) { mw.auth.tryReviveSession(req, res, next) },
-    function (req, res, next) { mw.auth.associateBestRole(app, roles, req, res, next) },
+    function (req, res, next) {
+      mw.auth.tryReviveSession(req, res, next);
+    },
+    function (req, res, next) {
+      mw.auth.associateBestRole(roles, req, res, next);
+    },
     function (req, res, next) {
       return req.db.contributor.getUniqueContent(
         null, { id: req.params.id }

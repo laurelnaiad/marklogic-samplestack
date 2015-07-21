@@ -259,6 +259,29 @@ module.exports = function (app) {
     createSession: sessions.createSession,
 
 
+    // tries to revive a session based on cookie -- will hit cache of
+    // users in db to look up sessions if there is a session cookie.
+    // An authenticated session looks like this:
+    // 
+    // { cookie:
+    //    { path: '/',
+    //      _expires: null,
+    //      originalMaxAge: null,
+    //      httpOnly: true },
+    //   passport:
+    //    { user:
+    //       { id: 'cf99542d-f024-4478-a6dc-7e723a51b040',
+    //         roles: [Object],
+    //         displayName: 'JoeUser' } } }
+    //
+    //
+    // the side effectof req.passport.user is what we'll care about because
+    // that user property will be on the req. after passport is through
+    // with this middleware. In other words, req.user may look like
+    //       { id: 'cf99542d-f024-4478-a6dc-7e723a51b040',
+    //         roles: [Object],
+    //         displayName: 'JoeUser' }
+    // after this is handled
     tryReviveSession: function (req, res, next) {
       // is the request purporting to have a session?
       // if so, it should have a csrf ID, in which case we will try reviving
@@ -274,9 +297,13 @@ module.exports = function (app) {
           sessions.createSession.bind(app, req, res),
           passport.initialize().bind(passport, req, res),
           passport.session().bind(passport, req, res),
-        ], next);
+        ], function () {
+          console.log(require('util').inspect(req.session));
+          next();
+        });
       }
       else {
+        console.log(require('util').inspect(req.session));
         // no sign of a session -- move on
         next();
       }

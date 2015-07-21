@@ -141,7 +141,9 @@ var closeServer = function (server, cb) {
       try {
         cb();
       }
-      catch (err) {}
+      catch (err) {
+        cb(err);
+      }
     }
   };
   try {
@@ -298,10 +300,10 @@ self = module.exports = {
           };
         }),
         // when all have called back, call back the caller
-        function () {
+        function (err) {
           activeServers = null;
           closing = false;
-          callback();
+          callback(err);
         }
       );
     }

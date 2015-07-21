@@ -16,22 +16,31 @@
 
 /*
 http://ldapjs.org/examples.html
+
     .userDnPatterns("uid={0},ou=people", "uid={0},ou=apps")
         .groupSearchBase("ou=groups").contextSource()
         .ldif("classpath:samplestack-ds.ldif")
         .root("dc=samplestack,dc=org");
+
   final String ldapServer = "ldap://localhost:33389";
   final String ldapSearchBase = "dc=samplestack,dc=org";
+
   //use one of the existing users...
   final String ldapUsername = "uid=mary@example.com,’";
   final String ldapPassword = "marysPassword";
+
   final String contributor = "Joe User";
+
     assertEquals(
       "joe@example.com",
        srLdapUser.getAttributes().get("uid").get()
 );
+
+
   String searchFilter = "(&(objectclass=person)(cn="
         + accountName + "))";
+
+
  */
 
 var ldap = require('ldapjs');
@@ -157,6 +166,7 @@ var start = function () {
       // TODO: read from ldif?
       // list of roles for user:
       /*
+
       ldapsearch -H ldap://localhost:8389 -x -D cn=root -w admin -LLL
         -b "o=samplestack"
         "(&(objectclass=groupOfNames)(uniqueMember= \

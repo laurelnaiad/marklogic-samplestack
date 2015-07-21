@@ -33,38 +33,59 @@ module.exports = [{
   name: 'node-unit',
   deps: ['build'],
   func: function (cb) {
-    if (ctx.hadErrors || ctx.rebuildOnNext) {
-      $.util.log(chalk.yellow('skipping unit tests due to build errors'));
-      cb();
+    // if (ctx.hadErrors || ctx.rebuildOnNext) {
+    //   $.util.log(chalk.yellow('skipping unit tests due to build errors'));
+    //   cb();
+    // }
+    // else {
+    // TODO: read alternative reporter(s) from minimist in order to support
+    // test harness automation
+    if (ctx.currentTask === 'node-unit') {
+      var adds = ctx.options.addresses;
+      ctx.startServer(ctx.paths.browser.buildDir, adds.webApp.port);
     }
-    else {
-      // TODO: read alternative reporter(s) from minimist in order to support
-      // test harness automation
-      if (ctx.currentTask === 'node-unit') {
-        var adds = ctx.options.addresses;
-        ctx.startServer(ctx.paths.browser.buildDir, adds.webApp.port);
-      }
 
-      runUnit({}, function (err) {
-        if (ctx.currentTask === 'node-unit') {
-          ctx.closeActiveServers(function () {
-            cb();
-            process.exit(err ? 1 : 0);
-          });
-        }
-        else {
-          ctx.deployBuilt(function (err) {
-            if (err) {
-              cb(err);
-              process.exit(err ? 1 : 0);
-            }
-            else {
-              cb();
-              process.exit(0);
-            }
-          });
-        }
-      });
-    }
+    runUnit({}, function (err) {
+      if (ctx.currentTask === 'node-unit') {
+        ctx.closeActiveServers(function () {
+          if (err) {
+            process.exit(1);
+          }
+          else {
+            process.exit(0);
+          }
+          // cb(err);
+        });
+      }
+      else {
+        cb(err);
+      }
+    });
+      //     // function () {
+      //     //   if (err) {
+      //     //     cb(err);
+      //     //   }
+      //     //   else {
+      //     //
+      //     //   }
+      //     // //   console.log(cb.toString());
+      //     // //   cb();
+      //     // //   process.exit(err ? 1 : 0);
+      //     // // });
+      //   }
+      //   // else {
+      //   //   ctx.deployBuilt(function (err) {
+      //   //     if (err) {
+      //   //       cb(err);
+      //   //       process.exit(err ? 1 : 0);
+      //   //     }
+      //   //     else {
+      //   //       cb();
+      //   //       process.exit(0);
+      //   //     }
+      //   //   });
+      //   // }
+      // });
+    // }
   }
 }];
