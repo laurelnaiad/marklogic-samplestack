@@ -35,9 +35,6 @@ module.exports = function() {
       websiteUrl: "http://website.com/grechaw"
     };
     /* jshint ignore:end */
-    var getUniqueContentResp = contributorDoc;
-    var patchReputationResp = contributorDoc;
-    var patchVoteCountResp = contributorDoc;
 
     beforeEach(function () {
       sandbox = sinon.sandbox.create();
@@ -75,6 +72,33 @@ module.exports = function() {
             done();
           });
         });
+
+
+        it('it works for contributors', function (done) {
+          var dbClient = {
+            contributor: {
+              getUniqueContent: sandbox.spy(function() {
+                return Promise.resolve(contributorDoc);
+              })
+            }
+          };
+          var myStubs = mocks.middleware.auth.impersonateJoe(
+            sandbox, dbClient
+          );
+
+          agent
+          .get('/v1/contributors/' + contributorDoc.id)
+          .end(function(err, res) {
+            myStubs.tryReviveSession.calledOnce.should.equal(true);
+            myStubs.associateBestRole.calledOnce.should.equal(true);
+            dbClient.contributor.getUniqueContent.calledOnce
+              .should.equal(true);
+            res.status.should.equal(200);
+            res.body.should.deep.equal(contributorDoc);
+            done();
+          });
+        });
+
 
       });
 

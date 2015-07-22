@@ -22,6 +22,26 @@ module.exports = {
     };
   },
 
+  impersonateUnauthorized: function (sandbox, dbClient) {
+    var ssw = libRequire('samplestackWorker');
+    return {
+      tryReviveSession: sandbox.stub(
+        ssw.mw.auth,
+        'tryReviveSession',
+        function (req, res, next) {
+          next();
+        }
+      ),
+      associateBestRole: sandbox.stub(
+        ssw.mw.auth,
+        'associateBestRole',
+        function (roles, req, res, next) {
+          res.status(401).send({ message: 'Unauthorized' });
+        }
+      )
+    };
+  },
+
   // most of our security is in the database layer -- i.e. once we've
   // selected the DB client, we leave it to the database to enforce
   // security. As such, the main issue with testing this code will

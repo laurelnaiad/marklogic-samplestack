@@ -27,6 +27,7 @@ var path = require('path');
 
 global.nock = nock;
 global.sinon = sinon;
+global.assert = chai.assert;
 global.expect = chai.expect;
 global.agent = request.agent('http://localhost:3000');
 global.libRequire = function (mod) {

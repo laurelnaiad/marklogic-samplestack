@@ -39,8 +39,12 @@ module.exports = function (app, mw) {
   // ]);
 
   app.get('/v1/questions/:id', [
-    mw.auth.tryReviveSession,
-    mw.auth.associateBestRole.bind(app, ['contributors', 'default']),
+    function (req, res, next) {
+      mw.auth.tryReviveSession(req, res, next);
+    },
+    function (req, res, next) {
+      mw.auth.associateBestRole(['contributors', 'default'], req, res, next);
+    },
 
     function (req, res, next) {
       return businessLogic.getAndRespond(req, res, next, { id: req.params.id })
@@ -49,9 +53,15 @@ module.exports = function (app, mw) {
   ]);
 
   app.post('/v1/questions', [
-    mw.auth.tryReviveSession,
-    mw.auth.associateBestRole.bind(app, ['contributors']),
-    mw.parseBody.json,
+    function (req, res, next) {
+      mw.auth.tryReviveSession(req, res, next);
+    },
+    function (req, res, next) {
+      mw.auth.associateBestRole(['contributors'], req, res, next);
+    },
+    function (req, res, next) {
+      mw.parseBody.json(req, res, next);
+    },
 
     function (req, res, next) {
       return req.db.qnaDoc.post(
@@ -69,9 +79,15 @@ module.exports = function (app, mw) {
    * /v1/questions/{id}/answers
    */
   app.post('/v1/questions/:questionId/:operation', [
-    mw.auth.tryReviveSession,
-    mw.auth.associateBestRole.bind(app, ['contributors']),
-    mw.parseBody.json,
+    function (req, res, next) {
+      mw.auth.tryReviveSession(req, res, next);
+    },
+    function (req, res, next) {
+      mw.auth.associateBestRole(['contributors'], req, res, next);
+    },
+    function (req, res, next) {
+      mw.parseBody.json(req, res, next);
+    },
 
     function (req, res, next) {
       var spec = _.clone(req.params);
@@ -114,9 +130,15 @@ module.exports = function (app, mw) {
    * /v1/questions/{id}/answers/{answerId}/accept
    */
   app.post('/v1/questions/:questionId/answers/:answerId/:operation', [
-    mw.auth.tryReviveSession,
-    mw.auth.associateBestRole.bind(app, ['contributors']),
-    mw.parseBody.json,
+    function (req, res, next) {
+      mw.auth.tryReviveSession(req, res, next);
+    },
+    function (req, res, next) {
+      mw.auth.associateBestRole(['contributors'], req, res, next);
+    },
+    function (req, res, next) {
+      mw.parseBody.json(req, res, next);
+    },
 
     function (req, res, next) {
       var spec = _.clone(req.params);

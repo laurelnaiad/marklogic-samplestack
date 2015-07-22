@@ -17,8 +17,6 @@
 var moment = require('moment-timezone');
 
 var search = function (spec) {
-  console.log('search');
-
   var query = spec;
 
   // search settings
@@ -72,10 +70,8 @@ var search = function (spec) {
   _.merge(query.search, { options: { constraint: [ datesBuckets ]}});
 
   // execute async search
-  console.log('search - before query');
   return this.documents.query(query).result()
   .then(function (response) {
-    console.log('search promise resolved');
     if (spec.shadow) {
       return response;
     }

@@ -166,7 +166,6 @@ module.exports = function() {
           ],
           "start":1,
           "timezone":"America/Los_Angeles",
-          "shadow":"dates"
         }
       };
       var shadowParams = '?shadow=dates';

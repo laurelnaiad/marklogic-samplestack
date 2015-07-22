@@ -100,21 +100,19 @@ module.exports = function() {
 
       describe('POST', function() {
 
-        it('lookup all tags', function (done) {
+        it('lookup all tags as visitor', function (done) {
           var dbClient = {
             tags: {
               getTags: sandbox.spy(function() {
-                console.log('getTags')
                 return Promise.resolve(getTagsResp);
-              }),
-              getRelatedTags: sandbox.spy(function() {
-                console.log('getRelatedTags')
-                return Promise.resolve(getRelatedTagsResp);
               })
             }
           };
-          var myStubs = mocks.middleware.auth.impersonateVisitor(
+          var authStubs = mocks.middleware.auth.impersonateVisitor(
             sandbox, dbClient
+          );
+          var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+            sandbox
           );
           var getTagsReq = {
             "search":{
@@ -131,9 +129,9 @@ module.exports = function() {
           .post('/v1/tags/')
           .send(getTagsReq)
           .end(function(err, res) {
-            myStubs.tryReviveSession.calledOnce.should.equal(true);
-            myStubs.associateBestRole.calledOnce.should.equal(true);
-            // TODO: parseBody calledOnce check
+            authStubs.tryReviveSession.calledOnce.should.equal(true);
+            authStubs.associateBestRole.calledOnce.should.equal(true);
+            parseBodyStubs.json.calledOnce.should.equal(true);
             dbClient.tags.getTags.calledOnce.should.equal(true);
             res.status.should.equal(200);
             res.body.should.deep.equal(getTagsResp);
@@ -142,6 +140,44 @@ module.exports = function() {
         });
 
 
+        it('lookup related tags as visitor', function (done) {
+          var dbClient = {
+            tags: {
+              getRelatedTags: sandbox.spy(function() {
+                return Promise.resolve(getRelatedTagsResp);
+              })
+            }
+          };
+          var authStubs = mocks.middleware.auth.impersonateVisitor(
+            sandbox, dbClient
+          );
+          var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+            sandbox
+          );
+          var getRelatedTagsReq = {
+            "search":{
+              "qtext":[""],
+              "start":1,
+              "timezone":"America/Los_Angeles",
+              "pageLength":100,
+              "relatedTo":"css",
+              "sort":"frequency"
+            }
+          };
+
+          agent
+          .post('/v1/tags/')
+          .send(getRelatedTagsReq)
+          .end(function(err, res) {
+            authStubs.tryReviveSession.calledOnce.should.equal(true);
+            authStubs.associateBestRole.calledOnce.should.equal(true);
+            parseBodyStubs.json.calledOnce.should.equal(true);
+            dbClient.tags.getRelatedTags.calledOnce.should.equal(true);
+            res.status.should.equal(200);
+            res.body.should.deep.equal(getRelatedTagsResp);
+            done();
+          });
+        });
 
       });
 
