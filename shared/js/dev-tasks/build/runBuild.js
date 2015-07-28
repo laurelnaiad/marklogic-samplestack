@@ -43,6 +43,7 @@ var buildSteps = require('./buildSteps');
 var rebaser = require('../rebaser');
 var cloner = require('../cloner');
 var counter = require('../counter');
+var gulp = require('gulp');
 
 module.exports = function (stream) {
   ctx.hadErrors = false;
@@ -55,6 +56,15 @@ module.exports = function (stream) {
   // rearrange the paths used to represent the files during this function's
   // processing
 
+  var schemaStream = gulp.src(
+    path.resolve(__dirname, '../../../schema/**/*.json')
+  );
+  schemaStream.pipe(gulp.dest(
+    path.resolve(__dirname, '../../../../browser/builds/built'))
+  );
+  schemaStream.pipe(gulp.dest(
+    path.resolve(__dirname, '../../../../browser/builds/unit-tester'))
+  );
 
   stream = stream.pipe($.if(['**/browser/src/**'], rebaser('browser/src')));
 
