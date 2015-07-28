@@ -64,6 +64,12 @@ module.exports = function (app, mw) {
     },
 
     function (req, res, next) {
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#qnaDoc', req, res, next
+      );
+    },
+
+    function (req, res, next) {
       return req.db.qnaDoc.post(
         null, _.omit(req.user, 'roles'), req.body
       )
