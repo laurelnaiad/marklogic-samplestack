@@ -1,0 +1,226 @@
+{
+  "id": "http://marklogic.com/samplestack#tagsSearch",
+  "required": [
+    "criteria"
+  ],
+  "properties": {
+    "criteria": {
+      "required": [
+        "tagsQuery"
+      ],
+      "properties": {
+        "q": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": null
+            }
+          ]
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "tagsQuery": {
+          "required": [
+            "start",
+            "pageLength"
+          ],
+          "properties": {
+            "forTag": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": null
+                }
+              ]
+            },
+            "relatedTo": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": null
+                }
+              ]
+            },
+            "sort": {
+              "type": "array",
+              "items": {
+                "type": {
+                  "enum": [
+                    "name",
+                    "frequency"
+                  ]
+                }
+              }
+            },
+            "start": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pageLength": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "constraints": {
+          "required": [
+            "userName",
+            "resolved",
+            "tags",
+            "dateStart",
+            "dateEnd"
+          ],
+          "properties": {
+            "userName": {
+              "properties": {
+                "constraintName": {
+                  "enum": [
+                    "userName"
+                  ]
+                },
+                "type": {
+                  "enum": [
+                    "text"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "\"null\""
+                  ]
+                },
+                "queryStringName": {
+                  "enum": [
+                    "contributor"
+                  ]
+                }
+              }
+            },
+            "resolved": {
+              "properties": {
+                "constraintName": {
+                  "enum": [
+                    "resolved"
+                  ]
+                },
+                "type": {
+                  "enum": [
+                    "boolean"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "boolean",
+                    "\"null\""
+                  ]
+                },
+                "queryStringName": {
+                  "enum": [
+                    "resolved"
+                  ]
+                }
+              }
+            },
+            "tags": {
+              "properties": {
+                "constraintName": {
+                  "enum": [
+                    "tag"
+                  ]
+                },
+                "type": {
+                  "enum": [
+                    "enum"
+                  ]
+                },
+                "subType": {
+                  "enum": [
+                    "value"
+                  ]
+                },
+                "values": {
+                  "type": [
+                    "array",
+                    "\"null\""
+                  ]
+                },
+                "queryStringName": {
+                  "enum": [
+                    "tags"
+                  ]
+                }
+              }
+            },
+            "dateStart": {
+              "properties": {
+                "constraintName": {
+                  "enum": [
+                    "lastActivity"
+                  ]
+                },
+                "operator": {
+                  "enum": [
+                    "GE"
+                  ]
+                },
+                "type": {
+                  "enum": [
+                    "dateTime"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "date-time",
+                    "\"null\""
+                  ]
+                },
+                "queryStringName": {
+                  "enum": [
+                    "date-ge"
+                  ]
+                }
+              }
+            },
+            "dateEnd": {
+              "properties": {
+                "constraintName": {
+                  "enum": [
+                    "lastActivity"
+                  ]
+                },
+                "operator": {
+                  "enum": [
+                    "LT"
+                  ]
+                },
+                "type": {
+                  "enum": [
+                    "dateTime"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "date-time",
+                    "\"null\""
+                  ]
+                },
+                "queryStringName": {
+                  "enum": [
+                    "date-lt"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

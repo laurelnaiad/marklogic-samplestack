@@ -1,20 +1,22 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-define(['_marklogic/module'], function (module) {
+define([
+  '_marklogic/module', 'json!_marklogic/schema/search.json'
+], function (module, schema) {
 
   /**
    * @ngdoc domain
@@ -170,125 +172,21 @@ define(['_marklogic/module'], function (module) {
       $q, mlModelBase, mlSchema, mlUtil
     ) {
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchCriteria',
-        additionalProperties: false,
-        properties: {
-          q: {
-            oneOf: [ { type: 'string' }, { type: 'null' } ]
-          },
-          sort: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
-          },
-          timezone: { type: 'string' },
-          start: { type: 'integer', minimum: 0 },
-          pageLength: { type: 'integer', minimum: 0 },
-          constraints: {
-            patternProperties: {
-              '^.+$': {
-                oneOf: [
-                  { $ref: 'http://marklogic.com/#searchConstraintText' },
-                  { $ref: 'http://marklogic.com/#searchConstraintBoolean' },
-                  { $ref: 'http://marklogic.com/#searchConstraintEnum' },
-                  { $ref: 'http://marklogic.com/#searchConstraintDateTime' }
-                ]
-              }
-            }
-          }
-        }
-      });
+      mlSchema.addSchema(schema.searchCriteria);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintText',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type'],
-            properties: {
-              type: { enum: ['text'] },
-              value: { type: ['string', 'null' ] }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schema.searchConstraintText);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintBoolean',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type'],
-            properties: {
-              type: { enum: ['boolean'] },
-              text: { type: ['boolean', 'null' ] }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schema.searchConstraintBoolean);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintEnum',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type', 'subType'],
-            properties: {
-              type: { enum: ['enum'] },
-              subType: { enum: ['text'] },
-              values: { type: ['array', 'null' ], items: { type: 'text' } }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schema.searchConstraintEnum);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintDateTime',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type'],
-            properties: {
-              type: { enum: ['dateTime'] },
-              value: { type: ['date-time', 'null' ] },
-              operator: { enum: ['GE', 'LE' ] }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schema.searchConstraintDateTime);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintBase',
-        required: ['constraintName', 'queryStringName'],
-        properties: {
-          constraintName: { type: 'string' },
-          constraintType: { enum: ['range', 'value'] },
-          queryStringName: { type: 'string' }
-        },
-      });
+      mlSchema.addSchema(schema.searchConstraintDateTime);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchResults',
-        additionalProperties: true,
-        required: ['start', 'total', 'page-length', 'items'],
-        properties: {
-          start: { type: 'integer' },
-          total: { type: 'integer' },
-          'page-length': { type: 'integer' },
-          items: {
-            type: 'array',
-            items: { type: 'object' }
-          },
-          facets: {
-            type: 'object',
-            patternProperties: {
-              '^.+$': { type: ['object', 'array'] }
-            }
-          }
-        }
-      });
+      mlSchema.addSchema(schema.searchConstraintBase);
+
+      mlSchema.addSchema(schema.searchResults);
 
       var throwMethod = function (method) {
         return function () {
@@ -333,32 +231,9 @@ define(['_marklogic/module'], function (module) {
       MlSearchObject.prototype = Object.create(mlModelBase.object.prototype);
 
 
-      Object.defineProperty(MlSearchObject.prototype, '$mlSpec', {
-        value: {
-          schema: mlSchema.addSchema({
-            id: 'http://marklogic.com/#search',
-            required: ['criteria'],
-            additionalProperties: false,
-            properties: {
-              criteria: { $ref: 'http://marklogic.com/#searchCriteria' },
-              facets: {
-                patternProperties: {
-                  '^.+$': {
-                    properties: {
-                      name: { type: 'string' },
-                      valuesType: { enum: ['array', 'object'] },
-                      shadowConstraints: {
-                        type: 'array', items: { type: 'string' }
-                      }
-                    }
-                  }
-                }
-              },
-              results: { $ref: 'http://marklogic.com/#searchResults' }
-            }
-          })
-        }
-      });
+      MlSearchObject.prototype.$mlSpec = {
+        schema: mlSchema.addSchema(schema.search)
+      };
 
       MlSearchObject.prototype.$mlSpec.serviceName = 'mlSearch';
 

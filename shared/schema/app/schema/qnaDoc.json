@@ -1,0 +1,28 @@
+{
+  "id": "http://marklogic.com/samplestack#qnaDoc",
+  "required": [
+    "title",
+    "text"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

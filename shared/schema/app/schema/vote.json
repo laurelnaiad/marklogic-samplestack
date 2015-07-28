@@ -1,0 +1,14 @@
+{
+  "id": "http://marklogic.com/samplestack#vote",
+  "required": [
+    "upDown"
+  ],
+  "properties": {
+    "upDown": {
+      "enum": [
+        1,
+        -1
+      ]
+    }
+  }
+}
