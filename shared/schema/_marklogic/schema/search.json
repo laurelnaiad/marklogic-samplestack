@@ -9,7 +9,7 @@
             "type": "string"
           },
           {
-            "type": null
+            "type": "null"
           }
         ]
       },
@@ -71,7 +71,7 @@
           "value": {
             "type": [
               "string",
-              "\"null\""
+              "null"
             ]
           }
         }
@@ -97,7 +97,7 @@
           "text": {
             "type": [
               "boolean",
-              "\"null\""
+              "null"
             ]
           }
         }
@@ -129,7 +129,7 @@
           "values": {
             "type": [
               "array",
-              "\"null\""
+              "null"
             ],
             "items": {
               "type": "text"
@@ -158,7 +158,7 @@
           "value": {
             "type": [
               "date-time",
-              "\"null\""
+              "null"
             ]
           },
           "operator": {

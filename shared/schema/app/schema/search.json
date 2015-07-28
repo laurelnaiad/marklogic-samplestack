@@ -17,7 +17,7 @@
         "timezone": {
           "type": [
             "string",
-            null
+            "null"
           ]
         },
         "sort": {
@@ -56,7 +56,7 @@
                 "value": {
                   "type": [
                     "string",
-                    "\"null\""
+                    "null"
                   ]
                 },
                 "queryStringName": {
@@ -81,7 +81,7 @@
                 "value": {
                   "type": [
                     "boolean",
-                    "\"null\""
+                    "null"
                   ]
                 },
                 "queryStringName": {
@@ -111,7 +111,7 @@
                 "values": {
                   "type": [
                     "array",
-                    "\"null\""
+                    "null"
                   ]
                 },
                 "queryStringName": {
@@ -141,7 +141,7 @@
                 "value": {
                   "type": [
                     "date-time",
-                    "\"null\""
+                    "null"
                   ]
                 },
                 "queryStringName": {
@@ -171,7 +171,7 @@
                 "value": {
                   "type": [
                     "date-time",
-                    "\"null\""
+                    "null"
                   ]
                 },
                 "queryStringName": {

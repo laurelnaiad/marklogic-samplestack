@@ -8,7 +8,7 @@
     "websiteUrl": {
       "type": [
         "string",
-        "\"null\""
+        "null"
       ]
     },
     "reputation": {
@@ -19,7 +19,7 @@
     "aboutMe": {
       "type": [
         "string",
-        "\"null\""
+        "null"
       ],
       "maxLength": 255
     },
@@ -31,7 +31,7 @@
     "location": {
       "type": [
         "string",
-        "\"null\""
+        "null"
       ]
     },
     "voteCount": {
