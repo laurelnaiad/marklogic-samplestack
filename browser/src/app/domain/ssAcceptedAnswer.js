@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/acceptedAnswer.json'
+  'app/module', 'json!app/schema/ssAcceptedAnswer.json'
 ], function (module, schema) {
 
   /**

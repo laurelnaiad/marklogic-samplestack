@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/vote.json'
+  'app/module', 'json!app/schema/ssVote.json'
 ], function (module, schema) {
 
   /**

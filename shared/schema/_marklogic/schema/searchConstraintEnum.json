@@ -1,0 +1,35 @@
+{
+  "id": "http://marklogic.com/#searchConstraintEnum",
+  "allOf": [
+    {
+      "$ref": "http://marklogic.com/#searchConstraintBase"
+    },
+    {
+      "required": [
+        "type",
+        "subType"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "enum"
+          ]
+        },
+        "subType": {
+          "enum": [
+            "text"
+          ]
+        },
+        "values": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "text"
+          }
+        }
+      }
+    }
+  ]
+}

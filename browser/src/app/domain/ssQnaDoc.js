@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/qnaDoc.json'
+  'app/module', 'json!app/schema/ssQnaDoc.json'
 ], function (module, schema) {
 
   /**

@@ -1,0 +1,26 @@
+{
+  "id": "http://marklogic.com/#searchConstraintText",
+  "allOf": [
+    {
+      "$ref": "http://marklogic.com/#searchConstraintBase"
+    },
+    {
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "text"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -70,6 +70,11 @@ module.exports = function (app, mw) {
       mw.parseBody.json(req, res, next);
     },
     function (req, res, next) {
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#sessionCreate', req, res, next
+      );
+    },
+    function (req, res, next) {
       mw.auth.login(req, res, next);
     },
     function (req, res, next) {
@@ -86,6 +91,11 @@ module.exports = function (app, mw) {
     },
     function (req, res, next) {
       mw.parseBody.urlEncoded(req, res, next);
+    },
+    function (req, res, next) {
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#sessionCreate', req, res, next
+      );
     },
     function (req, res, next) {
       mw.auth.login(req, res, next);

@@ -1,0 +1,45 @@
+{
+  "id": "http://marklogic.com/samplestack#relatedTags",
+  "required": [
+    "search"
+  ],
+  "properties": {
+    "search": {
+      "required": [
+        "relatedTo"
+      ],
+      "properties": {
+        "relatedTo": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sort": {
+          "type": "string"
+        },
+        "qtext": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pageLength": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timezone": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

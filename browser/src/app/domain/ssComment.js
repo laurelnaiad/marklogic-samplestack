@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/comment.json'
+  'app/module', 'json!app/schema/ssComment.json'
 ], function (module, schema) {
 
   /**

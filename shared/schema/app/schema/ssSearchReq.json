@@ -1,0 +1,35 @@
+{
+  "id": "http://marklogic.com/samplestack#searchReq",
+  "required": [
+    "search"
+  ],
+  "properties": {
+    "search": {
+      "required": [
+        "qtext"
+      ],
+      "properties": {
+        "timezone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "qtext": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pageLength": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

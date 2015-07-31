@@ -62,7 +62,6 @@ module.exports = function (app, mw) {
     function (req, res, next) {
       mw.parseBody.json(req, res, next);
     },
-
     function (req, res, next) {
       mw.schema.validate(
         'http://marklogic.com/samplestack#qnaDoc', req, res, next
@@ -93,6 +92,27 @@ module.exports = function (app, mw) {
     },
     function (req, res, next) {
       mw.parseBody.json(req, res, next);
+    },
+    function (req, res, next) {
+      var schemaType;
+      switch (req.params.operation) {
+        case 'upvotes':
+        case 'downvotes':
+          schemaType = 'vote';
+          break;
+        case 'comments':
+          schemaType = 'comment';
+          break;
+        case 'answers':
+          schemaType = 'answer';
+          break;
+      }
+      if (schemaType) {
+        mw.schema.validate(
+          'http://marklogic.com/samplestack#' + schemaType, req, res, next
+        );
+      }
+      else next();
     },
 
     function (req, res, next) {
@@ -144,6 +164,27 @@ module.exports = function (app, mw) {
     },
     function (req, res, next) {
       mw.parseBody.json(req, res, next);
+    },
+    function (req, res, next) {
+      var schemaType;
+      switch (req.params.operation) {
+        case 'upvotes':
+        case 'downvotes':
+          schemaType = 'vote';
+          break;
+        case 'comments':
+          schemaType = 'comment';
+          break;
+        case 'accept':
+          schemaType = 'accept';
+          break;
+      }
+      if (schemaType) {
+        mw.schema.validate(
+          'http://marklogic.com/samplestack#' + schemaType, req, res, next
+        );
+      }
+      else next();
     },
 
     function (req, res, next) {

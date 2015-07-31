@@ -15,8 +15,26 @@
  */
 
 define([
-  '_marklogic/module', 'json!_marklogic/schema/search.json'
-], function (module, schema) {
+  '_marklogic/module',
+  'json!_marklogic/schema/search.json',
+  'json!_marklogic/schema/searchConstraintBase.json',
+  'json!_marklogic/schema/searchConstraintBoolean.json',
+  'json!_marklogic/schema/searchConstraintDateTime.json',
+  'json!_marklogic/schema/searchConstraintEnum.json',
+  'json!_marklogic/schema/searchConstraintText.json',
+  'json!_marklogic/schema/searchCriteria.json',
+  'json!_marklogic/schema/searchResults.json'
+], function (
+  module,
+  schemaSearch,
+  schemaSearchConstraintBase,
+  schemaSearchConstraintBoolean,
+  schemaSearchConstraintDateTime,
+  schemaSearchConstraintEnum,
+  schemaSearchConstraintText,
+  schemaSearchCriteria,
+  schemaSearchResults
+) {
 
   /**
    * @ngdoc domain
@@ -165,6 +183,17 @@ define([
    * ```
    *
    */
+  var schemas = {
+    search : schemaSearch,
+    searchConstraintBase : schemaSearchConstraintBase,
+    searchConstraintBoolean : schemaSearchConstraintBoolean,
+    searchConstraintDateTime : schemaSearchConstraintDateTime,
+    searchConstraintEnum : schemaSearchConstraintEnum,
+    searchConstraintText : schemaSearchConstraintText,
+    searchCriteria : schemaSearchCriteria,
+    searchResults : schemaSearchResults
+  };
+
   module.factory('mlSearch', [
 
     '$q', 'mlModelBase', 'mlSchema', 'mlUtil',
@@ -172,21 +201,19 @@ define([
       $q, mlModelBase, mlSchema, mlUtil
     ) {
 
-      mlSchema.addSchema(schema.searchCriteria);
+      mlSchema.addSchema(schemas.searchCriteria);
 
-      mlSchema.addSchema(schema.searchConstraintText);
+      mlSchema.addSchema(schemas.searchConstraintText);
 
-      mlSchema.addSchema(schema.searchConstraintBoolean);
+      mlSchema.addSchema(schemas.searchConstraintBoolean);
 
-      mlSchema.addSchema(schema.searchConstraintEnum);
+      mlSchema.addSchema(schemas.searchConstraintEnum);
 
-      mlSchema.addSchema(schema.searchConstraintDateTime);
+      mlSchema.addSchema(schemas.searchConstraintDateTime);
 
-      mlSchema.addSchema(schema.searchConstraintDateTime);
+      mlSchema.addSchema(schemas.searchConstraintBase);
 
-      mlSchema.addSchema(schema.searchConstraintBase);
-
-      mlSchema.addSchema(schema.searchResults);
+      mlSchema.addSchema(schemas.searchResults);
 
       var throwMethod = function (method) {
         return function () {
@@ -232,7 +259,7 @@ define([
 
 
       MlSearchObject.prototype.$mlSpec = {
-        schema: mlSchema.addSchema(schema.search)
+        schema: mlSchema.addSchema(schemas.search)
       };
 
       MlSearchObject.prototype.$mlSpec.serviceName = 'mlSearch';

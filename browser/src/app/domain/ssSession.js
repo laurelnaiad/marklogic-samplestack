@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/session.json'
+  'app/module', 'json!app/schema/ssSession.json'
 ], function (module, schema) {
 
   /**

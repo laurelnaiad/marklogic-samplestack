@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/contributor.json'
+  'app/module', 'json!app/schema/ssContributor.json'
 ], function (module, schema) {
 
   /**

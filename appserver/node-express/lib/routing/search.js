@@ -28,7 +28,12 @@ module.exports = function (app, mw) {
       mw.parseBody.json(req, res, next);
     },
     function (req, res, next) {
-      req.body.shadow = req.query.shadow;
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#searchReq', req, res, next
+      );
+    },
+    function (req, res, next) {
+      req.body.shadow = req.params.shadow;
 
       return req.db.search(req.body)
       .then(function (result) {

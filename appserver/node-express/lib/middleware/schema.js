@@ -41,7 +41,7 @@ module.exports = function (app) {
         next();
       }
       else {
-        res.send(400);
+        res.status(400).send({ error: validated.errors });
       }
     }
   };

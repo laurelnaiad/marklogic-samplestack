@@ -15,7 +15,7 @@
  */
 
 define([
-  'app/module', 'json!app/schema/search.json'
+  'app/module', 'json!app/schema/ssSearch.json'
 ], function (module, schema) {
 
   /**

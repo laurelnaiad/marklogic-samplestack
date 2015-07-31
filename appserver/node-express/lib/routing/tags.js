@@ -27,6 +27,12 @@ module.exports = function (app, mw) {
     function (req, res, next) {
       mw.parseBody.json(req, res, next);
     },
+    function (req, res, next) {
+      var schemaType = (req.body.search.relatedTo) ? 'relatedTags' : 'forTags';
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#' + schemaType, req, res, next
+      );
+    },
 
     function (req, res, next) {
       // Handle related tags
