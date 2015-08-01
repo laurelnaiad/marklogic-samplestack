@@ -23,11 +23,10 @@
         },
         "start": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 1
         },
         "pageLength": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         }
       }
     }

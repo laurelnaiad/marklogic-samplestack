@@ -34,12 +34,6 @@ global.libRequire = function (mod) {
   return require(path.resolve(__dirname, '../../lib', mod));
 };
 
-// global.request = request('http://localhost:3000');
-
-// var dbClient = require('./db-client');
-// var middleware = require('./middleware');
-// var routing = require('./routing');
-//
 var modules = require('requireindex')(__dirname);
 describe('node-express/lib', function () {
   Object.keys(modules).forEach(function (mod) {
@@ -47,7 +41,4 @@ describe('node-express/lib', function () {
       modules[mod]();
     }
   });
-  // dbClient();
-  // middleware();
-  // routing();
 });
