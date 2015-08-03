@@ -22,7 +22,6 @@
     "beforeEach": false,
     "before": false,
     "sinon": false,
-    "_": false,
     "libRequire": false,
     "agent": false
   },

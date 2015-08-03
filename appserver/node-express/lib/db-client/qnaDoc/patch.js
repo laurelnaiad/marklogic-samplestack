@@ -25,6 +25,8 @@ var Promise = require('bluebird');
 
 var qnaDoc = require('./index');
 
+var _ = require('lodash');
+
 module.exports = function (txid, spec) {
   var self = this;
 
