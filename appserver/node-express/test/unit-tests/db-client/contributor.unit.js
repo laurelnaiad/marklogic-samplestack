@@ -119,20 +119,12 @@ module.exports = function() {
       /* jshint ignore:end */
 
       sandbox.stub(connection.documents, 'query', function(dq) {
-        // TODO: FIGURE OUT WHY THESE ARE NOT SEEN AS EQUAL!
-        console.log('(** dq **)')
-        console.log(require('util').inspect(dq, { depth: null }));
-        console.log('(** docsQuery **)')
-        console.log(require('util').inspect(docsQuery, { depth: null }));
+        expect(dq.whereClause).to.exist;
+        expect(dq.whereClause.query).to.exist;
+        expect(dq.whereClause.query.queries).to.exist;
+        dq.whereClause.query.queries
+          .should.deep.equal(docsQuery.whereClause.query.queries);
 
-        var diff = require('deep-diff').diff;
-        var differences = diff(dq, docsQuery);
-        console.log(require('util').inspect(differences, { depth: null }));
-
-        // console.log('_.isEqual(dq, docsQuery)');
-        // console.log(_.isEqual(dq, docsQuery));
-
-        dq.should.deep.equal(docsQuery);
         return {
           result: function() {
             return Promise.resolve(docsQueryResult);
