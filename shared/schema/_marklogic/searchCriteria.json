@@ -1,0 +1,53 @@
+{
+  "id": "http://marklogic.com/#searchCriteria",
+  "additionalProperties": false,
+  "properties": {
+    "q": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sort": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pageLength": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "constraints": {
+      "patternProperties": {
+        "^.+$": {
+          "oneOf": [
+            {
+              "$ref": "http://marklogic.com/#searchConstraintText"
+            },
+            {
+              "$ref": "http://marklogic.com/#searchConstraintBoolean"
+            },
+            {
+              "$ref": "http://marklogic.com/#searchConstraintEnum"
+            },
+            {
+              "$ref": "http://marklogic.com/#searchConstraintDateTime"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

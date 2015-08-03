@@ -1,0 +1,44 @@
+{
+  "excludeFiles": ["**/src/application.js", "**/node-express/options.js"],
+  "disallowMultipleVarDecl": true,
+  "requireSpaceBeforeBinaryOperators": [
+    "?",
+    "+",
+    "-",
+    "/",
+    "*",
+    "=",
+    "==",
+    "===",
+    "!=",
+    "!=="
+  ],
+  "requireSpaceAfterBinaryOperators": [
+    "?",
+    "+",
+    "-",
+    "/",
+    "*",
+    "=",
+    "==",
+    "===",
+    "!=",
+    "!=="
+  ],
+  "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+  "validateIndentation": 2,
+  "requireKeywordsOnNewLine": ["else"],
+  "disallowKeywordsOnNewLine": [],
+  "safeContextKeyword": [ "self" ],
+  "requireSpacesInFunctionExpression": {
+      "beforeOpeningRoundBrace": true,
+      "beforeOpeningCurlyBrace": true
+  },
+  "requireSpacesInConditionalExpression": {
+      "afterTest": true,
+      "beforeConsequent": true,
+      "afterConsequent": true,
+      "beforeAlternate": true
+  },
+  "maximumLineLength": 1000
+}

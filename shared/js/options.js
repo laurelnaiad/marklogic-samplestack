@@ -20,10 +20,19 @@ var url = require('url');
 global._ = require('lodash');
 _.mixin(require('lodash-deep'));
 
-var credentials = require('../credentials');
-var pkg = require('../../package.json');
+var credentials = require('./credentials');
+var pkg;
+
+try {
+  pkg = require('./package.json');
+}
+catch (e) {
+  pkg = require('../../package.json');
+}
 
 var defaults = {
+
+  liveReloadPort: 35730,
 
   addresses: {
     // the middle tier

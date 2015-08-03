@@ -1,0 +1,13 @@
+{
+  "id": "http://marklogic.com/samplestack#answer",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

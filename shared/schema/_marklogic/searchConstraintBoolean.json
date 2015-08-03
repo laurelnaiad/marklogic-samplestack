@@ -1,0 +1,26 @@
+{
+  "id": "http://marklogic.com/#searchConstraintBoolean",
+  "allOf": [
+    {
+      "$ref": "http://marklogic.com/#searchConstraintBase"
+    },
+    {
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "boolean"
+          ]
+        },
+        "text": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    }
+  ]
+}

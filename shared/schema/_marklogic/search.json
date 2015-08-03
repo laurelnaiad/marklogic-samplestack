@@ -1,0 +1,22 @@
+{
+  "id": "http://marklogic.com/#search",
+  "required": ["criteria"],
+  "additionalProperties": false,
+  "properties": {
+    "criteria": { "$ref": "http://marklogic.com/#searchCriteria" },
+    "facets": {
+      "patternProperties": {
+        "^.+$": {
+          "properties": {
+            "name": { "type": "string" },
+            "valuesType": { "enum": ["array", "object"] },
+            "shadowConstraints": {
+              "type": "array", "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "results": { "$ref": "http://marklogic.com/#searchResults" }
+  }
+}

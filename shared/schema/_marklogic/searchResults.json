@@ -1,0 +1,38 @@
+{
+  "id": "http://marklogic.com/#searchResults",
+  "additionalProperties": true,
+  "required": [
+    "start",
+    "total",
+    "page-length",
+    "items"
+  ],
+  "properties": {
+    "start": {
+      "type": "integer"
+    },
+    "total": {
+      "type": "integer"
+    },
+    "page-length": {
+      "type": "integer"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "facets": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "type": [
+            "object",
+            "array"
+          ]
+        }
+      }
+    }
+  }
+}

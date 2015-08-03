@@ -1,11 +1,11 @@
 {
   "node": true,
-  "browser": false,
   "globals": {
     "libRequire": false,
     "sharedRequire": false,
     "_": true,
-    "Promise": true
+    "Promise": true,
+    "$": false
   },
   "esnext": false,
   "expr": true,
