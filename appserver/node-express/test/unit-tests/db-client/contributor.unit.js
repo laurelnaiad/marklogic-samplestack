@@ -68,7 +68,7 @@ module.exports = function() {
       var ret = { id: 'cf99542d-f024-4478-a6dc-7e723a51b040' };
       /* jshint ignore:end */
 
-      sandbox.stub(connection.documents, 'patch', function(dp) {
+      sandbox.stub(connection.documents, 'patch', function (dp) {
         dp.should.deep.equal(docsPatch);
         return {
           result: function() {
@@ -77,14 +77,14 @@ module.exports = function() {
         };
       });
 
-      contributor.patchVoteCount(txid, id, increment).then(function(gtRet) {
+      contributor.patchVoteCount(txid, id, increment).then(function (gtRet) {
         gtRet.should.deep.equal(ret);
         done();
       });
 
     });
 
-    xit('getUniqueContent with contributor ID', function (done) {
+    it('getUniqueContent with contributor ID', function (done) {
       /* jshint ignore:start */
       var txid = null,
           spec = { id: 'cf99542d-f024-4478-a6dc-7e723a51b040' };
@@ -109,7 +109,7 @@ module.exports = function() {
 
     });
 
-    xit('getUniqueContent without contributor ID', function (done) {
+    it('getUniqueContent without contributor ID', function (done) {
       /* jshint ignore:start */
       var txid = null,
           spec = { userName: 'joe@example.com' };

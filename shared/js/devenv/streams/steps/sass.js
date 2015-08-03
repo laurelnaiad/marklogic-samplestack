@@ -6,6 +6,7 @@ var through = require('through2');
 var path = require('path');
 var merge = require('merge-stream');
 var duplex = require('event-stream').duplex;
+var Promise = require('bluebird');
 
 module.exports = function () {
   var once = false;

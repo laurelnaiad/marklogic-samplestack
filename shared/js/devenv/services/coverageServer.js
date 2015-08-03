@@ -1,6 +1,7 @@
 var path = require('path');
 var globs = require('../globs');
 var childProcess = require('child_process');
+var Promise = require('bluebird');
 
 var myProcess;
 
