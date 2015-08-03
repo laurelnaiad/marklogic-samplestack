@@ -1,10 +1,10 @@
 var streams = require('../streams');
 var Promise = require('bluebird');
-var rimraf = require('rimraf');
 var path = require('path');
 var globs = require('../globs');
 
 module.exports = function (ctx) {
+  var rimraf = require('rimraf');
   return new Promise(function (resolve, reject) {
     if (ctx.clean) {
       // console.log('cleaning');

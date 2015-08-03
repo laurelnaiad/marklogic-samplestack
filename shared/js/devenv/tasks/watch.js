@@ -49,7 +49,10 @@ var cycle = function (inputStream, context, options) {
       e2e: false,
       int: false
     }
-  ));
+  ))
+  .catch(function (err) {
+    console.log(err.stack);
+  });
 };
 
 var watch = function (cb) {
@@ -68,7 +71,7 @@ var watch = function (cb) {
             clean: false,
             // finalStreamLog: true
           }
-        ).on('end', function () {
+        ).then(function (errs) {
           cb();
         });
       })

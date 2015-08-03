@@ -61,6 +61,18 @@ self.deps = [];
 self.func = function (cb) {
   var srcFiles = gulp.src(globs.allSrcFiles);
 
+  var onEnd = function (errs) {
+    if (errs) {
+      console.log(errs);
+      console.log(errs.stack);
+      process.exit(1);
+    }
+    else {
+      cb();
+      process.exit(0);
+    }
+  };
+
   cycle(srcFiles,
     ctx,
     {
@@ -68,17 +80,7 @@ self.func = function (cb) {
       doLiveReload: true,
       // finalStreamLog: false
     }
-  ).then(function (err) {
-    if (err) {
-      console.log(err);
-      console.log(err.stack);
-      process.exit(1);
-    }
-    else {
-      cb();
-      process.exit(0);
-    }
-  });
+  ).then(onEnd, onEnd);
 };
 
 module.exports = self;

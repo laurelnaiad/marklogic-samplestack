@@ -1,14 +1,15 @@
-var lazypipe = require('lazypipe');
-var stepThrough = require('../stepThrough');
-var gulp = require('gulp');
-var globs = require('../../globs');
-var through = require('through2');
-var path = require('path');
-var merge = require('merge-stream');
-var duplex = require('event-stream').duplex;
-var Promise = require('bluebird');
 
 module.exports = function () {
+  var lazypipe = require('lazypipe');
+  var stepThrough = require('../stepThrough');
+  var gulp = require('gulp');
+  var globs = require('../../globs');
+  var through = require('through2');
+  var path = require('path');
+  var merge = require('merge-stream');
+  var duplex = require('event-stream').duplex;
+  var Promise = require('bluebird');
+
   var once = false;
   var mySassStream;
   var sassDone;

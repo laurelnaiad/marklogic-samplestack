@@ -1,24 +1,24 @@
-var streams = require('../streams');
-var Promise = require('bluebird');
-
-
-var getLrPort = function (options) {
-  if (options.doLiveReload) {
-    return new Promise(function (resolve, reject) {
-      var portfinder = require('portfinder');
-      portfinder.basePort = 35731;
-      portfinder.getPort(function (err, port) {
-        options.liveReloadPort = port;
-        resolve();
-      });
-    });
-  }
-  else {
-    return Promise.resolve();
-  }
-};
 
 module.exports = function (inputStream, ctx, options) {
+  var streams = require('../streams');
+  var Promise = require('bluebird');
+  var portfinder = require('portinder');
+
+  var getLrPort = function (options) {
+    if (options.doLiveReload) {
+      return new Promise(function (resolve, reject) {
+        portfinder.basePort = 35731;
+        portfinder.getPort(function (err, port) {
+          options.liveReloadPort = port;
+          resolve();
+        });
+      });
+    }
+    else {
+      return Promise.resolve();
+    }
+  };
+
   ctx.nodeBuilt = false;
   ctx.browserBuild = false;
 

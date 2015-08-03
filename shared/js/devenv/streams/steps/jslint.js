@@ -1,8 +1,8 @@
-var lazypipe = require('lazypipe');
-var stepThrough = require('../stepThrough');
-var duplex = require('event-stream').duplex;
 
 module.exports = function (tier, context, options) {
+  var lazypipe = require('lazypipe');
+  var stepThrough = require('../stepThrough');
+  var duplex = require('event-stream').duplex;
 
   var head = $.jshint();
   var tail = head

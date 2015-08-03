@@ -81,6 +81,7 @@
     "node-sass": "^3.2.0",
     "open": "^0.0.5",
     "phantomjs": "1.9.7-15",
+    "portfinder": "^0.4.0",
     "protractor": "^2.1.0",
     "request": "^2.58.0",
     "rimraf": "^2.4.0",

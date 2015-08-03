@@ -16,64 +16,65 @@
 
 // TODO docs
 
-var path = require('path');
-var bowerFiles = require('main-bower-files');
-var merge = require('merge-stream');
-var stepThrough = require('../stepThrough');
-var through = require('through2');
-var Promise = require('bluebird');
-var gulp = require('gulp');
-var lazypipe = require('lazypipe');
-var globs = require('../../globs');
-// var rebaser = require('../rebaser');
-var duplex = require('event-stream').duplex;
-
-
-var paths = {
-  bowerJson: path.join(globs.browserDir, 'bower.json'),
-  bowerDirectory: path.join(globs.browserDir, 'bower_components')
-};
-
-var bowerStream = function () {
-  // console.log('BOWERSTREAMBOWERSTREAMBOWERSTREAMBOWERSTREAMBOWERSTREAM');
-  var src = gulp.src(
-    bowerFiles({
-      includeDev: true,
-      // debugging: true,
-      dependencies: false,
-      read: true,
-      paths: paths
-    }), { base: paths.bowerDirectory }
-  );
-
-  var tail = src
-    .pipe(through.obj(function (file, enc, cb) {
-      file.tier = 'browser';
-      file.base = globs.projectDir;
-      file.path = file.path.replace(
-        '/browser/bower_components', '/browser/deps'
-      );
-      // console.log('a SPUN: ' + file.path);
-      // file.base = file.base.replace(
-      //   '/browser/bower_components', '/browser/deps'
-      // );
-      this.push(file);
-      cb();
-    }));
-
-  return duplex(src, tail);
-};
-
 // copy all of the bower components runtime deps to the build
 // and unit targets.
 // also, for unit targets, copy the dev dependencies that have
 // an oerride that indicates they are needed for the unit target
 //
 module.exports = function (context, options) {
+  var path = require('path');
+  var bowerFiles = require('main-bower-files');
+  var merge = require('merge-stream');
+  var stepThrough = require('../stepThrough');
+  var through = require('through2');
+  var Promise = require('bluebird');
+  var gulp = require('gulp');
+  var lazypipe = require('lazypipe');
+  var globs = require('../../globs');
+  // var rebaser = require('../rebaser');
+  var duplex = require('event-stream').duplex;
+
+
+  var paths = {
+    bowerJson: path.join(globs.browserDir, 'bower.json'),
+    bowerDirectory: path.join(globs.browserDir, 'bower_components')
+  };
+
+  var bowerStream = function () {
+    // console.log('BOWERSTREAMBOWERSTREAMBOWERSTREAMBOWERSTREAMBOWERSTREAM');
+    var src = gulp.src(
+      bowerFiles({
+        includeDev: true,
+        // debugging: true,
+        dependencies: false,
+        read: true,
+        paths: paths
+      }), { base: paths.bowerDirectory }
+    );
+
+    var tail = src
+      .pipe(through.obj(function (file, enc, cb) {
+        file.tier = 'browser';
+        file.base = globs.projectDir;
+        file.path = file.path.replace(
+          '/browser/bower_components', '/browser/deps'
+        );
+        // console.log('a SPUN: ' + file.path);
+        // file.base = file.base.replace(
+        //   '/browser/bower_components', '/browser/deps'
+        // );
+        this.push(file);
+        cb();
+      }));
+
+    return duplex(src, tail);
+  };
+
+
   var once = false;
   var myBowerStream;
   var bowerDone;
-  var bowerPromise = new Promise(function(resolve, reject) {
+  var bowerPromise = new Promise(function (resolve, reject) {
     bowerDone = function () {
       // console.log('bower done');
       resolve();

@@ -1,7 +1,7 @@
 var through = require('through2');
-var browserify = require('browserify');
 var stepThrough = require('../stepThrough');
 module.exports = function () {
+  var browserify = require('browserify');
   return stepThrough.tracked(
     {
       name: 'browserify',
