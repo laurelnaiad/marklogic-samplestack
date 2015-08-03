@@ -2,13 +2,21 @@ var streams = require('../streams');
 var Promise = require('bluebird');
 var path = require('path');
 var globs = require('../globs');
+var async = require('async');
+var mkdirp = require('mkdirp');
 
 module.exports = function (ctx) {
   var rimraf = require('rimraf');
   return new Promise(function (resolve, reject) {
     if (ctx.clean) {
       // console.log('cleaning');
-      rimraf(path.join(globs.projectDir, 'shared/js/builds'), resolve);
+      async.parallel([
+        rimraf.bind(rimraf, path.join(globs.projectDir, 'shared/js/builds')),
+        rimraf.bind(rimraf, path.join(globs.projectDir, 'shared/js/reports'))
+      ], function () {
+        mkdirp.sync(path.join(globs.projectDir, 'shared/js/reports'));
+        resolve();
+      });
     }
     else {
       resolve();

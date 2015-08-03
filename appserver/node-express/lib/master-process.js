@@ -21,24 +21,24 @@ does.
 
  */
 
- var path = require('path');
- var options = require('../options');
+var path = require('path');
+var options = require('../options');
 
 global.libRequire = function (name) {
- return require(path.resolve(__dirname, '../lib', name));
+  return require(path.resolve(__dirname, '../lib', name));
 };
 
 if (options.istanbul) {
- process.env['NO_DEPRECATION'] = 'express';
- var rootDir = path.resolve(__dirname, '..');
- var im = require('istanbul-middleware');
- im.hookLoader(function (filePath) {
-   if (filePath.indexOf(rootDir) === 0) {
+  process.env['NO_DEPRECATION'] = 'express';
+  var rootDir = path.resolve(__dirname, '..');
+  var im = require('istanbul-middleware');
+  im.hookLoader(function (filePath) {
+    if (filePath.indexOf(rootDir) === 0) {
      var localPath = filePath.substr(rootDir.length);
      return localPath.indexOf('static/deps/') < 0 &&
          localPath.indexOf('test/') < 0;
-   }
- });
+    }
+  });
 }
 
 var ldapWorker;

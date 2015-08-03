@@ -115,13 +115,13 @@ module.exports = function() {
             sandbox
           );
           var getTagsReq = {
-            "search":{
-              "qtext":[""],
-              "start":1,
-              "timezone":"America/Los_Angeles",
-              "pageLength":18,
-              "forTag":"",
-              "sort":"frequency"
+            'search':{
+              'qtext':[''],
+              'start':1,
+              'timezone':'America/Los_Angeles',
+              'pageLength':18,
+              'forTag':'',
+              'sort':'frequency'
             }
           };
 
@@ -155,13 +155,13 @@ module.exports = function() {
             sandbox
           );
           var getRelatedTagsReq = {
-            "search":{
-              "qtext":[""],
-              "start":1,
-              "timezone":"America/Los_Angeles",
-              "pageLength":100,
-              "relatedTo":"css",
-              "sort":"frequency"
+            'search':{
+              'qtext':[''],
+              'start':1,
+              'timezone':'America/Los_Angeles',
+              'pageLength':100,
+              'relatedTo':'css',
+              'sort':'frequency'
             }
           };
 

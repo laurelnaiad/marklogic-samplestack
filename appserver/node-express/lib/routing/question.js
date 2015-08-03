@@ -113,7 +113,9 @@ module.exports = function (app, mw) {
           'http://marklogic.com/samplestack#' + schemaType, req, res, next
         );
       }
-      else next();
+      else {
+        next();
+      }
     },
 
     function (req, res, next) {
@@ -185,7 +187,9 @@ module.exports = function (app, mw) {
           'http://marklogic.com/samplestack#' + schemaType, req, res, next
         );
       }
-      else next();
+      else {
+        next();
+      }
     },
 
     function (req, res, next) {

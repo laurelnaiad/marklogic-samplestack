@@ -18,6 +18,7 @@
     "postinstall": "node shared/js/devenv/postinstall.js"
   },
   "devDependencies": {
+    "adm-zip": "^0.4.7",
     "async": "^1.2.1",
     "body-parser": "^1.13.1",
     "bower": "^1.4.1",

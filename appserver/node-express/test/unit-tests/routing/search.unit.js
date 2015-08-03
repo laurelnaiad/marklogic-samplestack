@@ -104,9 +104,9 @@ module.exports = function() {
           );
           var searchReqSimpleReq = {
             search: {
-              qtext: ["test", "sort:relevance"],
+              qtext: ['test', 'sort:relevance'],
               start: 1,
-              timezone: "America/Los_Angeles"
+              timezone: 'America/Los_Angeles'
             }
           };
 
@@ -138,9 +138,9 @@ module.exports = function() {
           );
           var searchReqSimpleReq = {
             search: {
-              qtext: ["test", "sort:relevance"],
+              qtext: ['test', 'sort:relevance'],
               start: 1,
-              timezone: "America/Los_Angeles"
+              timezone: 'America/Los_Angeles'
             }
           };
 
@@ -160,12 +160,12 @@ module.exports = function() {
 
         it('shadow search as visitor', function (done) {
           var searchShadowReq = {
-            "search":{
-              "qtext":[
-                "test","sort:relevance"
+            'search':{
+              'qtext':[
+                'test','sort:relevance'
               ],
-              "start":1,
-              "timezone":"America/Los_Angeles"
+              'start':1,
+              'timezone':'America/Los_Angeles'
             }
           };
           // calledWithShadow is used to check that shadow property was added

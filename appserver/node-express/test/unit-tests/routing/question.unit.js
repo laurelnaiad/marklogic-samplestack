@@ -76,9 +76,9 @@ module.exports = function() {
               sandbox, dbClient
             );
             var postData = {
-              "title":"title of the question",
-              "text":"Body of the question, in markdown",
-              "tags":["xquery","javscript"]
+              title: 'title of the question',
+              text: 'Body of the question, in markdown',
+              tags: ['xquery','javscript']
             };
 
             agent
@@ -109,9 +109,9 @@ module.exports = function() {
               sandbox
             );
             var postData = {
-              "title":"title of the question",
-              "text":"Body of the question, in markdown",
-              "tags":["xquery","javscript"]
+              'title':'title of the question',
+              'text':'Body of the question, in markdown',
+              'tags':['xquery','javscript']
             };
 
             agent
@@ -273,41 +273,45 @@ module.exports = function() {
             });
           });
 
-          it('succeeds to comment on a question as contributor', function (done) {
-            var dbClient = {
-              qnaDoc: {
-                patch: sandbox.spy(function() {
-                  return Promise.resolve({ id: questionDoc.id });
-                }),
-                getUniqueContent: sandbox.spy(function() {
-                  return Promise.resolve(questionDoc);
-                })
-              }
-            };
-            var authStubs = mocks.middleware.auth.impersonateJoe(
-              sandbox, dbClient
-            );
-            var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
-              sandbox
-            );
-            var businessLogicStubs = mocks['business-logic'].stubBusinessLogic(
-              sandbox, questionDoc
-            );
+          it(
+            'succeeds to comment on a question as contributor',
+            function (done) {
+              var dbClient = {
+                qnaDoc: {
+                  patch: sandbox.spy(function() {
+                    return Promise.resolve({ id: questionDoc.id });
+                  }),
+                  getUniqueContent: sandbox.spy(function() {
+                    return Promise.resolve(questionDoc);
+                  })
+                }
+              };
+              var authStubs = mocks.middleware.auth.impersonateJoe(
+                sandbox, dbClient
+              );
+              var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+                sandbox
+              );
+              var businessLogicStubs = mocks['business-logic']
+                  .stubBusinessLogic(
+                    sandbox, questionDoc
+                  );
 
-            agent
-            .post('/v1/questions/' + questionDoc.id + '/comments')
-            .send({ text: 'comment on your question' })
-            .end(function(err, res) {
-              authStubs.tryReviveSession.calledOnce.should.equal(true);
-              authStubs.associateBestRole.calledOnce.should.equal(true);
-              parseBodyStubs.json.calledOnce.should.equal(true);
-              businessLogicStubs.getAndRespond.calledOnce.should.equal(true);
-              businessLogicStubs.handleComment.calledOnce.should.equal(true);
-              res.status.should.equal(200);
-              res.body.should.deep.equal(questionDoc);
-              done();
-            });
-          });
+              agent
+              .post('/v1/questions/' + questionDoc.id + '/comments')
+              .send({ text: 'comment on your question' })
+              .end(function(err, res) {
+                authStubs.tryReviveSession.calledOnce.should.equal(true);
+                authStubs.associateBestRole.calledOnce.should.equal(true);
+                parseBodyStubs.json.calledOnce.should.equal(true);
+                businessLogicStubs.getAndRespond.calledOnce.should.equal(true);
+                businessLogicStubs.handleComment.calledOnce.should.equal(true);
+                res.status.should.equal(200);
+                res.body.should.deep.equal(questionDoc);
+                done();
+              });
+            }
+          );
 
         });
 
@@ -320,7 +324,7 @@ module.exports = function() {
 
             agent
             .post('/v1/questions/' + questionDoc.id + '/answers')
-            .send({"text": "This is a Markdown answer to the question"})
+            .send({'text': 'This is a Markdown answer to the question'})
             .end(function(err, res) {
               res.status.should.equal(401);
               res.body.message.should.equal('Unauthorized');
@@ -348,7 +352,7 @@ module.exports = function() {
 
             agent
             .post('/v1/questions/' + questionDoc.id + '/answers')
-            .send({"text": "This is a Markdown answer to the question"})
+            .send({'text': 'This is a Markdown answer to the question'})
             .end(function(err, res) {
               authStubs.tryReviveSession.calledOnce.should.equal(true);
               authStubs.associateBestRole.calledOnce.should.equal(true);

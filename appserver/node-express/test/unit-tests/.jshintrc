@@ -21,7 +21,7 @@
     "inject": false,
     "beforeEach": false,
     "before": false,
-    "sinon": false,
+    "sinon": true,
     "libRequire": false,
     "agent": false
   },
