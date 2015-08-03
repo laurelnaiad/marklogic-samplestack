@@ -3,7 +3,6 @@
   "browser": false,
   "globals": {
     "libRequire": false,
-    "sharedRequire": false,
     "_": true,
     "Promise": true
   },

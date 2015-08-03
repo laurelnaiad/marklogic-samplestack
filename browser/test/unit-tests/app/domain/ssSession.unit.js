@@ -1,18 +1,18 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 define(['testHelper', 'mocks/index'], function (helper, mocks) {
 
@@ -38,7 +38,7 @@ define(['testHelper', 'mocks/index'], function (helper, mocks) {
       };
 
       var validUser;
-/* jshint ignore:start */
+      /* jshint ignore:start */
       validUser = {
         'id':'cf99542d-f024-4478-a6dc-7e723a51b040',
         'username':'joe@example.com',
@@ -67,7 +67,7 @@ define(['testHelper', 'mocks/index'], function (helper, mocks) {
 
 
       };
-/* jshint ignore:end */
+      /* jshint ignore:end */
 
       it('should validate a valid instance pre-login', function () {
         var session = ssSession.create(validCreds);

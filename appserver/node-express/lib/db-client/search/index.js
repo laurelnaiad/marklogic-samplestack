@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+var _ = require('lodash');
+
 var moment = require('moment-timezone');
 
 var search = function (spec) {
-
   var query = spec;
 
   // search settings

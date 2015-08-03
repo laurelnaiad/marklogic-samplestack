@@ -1,18 +1,18 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 define(['app/module'], function (module) {
 
@@ -130,7 +130,7 @@ define(['app/module'], function (module) {
         });
       });
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.canVoteOn
       * @description Returns whether current user can vote on the object.
@@ -148,7 +148,7 @@ define(['app/module'], function (module) {
         }
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.hasVotedUp
       * @description Returns whether current user has upvoted the object
@@ -166,7 +166,7 @@ define(['app/module'], function (module) {
         }
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.hasVotedDown
       * @description Returns whether current user has downvoted the object
@@ -212,7 +212,7 @@ define(['app/module'], function (module) {
         }
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.canAcceptAnswer
       * @description Returns whether current user can accept
@@ -227,7 +227,7 @@ define(['app/module'], function (module) {
         return $scope.store.session.userInfo.id === $scope.doc.owner.id;
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.canAnswer
       * @description Returns whether current user can submit
@@ -239,7 +239,7 @@ define(['app/module'], function (module) {
         return $scope.store.session;
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.answersCountLabel
       * @description Returns a singular or plural answers label based on
@@ -251,7 +251,7 @@ define(['app/module'], function (module) {
         return len + (len === 1 ? ' Answer' : ' Answers');
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.marked
       * @description Parses markdown-formatted text.
@@ -266,7 +266,7 @@ define(['app/module'], function (module) {
         appRouting.go('^.explore', { q: $scope.searchbarText });
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.saveAnswer
       * @description Saves an answer if valid.
@@ -293,7 +293,7 @@ define(['app/module'], function (module) {
         }
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.saveQuestionComment
       * @description Saves a question comment if valid.
@@ -317,7 +317,7 @@ define(['app/module'], function (module) {
         }
       };
 
-     /**
+      /**
       * @ngdoc method
       * @name qnaDocCtlr#$scope.saveAnswerComment
       * @description Saves an answer comment if valid.

@@ -14,11 +14,14 @@
  * limitations under the License. 
  */ 
 
+var _ = require('lodash');
+
 module.exports = function (app) {
   var modules = {};
   var moduleFuncs = {
     auth: require('./auth'),
-    parseBody: require('./parseBody')
+    parseBody: require('./parseBody'),
+    schema: require('./schema')
   };
   _.each(moduleFuncs, function (modFunc, key) {
     // mod.bind(app.locals.options);

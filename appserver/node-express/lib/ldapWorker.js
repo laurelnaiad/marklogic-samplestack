@@ -1,18 +1,18 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /*
 http://ldapjs.org/examples.html
@@ -45,7 +45,9 @@ http://ldapjs.org/examples.html
 
 var ldap = require('ldapjs');
 
-var options = sharedRequire('js/options');
+var options = libRequire('../options');
+var server;
+
 
 ///--- Shared handlers
 
@@ -62,93 +64,104 @@ function authorize(req, res, next) {
 
 var SUFFIX = 'dc=samplestack,dc=org';
 var db = {};
-var server = ldap.createServer();
 
-var stop = function () {
+var stop = function (cb) {
   try {
-    console.log('Stopping LDAP worker...');
-    server.close();
+    if (server) {
+      // console.log('Stopping LDAP worker...');
+      server.close();
+      server = null;
+      // console.log('closed');
+    }
+    if (cb) {
+      cb();
+    }
   }
-  catch (e) {}
+  catch (e) {
+    console.log(e);
+    if (cb) {
+      cb(e);
+    }
+  }
 };
 process.on('exit', stop);
-
-server.bind('cn=root', function (req, res, next) {
-  if (req.dn.toString() !== 'cn=root' ||
-      req.credentials !== options.middleTier.ldap.adminPassword
-  ) {
-    return next(new ldap.InvalidCredentialsError());
-  }
-
-  res.end();
-  return next();
-});
-
-server.bind(SUFFIX, function (req, res, next) {
-  var dn = req.dn.toString();
-  if (!db[dn]) {
-    return next(new ldap.NoSuchObjectError(dn));
-  }
-
-  if (!db[dn].attributes.userPassword) {
-    return next(new ldap.NoSuchAttributeError('userPassword'));
-  }
-
-  if (db[dn].attributes.userPassword !== req.credentials) {
-    return next(new ldap.InvalidCredentialsError());
-  }
-
-  res.end();
-  return next();
-});
-
-server.compare(SUFFIX, authorize, function (req, res, next) {
-  var dn = req.dn.toString();
-  if (!db[dn]) {
-    return next(new ldap.NoSuchObjectError(dn));
-  }
-
-  if (!db[dn][req.attribute]) {
-    return next(new ldap.NoSuchAttributeError(req.attribute));
-  }
-
-  var matches = false;
-  var vals = db[dn][req.attribute];
-  for (var i = 0; i < vals.length; i++) {
-    if (vals[i] === req.value) {
-      matches = true;
-      break;
-    }
-  }
-
-  res.end(matches);
-  return next();
-});
-
-server.search(SUFFIX, authorize, function (req, res, next) {
-  Object.keys(db).forEach(function (k) {
-    if (req.filter.matches(db[k].attributes)) {
-      var user = _.cloneDeep(db[k]);
-      if (user.attributes) {
-        delete user.attributes.userPassword;
-      }
-      res.send(_.merge({ dn: k }, user ));
-    }
-  });
-
-  res.end();
-  return next();
-});
 
 ///--- Fire it up
 var listener;
 
 
 var start = function () {
+  server = ldap.createServer();
+  server.bind('cn=root', function (req, res, next) {
+    if (req.dn.toString() !== 'cn=root' ||
+        req.credentials !== options.ldap.adminPassword
+    ) {
+      return next(new ldap.InvalidCredentialsError());
+    }
+
+    res.end();
+    return next();
+  });
+
+  server.bind(SUFFIX, function (req, res, next) {
+    var dn = req.dn.toString();
+    if (!db[dn]) {
+      return next(new ldap.NoSuchObjectError(dn));
+    }
+
+    if (!db[dn].attributes.userPassword) {
+      return next(new ldap.NoSuchAttributeError('userPassword'));
+    }
+
+    if (db[dn].attributes.userPassword !== req.credentials) {
+      return next(new ldap.InvalidCredentialsError());
+    }
+
+    res.end();
+    return next();
+  });
+
+  server.compare(SUFFIX, authorize, function (req, res, next) {
+    var dn = req.dn.toString();
+    if (!db[dn]) {
+      return next(new ldap.NoSuchObjectError(dn));
+    }
+
+    if (!db[dn][req.attribute]) {
+      return next(new ldap.NoSuchAttributeError(req.attribute));
+    }
+
+    var matches = false;
+    var vals = db[dn][req.attribute];
+    for (var i = 0; i < vals.length; i++) {
+      if (vals[i] === req.value) {
+        matches = true;
+        break;
+      }
+    }
+
+    res.end(matches);
+    return next();
+  });
+
+  server.search(SUFFIX, authorize, function (req, res, next) {
+    Object.keys(db).forEach(function (k) {
+      if (req.filter.matches(db[k].attributes)) {
+        var user = _.cloneDeep(db[k]);
+        if (user.attributes) {
+          delete user.attributes.userPassword;
+        }
+        res.send(_.merge({ dn: k }, user ));
+      }
+    });
+
+    res.end();
+    return next();
+  });
 
   listener = server.listen(
-    options.middleTier.ldap.port,
-    options.middleTier.ldap.hostname,
+    options.ldap.port,
+    options.ldap.hostname,
     function () {
 
       // TODO: read from ldif?
@@ -182,7 +195,9 @@ var start = function () {
       db['uid=joe@example.com,ou=people,dc=samplestack,dc=org'] = {
         dn: 'uid=joe@example.com,ou=people,dc=samplestack,dc=org',
         attributes: {
-          objectclass: ['top', 'person', 'organizationalPerson', 'inetOrgPerson'],
+          objectclass: [
+            'top', 'person', 'organizationalPerson', 'inetOrgPerson'
+          ],
           cn: 'Joe User',
           sn: 'User',
           uid: 'joe@example.com',
@@ -197,7 +212,9 @@ var start = function () {
       db['uid=mary@example.com,ou=people,dc=samplestack,dc=org'] = {
         dn: 'uid=mary@example.com,ou=people,dc=samplestack,dc=org',
         attributes: {
-          objectclass: ['top', 'person', 'organizationalPerson', 'inetOrgPerson'],
+          objectclass: [
+            'top', 'person', 'organizationalPerson', 'inetOrgPerson'
+          ],
           cn: 'Mary Admin',
           sn: 'User',
           uid: 'mary@example.com',
@@ -234,7 +251,7 @@ var start = function () {
         }
       };
 
-      console.log('Samplestack LDAP server up at: %s', server.url);
+      // console.log('Samplestack LDAP server up at: %s', server.url);
     }
   );
 };

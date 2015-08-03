@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+var _ = require('lodash');
+
+
 var mlclient = require('marklogic');
 var qb = mlclient.queryBuilder;
 var pb = mlclient.patchBuilder;
@@ -32,14 +35,21 @@ var funcs = {};
  */
 funcs.patchReputation = function (txid, id, repChange) {
   // add (or subtract) from reputation property
-  return this.documents.patch({
+  var req = {
     txid: txid,
     uri: meta.getUri(id),
     operations: [
       pb.replace('reputation', pb.add(repChange))
     ]
-  }).result()
-  .then(meta.responseToSpec);
+  };
+  return this.documents.patch(req).result()
+  .then(function(r) {
+    return r;
+  })
+  .then(function(r) {
+    var resp = meta.responseToSpec(r);
+    return resp;
+  })
 };
 
 /**
@@ -51,38 +61,70 @@ funcs.patchReputation = function (txid, id, repChange) {
  * @return {Promise} A promise object.
  */
 funcs.patchVoteCount = function (txid, id, increment) {
-  return this.documents.patch({
+  var req = {
     txid: txid,
     uri: meta.getUri(id),
     operations: [
       pb.replace('voteCount', pb.add(increment))
     ]
-  }).result()
-  .then(meta.responseToSpec);
+  };
+  return this.documents.patch(req).result()
+  .then(function(r) {
+    return r;
+  })
+  .then(function(r) {
+    var resp = meta.responseToSpec(r);
+    return resp;
+  })
 };
 
 funcs.getUniqueContent = function (txid, spec) {
+  console.log('getUniqueContent txid')
+  console.log(txid)
+  console.log('getUniqueContent spec')
+  console.log(require('util').inspect(spec, { depth: null }));
   var self = this;
   // if given id, we can do this more efficinetly by reading via URI
   // otheriwse, we search
   if (spec.id) {
-    return this.documents.read({
+    console.log('SPEC ID')
+    var sp = {
       txid: txid,
       uris: [ meta.getUri(spec.id) ]
-    }).result()
+    };
+    return this.documents.read(sp).result()
+    .then(function(r) {
+      return r;
+    })
     .then(util.getOnlyContent)
-    .then(util.unwrapPojo);
+    .then(util.unwrapPojo)
+    .then(function(r) {
+      return r;
+    });
   }
   else {
+    console.log('!SPEC ID')
     var built = qb.where(
       qb.directory(meta.baseUri),
       qb.value('userName', spec.userName)
     );
+    console.log('getUniqueContent documents.query built')
+    console.log(require('util').inspect(built, { depth: null }));
     return this.documents.query(
       built
     ).result()
+    .then(function(r) {
+      console.log('getUniqueContent documents.read resp')
+      console.log(require('util').inspect(r, { depth: null }));
+      return r;
+    })
     .then(util.getOnlyContent)
-    .then(util.unwrapPojo);
+    .then(util.unwrapPojo)
+    .then(function(r) {
+      console.log('getUniqueContent documents.read FINAL resp')
+      console.log(require('util').inspect(r, { depth: null }));
+      return r;
+    });
   }
 };
 

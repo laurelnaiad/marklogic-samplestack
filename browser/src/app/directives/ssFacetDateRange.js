@@ -314,7 +314,7 @@ define(['app/module'], function (module) {
                   type: 'datetime',
                   title: { text: null },
                   labels: {
-                      format: '{value:%Y}',
+                    format: '{value:%Y}',
                   }
                 },
                 yAxis: {

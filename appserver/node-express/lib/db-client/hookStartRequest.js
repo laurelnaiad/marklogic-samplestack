@@ -25,6 +25,8 @@
 
 var mlrest = require('marklogic/lib/mlrest');
 var origStartRequest = mlrest.startRequest;
+var _ = require('lodash');
+_.mixin(require('lodash-deep'));
 
 mlrest.startRequest = function (operation) {
 

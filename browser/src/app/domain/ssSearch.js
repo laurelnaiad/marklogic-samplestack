@@ -1,20 +1,22 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-define(['app/module'], function (module) {
+define([
+  'app/module', 'json!schema/app/ssSearch.json'
+], function (module, schema) {
 
   /**
    * @ngdoc domain
@@ -119,87 +121,9 @@ define(['app/module'], function (module) {
         mlSearch.object.prototype
       );
 
-      Object.defineProperty(SsSearchObject.prototype, '$mlSpec', {
-        value: {
-          schema: mlSchema.addSchema({
-            id: 'http://marklogic.com/samplestack#search',
-            allOf: [
-              { $ref: 'http://marklogic.com/#search' }
-            ],
-            required: ['criteria'],
-            properties: {
-              criteria: {
-                required: ['constraints'],
-                properties: {
-                  timezone: { type: [ 'string', null ] },
-                  sort: {
-                    type: 'array',
-                    items: {
-                      type: {
-                        enum: ['relevance', 'active', 'score']
-                      }
-                    }
-                  },
-                  constraints: {
-                    required: [
-                      'userName',
-                      'resolved',
-                      'tags',
-                      'dateStart',
-                      'dateEnd'
-                    ],
-                    properties: {
-                      userName: {
-                        properties: {
-                          constraintName: { enum: ['userName'] },
-                          type: { enum: ['text'] },
-                          value: { type: ['string', 'null'] },
-                          queryStringName: { enum: ['contributor'] }
-                        }
-                      },
-                      resolved: {
-                        properties: {
-                          constraintName: { enum: ['resolved'] },
-                          type: { enum: ['boolean'] },
-                          value: { type: ['boolean', 'null'] },
-                          queryStringName: { enum: ['resolved'] }
-                        }
-                      },
-                      tags: {
-                        properties: {
-                          constraintName: { enum: ['tag'] },
-                          type: { enum: ['enum'] },
-                          subType: { enum: ['value'] },
-                          values: { type: ['array', 'null'] },
-                          queryStringName: { enum: ['tags'] }
-                        }
-                      },
-                      dateStart: {
-                        properties: {
-                          constraintName: { enum: ['lastActivity'] },
-                          operator: { enum: ['GE'] },
-                          type: { enum: ['dateTime'] },
-                          value: { type: ['date-time', 'null'] },
-                          queryStringName: { enum: ['date-ge'] }
-                        }
-                      },
-                      dateEnd: {
-                        properties: {
-                          constraintName: { enum: ['lastActivity'] },
-                          operator: { enum: ['LT'] },
-                          type: { enum: ['dateTime'] },
-                          value: { type: ['date-time', 'null'] },
-                          queryStringName: { enum: ['date-lt'] }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          })
-        }
-      });
+      SsSearchObject.prototype.$mlSpec = {
+        schema: mlSchema.addSchema(schema)
+      };
 
       SsSearchObject.prototype.$mlSpec.serviceName = 'ssSearch';
 

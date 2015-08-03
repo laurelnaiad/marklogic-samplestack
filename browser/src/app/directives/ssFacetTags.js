@@ -119,7 +119,7 @@ define(['app/module'], function (module) {
             // setup typeahead
           };
 
-         /**
+          /**
           * Handle tag selection in UI
           */
           scope.selectTag = function (tag) {
@@ -143,7 +143,7 @@ define(['app/module'], function (module) {
             scope.relatedShown = null;
           };
 
-         /**
+          /**
           * Handle typeahead menu selection.
           * @param {object} $item Tag object
           * @param {number} $model Tag count
@@ -169,7 +169,7 @@ define(['app/module'], function (module) {
             scope.relatedShown = null;
           };
 
-         /**
+          /**
           * Convert object to array, for use in list display in template
           * @param {object} obj An object
           * @returns {array} An array of object property values
@@ -180,7 +180,7 @@ define(['app/module'], function (module) {
                 [];
           };
 
-         /**
+          /**
           * Do selected tags exist, for use in template layout
           * @returns {boolean} true if selTags object has property keys
           */
@@ -197,7 +197,7 @@ define(['app/module'], function (module) {
             scope.$emit('browseTags');
           };
 
-         /**
+          /**
           * Show related-tags popup for a selected tag
           * @param {object} tag The selected tag object
           */
@@ -222,13 +222,13 @@ define(['app/module'], function (module) {
             // @see http://stackoverflow.com/a/21151625/3682288
             if (scope.relatedShown) {
               $window.onclick = function (event) {
-                  scope.relatedShown = null;
-                  scope.$apply();
+                scope.relatedShown = null;
+                scope.$apply();
               };
             }
           };
 
-         /**
+          /**
           * Hide related-tags popup on mouseleave event
           * @param {object} tag The selected tag object
           */

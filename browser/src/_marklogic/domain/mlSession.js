@@ -1,20 +1,22 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-define(['_marklogic/module'], function (module) {
+define([
+  '_marklogic/module', 'json!schema/_marklogic/session.json'
+], function (module, schema) {
 
   /**
    * @ngdoc domain
@@ -52,31 +54,7 @@ define(['_marklogic/module'], function (module) {
       };
       MlSessionObject.prototype = Object.create(mlModelBase.object.prototype);
       MlSessionObject.prototype.$mlSpec = {
-        schema: mlSchema.addSchema({
-          id: 'http://marklogic.com/#session',
-          required:['username'],
-          properties: {
-            username: { type: 'string', minLength: '5' }
-          },
-          oneOf: [
-            {
-              required: ['password'],
-              properties: {
-                password: { type: 'string', minLength: '5' }
-              }
-            },
-            {
-              required: ['id', 'role'],
-              properties: {
-                id: { type: 'string', minLength: '1' },
-                password: { not: {} },
-                role: {
-                  type: 'array', items: { type: 'string' }
-                }
-              }
-            }
-          ]
-        })
+        schema: mlSchema.addSchema(schema)
       };
 
       MlSessionObject.prototype.getHttpUrl = function (httpMethod) {

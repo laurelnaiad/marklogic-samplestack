@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-var options = sharedRequire('js/options');
+var _ = require('lodash');
+
+var options = libRequire('../options');
 
 var mlclient = require('marklogic');
 require('./hookStartRequest');
@@ -44,7 +46,7 @@ var execAsTransaction = function (ex) {
 
 var getClient = function (user, password) {
   return mlclient.createDatabaseClient(_.merge(
-    options.middleTier.db.clientConnection,
+    options.db.clientConnection,
     {
       user: user,
       password: password

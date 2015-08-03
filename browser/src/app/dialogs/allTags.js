@@ -138,7 +138,7 @@ define(['app/module'], function (module) {
               searchText +
               '</strong>' +
               tagText.substr(begin + searchText.length);
-          console.log(tagText, searchText, formatted);
+          // console.log(tagText, searchText, formatted);
 
           return formatted;
         }
