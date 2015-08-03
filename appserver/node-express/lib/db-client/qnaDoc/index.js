@@ -30,8 +30,6 @@ funcs.search = function (spec) {
   // TODO: should really be supporting the txid param
   // query function wants an args list so we use apply since we
   // are dynamically creating values out of what is specified
-  // console.log(require('util').inspect(this));
-  // console.log(JSON.stringify(spec));
   return this.documents.query.apply(
     this,
     [
