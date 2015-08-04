@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports = function() {
+module.exports = function () {
 
-  describe('contributor',function() {
+  describe('contributor',function () {
 
     var sandbox;
     var Promise = require('bluebird');
@@ -44,14 +44,14 @@ module.exports = function() {
       sandbox.restore();
     });
 
-    describe('/v1/contributors', function() {
+    describe('/v1/contributors', function () {
 
-      describe('GET', function() {
+      describe('GET', function () {
 
         it('it works for visitors', function (done) {
           var dbClient = {
             contributor: {
-              getUniqueContent: sandbox.spy(function() {
+              getUniqueContent: sandbox.spy(function () {
                 return Promise.resolve(contributorDoc);
               })
             }
@@ -62,7 +62,7 @@ module.exports = function() {
 
           agent
           .get('/v1/contributors/' + contributorDoc.id)
-          .end(function(err, res) {
+          .end(function (err, res) {
             myStubs.tryReviveSession.calledOnce.should.equal(true);
             myStubs.associateBestRole.calledOnce.should.equal(true);
             dbClient.contributor.getUniqueContent.calledOnce
@@ -77,7 +77,7 @@ module.exports = function() {
         it('it works for contributors', function (done) {
           var dbClient = {
             contributor: {
-              getUniqueContent: sandbox.spy(function() {
+              getUniqueContent: sandbox.spy(function () {
                 return Promise.resolve(contributorDoc);
               })
             }
@@ -88,7 +88,7 @@ module.exports = function() {
 
           agent
           .get('/v1/contributors/' + contributorDoc.id)
-          .end(function(err, res) {
+          .end(function (err, res) {
             myStubs.tryReviveSession.calledOnce.should.equal(true);
             myStubs.associateBestRole.calledOnce.should.equal(true);
             dbClient.contributor.getUniqueContent.calledOnce

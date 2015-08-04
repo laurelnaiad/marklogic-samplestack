@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports = function() {
+module.exports = function () {
 
   var sandbox;
   var Promise = require('bluebird');
@@ -34,24 +34,24 @@ module.exports = function() {
     var req = {
       db: {
         qnaDoc: {
-          getUniqueContent: sandbox.spy(function() {
+          getUniqueContent: sandbox.spy(function () {
             return Promise.resolve(doc);
           })
         }
       }
     };
     var send = {
-      send: sandbox.spy(function(content) {})
+      send: sandbox.spy(function (content) {})
     };
     var res = {
-      status: sandbox.spy(function(statusCode) {
+      status: sandbox.spy(function (statusCode) {
         return send;
       })
     };
 
-    var next = sandbox.spy(function() {});
+    var next = sandbox.spy(function () {});
 
-    bl.getAndRespond(req, res, next, doc).then(function(result) {
+    bl.getAndRespond(req, res, next, doc).then(function (result) {
       req.db.qnaDoc.getUniqueContent.calledOnce.should.equal(true);
       res.status.calledOnce.should.equal(true);
       res.status.calledWith(200);
@@ -64,27 +64,27 @@ module.exports = function() {
 
   it('getAndRespond - without content', function (done) {
     var bl = require('../../../lib/business-logic');
-    var doc = undefined;
+    var doc;
     var req = {
       db: {
         qnaDoc: {
-          getUniqueContent: sandbox.spy(function() {
+          getUniqueContent: sandbox.spy(function () {
             return Promise.resolve(doc);
           })
         }
       }
     };
     var send = {
-      send: sandbox.spy(function(content) {})
+      send: sandbox.spy(function (content) {})
     };
     var res = {
-      status: sandbox.spy(function(statusCode) {
+      status: sandbox.spy(function (statusCode) {
         return send;
       })
     };
-    var next = sandbox.spy(function() {});
+    var next = sandbox.spy(function () {});
 
-    bl.getAndRespond(req, res, next, doc).then(function(result) {
+    bl.getAndRespond(req, res, next, doc).then(function (result) {
       req.db.qnaDoc.getUniqueContent.calledOnce.should.equal(true);
       res.status.calledOnce.should.equal(true);
       res.status.calledWith(401);

@@ -1,92 +1,28 @@
 /*
  * Copyright 2012-2015 MarkLogic Corporation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports = function() {
+module.exports = function () {
 
-  describe('tags',function() {
+  describe('tags',function () {
 
     var sandbox;
     var Promise = require('bluebird');
     var mocks = require('../mocks');
 
-    var getTagsResp, getRelatedTagsResp;
-    /* jshint ignore:start */
-    getTagsResp = {
-      "values-response":{
-        "name":"tags",
-        "type":"xs:string",
-        "distinct-value":[
-          {
-            "frequency":267,
-            "_value":"xquery"
-          },
-          {
-            "frequency":254,
-            "_value":"php"
-          },
-          {
-            "frequency":142,
-            "_value":"json"
-          }
-        ],
-        "aggregate-result":[
-          {
-            "name":"count",
-            "_value":"7990"
-          }
-        ],
-        "metrics":{
-          "values-resolution-time":"PT0.031663S",
-          "aggregate-resolution-time":"PT0.001805S",
-          "total-time":"PT0.23124S"
-        },
-        "total":1225
-      }
-    };
-    getRelatedTagsResp = {
-      "values-response":{
-        "name":"tags",
-        "type":"xs:string",
-        "distinct-value":[
-          {
-            "frequency":267,
-            "_value":"xquery"
-          },
-          {
-            "frequency":254,
-            "_value":"php"
-          },
-          {
-            "frequency":142,
-            "_value":"json"
-          }
-        ],
-        "aggregate-result":[
-          {
-            "name":"count",
-            "_value":"2082"
-          }
-        ],
-        "metrics":{
-          "values-resolution-time":"PT0.029942S",
-          "aggregate-resolution-time":"PT0.002042S",
-          "total-time":"PT1.053313S"
-        }
-      }
-    };
-    /* jshint ignore:end */
+    var getTagsResp = mocks.routing.tags.getTagsResp;
+    var getRelatedTagsResp = mocks.routing.tags.getRelatedTagsResp;
 
     beforeEach(function () {
       sandbox = sinon.sandbox.create();
@@ -96,14 +32,14 @@ module.exports = function() {
       sandbox.restore();
     });
 
-    describe('/v1/tags', function() {
+    describe('/v1/tags', function () {
 
-      describe('POST', function() {
+      describe('POST', function () {
 
         it('lookup all tags as visitor', function (done) {
           var dbClient = {
             tags: {
-              getTags: sandbox.spy(function() {
+              getTags: sandbox.spy(function () {
                 return Promise.resolve(getTagsResp);
               })
             }
@@ -128,7 +64,7 @@ module.exports = function() {
           agent
           .post('/v1/tags/')
           .send(getTagsReq)
-          .end(function(err, res) {
+          .end(function (err, res) {
             authStubs.tryReviveSession.calledOnce.should.equal(true);
             authStubs.associateBestRole.calledOnce.should.equal(true);
             parseBodyStubs.json.calledOnce.should.equal(true);
@@ -143,7 +79,7 @@ module.exports = function() {
         it('lookup related tags as visitor', function (done) {
           var dbClient = {
             tags: {
-              getRelatedTags: sandbox.spy(function() {
+              getRelatedTags: sandbox.spy(function () {
                 return Promise.resolve(getRelatedTagsResp);
               })
             }
@@ -168,7 +104,7 @@ module.exports = function() {
           agent
           .post('/v1/tags/')
           .send(getRelatedTagsReq)
-          .end(function(err, res) {
+          .end(function (err, res) {
             authStubs.tryReviveSession.calledOnce.should.equal(true);
             authStubs.associateBestRole.calledOnce.should.equal(true);
             parseBodyStubs.json.calledOnce.should.equal(true);

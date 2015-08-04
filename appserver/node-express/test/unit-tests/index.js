@@ -18,22 +18,14 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 chai.should();
 var request = require('supertest');
-var sinon = require('sinon');
-// var adds = ctx.options.addresses;
-var nock = require('nock');
 var path = require('path');
-// nock.recorder.rec();
 var _ = require('lodash');
 
-global.nock = nock;
-global.sinon = sinon;
+global.nock = require('nock');
+global.sinon = require('sinon');
 global.assert = chai.assert;
 global.expect = chai.expect;
 global.agent = request.agent('http://localhost:3001');
-// global.libRequire = function (mod) {
-//   console.log('hey');
-//   return require(path.resolve(__dirname, '../../lib', mod));
-// };
 
 var modules = require('requireindex')(__dirname);
 describe('node-express/lib', function () {

@@ -16,9 +16,9 @@
 var _ = require('lodash');
 
 var submodules = require('requireindex')(__dirname);
-module.exports = function() {
-  describe("db-client", function () {
-    _.each(submodules, function(mod) {
+module.exports = function () {
+  describe('db-client', function () {
+    _.each(submodules, function (mod) {
       mod();
     });
   });

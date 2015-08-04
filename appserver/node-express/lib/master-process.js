@@ -34,8 +34,8 @@ if (options.istanbul) {
   var im = require('istanbul-middleware');
   im.hookLoader(function (filePath) {
     if (filePath.indexOf(rootDir) === 0) {
-     var localPath = filePath.substr(rootDir.length);
-     return localPath.indexOf('static/deps/') < 0 &&
+      var localPath = filePath.substr(rootDir.length);
+      return localPath.indexOf('static/deps/') < 0 &&
          localPath.indexOf('test/') < 0;
     }
   });
