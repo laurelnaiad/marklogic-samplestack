@@ -2,7 +2,7 @@
 module.exports = function (inputStream, ctx, options) {
   var streams = require('../streams');
   var Promise = require('bluebird');
-  var portfinder = require('portinder');
+  var portfinder = require('portfinder');
 
   var getLrPort = function (options) {
     if (options.doLiveReload) {

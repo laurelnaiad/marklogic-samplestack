@@ -10,7 +10,8 @@
     "World": false,
     "q": false,
     "_": false,
-    "protractor": false
+    "protractor": false,
+    "Promise": false
   },
   "esnext": false,
   "expr": true,

@@ -16,7 +16,7 @@
 
 var Promise = require('bluebird');
 var async = require('async');
-var mon = libRequire('monitoring');
+// var mon = libRequire('monitoring');
 
 var sessionGetter = function (req, res, next) {
   return req.db.contributor.getUniqueContent(

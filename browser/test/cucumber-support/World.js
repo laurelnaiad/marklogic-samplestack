@@ -39,6 +39,7 @@ browser.getCapabilities().then(function (cap) {
 });
 browser.driver.manage().window().maximize();
 
+
 function World (callback) {
   self = this;
   this.pages = pages;
@@ -65,12 +66,23 @@ World.addPage = function (Page) {
 };
 
 World.prototype.go = function (page, suffix) {
+
   var curPage = self.currentPage;
   var url = page.url + (suffix ? suffix : '');
   var promise = curPage ?
       browser.setLocation(url) :
       browser.get(url);
-  return promise.then(
+  return promise
+  .then(function () {
+    return browser.executeScript(function () {
+      window.goCount = window.goCount ? window.goCount + 1 : 1;
+      return window.goCount;
+    });
+  })
+  .then(function (goCount) {
+    console.log('GO COUNT ' + goCount);
+  })
+  .then(
     function () {
       self.currentPage = page;
       return page;

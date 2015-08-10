@@ -35,6 +35,7 @@ globs.browserSrcFiles = [
   // all(join(globs.browserDir, 'bower_components'))
 ];
 globs.browserUnitSrcFiles = [all(join(globs.browserDir, 'test/unit-tests'))];
+globs.cucumberSupportDir = join(globs.browserDir, 'test/cucumber-support');
 globs.browserFiles = _.flattenDeep(
   [globs.browserSrcFiles, globs.browserUnitSrcFiles]
 );

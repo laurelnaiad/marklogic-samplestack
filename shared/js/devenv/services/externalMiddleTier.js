@@ -1,3 +1,11 @@
+module.exports = {
+  start: function (err) {
+    console.log('(using Node.js middle tier)');
+    console.log(require('util').inspect(require('../promises')));
+    return Promise.resolve(null);
+  }
+};
+
 // /*
 //  * Copyright 2012-2015 MarkLogic Corporation
 //  *

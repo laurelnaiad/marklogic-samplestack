@@ -1,5 +1,7 @@
 module.exports = require('requireindex')(__dirname);
 
+console.log(require('util').inspect(module.exports));
+
 //
 // module.exports = function (context, options) {
 //

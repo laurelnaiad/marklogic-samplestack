@@ -47,7 +47,7 @@ var ldap = require('ldapjs');
 
 var options = libRequire('../options');
 var server;
-
+var _ = require('lodash');
 
 ///--- Shared handlers
 

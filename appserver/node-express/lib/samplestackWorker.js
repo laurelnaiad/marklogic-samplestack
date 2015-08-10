@@ -23,7 +23,6 @@ var path = require('path');
 // };
 
 var options = libRequire('../options');
-var mon = libRequire('monitoring');
 var express = require('express');
 
 // configure Express
@@ -135,7 +134,7 @@ else {
         });
       }
       else {
-        mon.error(500, err);
+        // mon.error(500, err);
         res.status(500).send({ error: err });
       }
     }

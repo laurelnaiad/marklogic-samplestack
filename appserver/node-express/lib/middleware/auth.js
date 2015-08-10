@@ -26,7 +26,7 @@ var async = require('async');
 var csrf = require('csurf');
 var util = require('util');
 var dbClient = libRequire('db-client');
-var mon = libRequire('monitoring');
+// var mon = libRequire('monitoring');
 
 // TODO: serialize to-from server
 var users = {};
@@ -143,7 +143,7 @@ var pickRole = function (roles, req, res, next) {
   }
 };
 
-var configurePassport = function (app , ldapConfig) {
+var configurePassport = function (app) {
   var ldapOptions = options.ldap;
 
   passport.use(new ldapauth.Strategy(
@@ -240,8 +240,8 @@ var configurePassport = function (app , ldapConfig) {
 
 
 module.exports = function (app) {
-  var ldap = libRequire('ldap-client')(app);
-  var sessions = configurePassport(app, ldap.config);
+  // var ldap = libRequire('ldap-client')(app);
+  var sessions = configurePassport(app);//, ldap.config);
 
   app.use(handleCsrfError);
 
