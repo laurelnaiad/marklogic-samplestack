@@ -5,7 +5,7 @@ var fs = require('fs');
 var cp = require('child_process');
 
 var go = function (opts, cb) {
-  var args = opts.args;
+  var args = opts.argv;
   console.log('go');
   var Runner = require('protractor/lib/runner');
 
@@ -128,7 +128,7 @@ var go = function (opts, cb) {
     globs.projectDir, 'node_modules/protractor/bin/protractor'
   );
 
-  var ptorProc = cp.spawn('node', [ptorPath, confPath], { stdio: 'inherit' });
+  var ptorProc = cp.fork(ptorPath, [confPath]);
   ptorProc.on('exit', function (code) {
     cb(code);
   });

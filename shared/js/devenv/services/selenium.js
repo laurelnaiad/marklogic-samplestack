@@ -5,17 +5,17 @@ var options = require('../../options');
 
 /* external */
 
-var startExternal = function (args, cb) {
+var startExternal = function (ctx, cb) {
   ctx.services.selenium = {
     close: function (cb) { cb(); },
-    url: url.parse(args.seleniumAddress)
+    url: url.parse(options.seleniumAddress)
   };
   cb();
 };
 
 
 /* sauce */
-var startSauce = function (args, cb) {
+var startSauce = function (ctx, cb) {
 
   var sauceConnectLauncher = require('sauce-connect-launcher');
 
@@ -56,11 +56,11 @@ var startSauce = function (args, cb) {
 
 /* local */
 /* selenium local */
-var startLocal = function (args, cb) {
+var startLocal = function (ctx, cb) {
   var childProcess = require('child_process');
   var path = require('path');
 
-  var ctx = require('../context');
+  // var ctx = require('../context');
 
   var getLastJar = function (dir) {
     var g = require('globule');
@@ -151,7 +151,6 @@ var startLocal = function (args, cb) {
       stdio: 'inherit'
     })
     .then(function (url) {
-      console.log('url = ' + require('util').inspect(url));
       ctx.services.selenium = {
         url: url,
         close: function (cb) {
@@ -165,10 +164,10 @@ var startLocal = function (args, cb) {
 };
 
 module.exports = {
-  start: function (options) {
+  start: function (ctx) {
     return new Promise(function (resolve, reject) {
       var seleniumHandler;
-      switch (options.selenium) {
+      switch (ctx.argv.selenium) {
         case 'external':
           $.util.log('using **external** Selenium server');
           seleniumHandler = startExternal;
@@ -186,14 +185,11 @@ module.exports = {
             'parameter `--selenium` must be one of [external|sauce|local]'
           ));
       }
-      seleniumHandler(options, function (err) {
-        console.log('handler callback');
+      seleniumHandler(ctx, function (err) {
         if (err) {
-          console.log(require('util').inspect(require('../promises')));
           reject(err);
         }
         else {
-          console.log(require('util').inspect(require('../promises')));
           resolve();
         }
       });

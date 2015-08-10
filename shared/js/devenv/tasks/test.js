@@ -50,11 +50,11 @@ var cycle = function (inputStream, context, options) {
   .then(promises.executeTests.bind(null,
     context,
     {
-      report: true, //DAM
-      // run unit tests if we see files from the tier in the build stream
-      unit: true, //DAM
-      e2e: true, //DAM
-      int: true //DAM
+      // report: true, //DAM
+      // // run unit tests if we see files from the tier in the build stream
+      // unit: true, //DAM
+      // e2e: true, //DAM
+      // int: true //DAM
     }
   ));
 
@@ -65,6 +65,13 @@ self.name = 'test';
 self.deps = [];
 
 self.func = function (cb) {
+  var allTests = !(
+    ctx.argv.unit || ctx.argv.e2e || ctx.argv.int
+  );
+  ctx.argv.unit = ctx.argv.unit || allTests;
+  ctx.argv.e2e = ctx.argv.e2e || allTests;
+  ctx.argv.int = ctx.argv.int || allTests;
+
   var srcFiles = gulp.src(globs.allSrcFiles);
 
   var onEnd = function (errs) {
@@ -87,8 +94,8 @@ self.func = function (cb) {
   cycle(srcFiles,
     ctx,
     {
-      clean: ctx.argv.clean,
-      doLiveReload: true,
+      // clean: ctx.argv.clean,
+      // doLiveReload: true,
       // finalStreamLog: false
     }
   ).then(onEnd, onEnd);

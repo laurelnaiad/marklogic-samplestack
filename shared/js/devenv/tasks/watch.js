@@ -53,10 +53,10 @@ var cycle = function (inputStream, context, options) {
   .then(promises.executeTests.bind(null,
     context,
     {
-      // run unit tests if we see files from the tier in the build stream
-      unit: 'conditional',
-      e2e: false,
-      int: false
+      // // run unit tests if we see files from the tier in the build stream
+      // unit: 'conditional',
+      // e2e: false,
+      // int: false
     }
   ))
   .catch(function (err) {
@@ -94,7 +94,7 @@ var watch = function (cb) {
     srcFiles,
     ctx,
     {
-      clean: true,
+      // clean: true,
       doLiveReload: true,
       // finalStreamLog: false
     }
@@ -112,6 +112,16 @@ self.name = 'watch';
 self.deps = [];
 
 self.func = function (cb) {
+  var noSpecified = !(
+    ctx.argv.unit || ctx.argv.e2e || ctx.argv.int
+  );
+
+  var all = ctx.argv.all;
+
+  ctx.argv.unit = ctx.argv.unit || noSpecified || all;
+  ctx.argv.e2e = ctx.argv.e2e || all;
+  ctx.argv.int = ctx.argv.int || all;
+
   watch(cb);
 };
 

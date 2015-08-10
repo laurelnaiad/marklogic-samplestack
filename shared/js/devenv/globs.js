@@ -57,7 +57,10 @@ globs.e2eFiles = [all(join(globs.browserDir, 'tests/e2e'))];
 
 globs.devenvFiles = _.flattenDeep([
   join(globs.projectDir, '*.*'),
-  all(join(globs.sharedDir, 'js/devenv'))
+  all(join(globs.sharedDir, 'js/devenv')),
+  '!' + join(globs.sharedDir, 'js/builds/**/*'),
+  '!' + join(globs.sharedDir, 'js/reports/**/*'),
+  '!**/protractor.conf'
 ]); //TODO all(join())];
 
 globs.srcFiles = _.flattenDeep(

@@ -2,56 +2,57 @@ var chalk = require('chalk');
 var services = require('../services');
 var promises = require('../promises');
 
-// var usage = 'USAGE: `gulp e2e --<pform>`` where <pform> in [java|node]';
-var args = {
-  reporter: 'pretty',
-  selenium: 'local',
-  sauce: false,
-  toFile: false,
-  middleTier: 'external', // or 'java' or 'node',
-  browser: 'chrome'
-  // or 'chrome' or 'firefox' or 'ie' or 'phantomjs'
-};
-
-_.merge(args, require('yargs').argv);
-
-if (!args.tags) {
-  // by default, do not execute known-broken tests
-  args.tags = '~@broken';
-}
-
-if (args.sauce && args.selenium !== 'external') {
-  args.selenium = 'sauce';
-}
-
-var skipNoDesktop = function () {
-  if (['linux', 'freebsd', 'sunos'].indexOf(process.platform) >= 0) {
-    if (!process.env.DESKTOP_SESSION && !args.sauce) {
-      console.log(
-        chalk.yellow(
-          'Skipping e2e testing because there is no desktop environment'
-        )
-      );
-      return true;
-    }
-  }
-  return false;
-};
-
 
 var Promise = require('bluebird');
 module.exports = function (ctx, options) {
+  // var usage = 'USAGE: `gulp e2e --<pform>`` where <pform> in [java|node]';
+  var args = {
+    reporter: 'pretty',
+    selenium: 'local',
+    sauce: false,
+    toFile: false,
+    middleTier: 'external', // or 'java' or 'node',
+    browser: 'chrome'
+    // or 'chrome' or 'firefox' or 'ie' or 'phantomjs'
+  };
+
+  ctx.argv = _.merge(args, ctx.argv);
+
+  if (!ctx.argv.tags) {
+    // by default, do not execute known-broken tests
+    ctx.argv.tags = '~@broken';
+  }
+
+  if (ctx.argv.sauce && ctx.argv.selenium !== 'external') {
+    ctx.argv.selenium = 'sauce';
+  }
+
+  var skipNoDesktop = function () {
+    if (['linux', 'freebsd', 'sunos'].indexOf(process.platform) >= 0) {
+      if (!process.env.DESKTOP_SESSION && !ctx.argv.sauce) {
+        console.log(
+          chalk.yellow(
+            'Skipping e2e testing because there is no desktop environment'
+          )
+        );
+        return true;
+      }
+    }
+    return false;
+  };
+
+
   if (
     skipNoDesktop() ||
-    !(options.e2e)
+    !(ctx.argv.e2e)
   ) {
     return Promise.resolve(null);
   }
   return services.selenium.start(
-    { selenium: 'local' }
+    ctx
   )
-  .then(services.externalMiddleTier.start.bind(null, {}))
-  .then(services.protractor.start.bind(null, { args: args }));
+  .then(services.externalMiddleTier.start.bind(null, ctx))
+  .then(services.protractor.start.bind(null, ctx));
   // .then(function () {
   //   console.log(require('util').inspect(require('../promises')));
   //   // promises.protractor.bind(null, {}));
