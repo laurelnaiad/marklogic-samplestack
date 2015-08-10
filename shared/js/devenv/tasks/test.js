@@ -62,6 +62,11 @@ self.func = function (cb) {
   var srcFiles = gulp.src(globs.allSrcFiles);
 
   var onEnd = function (errs) {
+    console.log(
+      'Coverage report: file://' +
+      path.join(globs.projectDir, 'shared/js/reports/lcov-report/index.html')
+    );
+
     if (errs) {
       console.log(errs);
       console.log(errs.stack);
