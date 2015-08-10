@@ -15,18 +15,24 @@ var cycle = function (inputStream, context, options) {
   context.nodeBuilt = false;
 
   var builtStream = stepThrough.dummy();
+
+  var redeploy;
+  if (ctx.argv.clean || ctx.argv.cleandb) {
+    redeploy = promises.conditionalClean(options)
+
+    .then(promises.buildDeploy.bind(null,
+      inputStream,
+      context,
+      options
+    ));
+  }
+  else {
+    redeploy = Promise.resolve();
+  }
   // inputStream.pipe($.filelog());
   // console.log('devenvFiles: ' + JSON.stringify(globs.devenvFiles));
   // console.log('cycle');
-  return promises.conditionalClean(options)
-
-  .then(promises.buildDeploy.bind(null,
-    inputStream,
-    context,
-    options
-  ))
-
-  .then(promises.runApp.bind(null,
+  return redeploy.then(promises.runApp.bind(null,
     context,
     options
   ))
@@ -81,7 +87,7 @@ self.func = function (cb) {
   cycle(srcFiles,
     ctx,
     {
-      clean: true,
+      clean: ctx.argv.clean,
       doLiveReload: true,
       // finalStreamLog: false
     }

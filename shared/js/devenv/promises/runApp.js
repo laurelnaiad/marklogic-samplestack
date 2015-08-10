@@ -4,7 +4,7 @@ module.exports = function (ctx, options) {
   var server = ctx.services.appServer;
 
   return new Promise(function (resolve, reject) {
-    if (ctx.nodeBuilt) {
+    if (ctx.nodeBuilt || !ctx.argv.clean) {
       server.restart(options, function (err) {
         if (err) {
           reject(err);

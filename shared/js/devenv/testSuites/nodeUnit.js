@@ -28,7 +28,7 @@ var testAndResolve = function (ctx) {
 module.exports = function (ctx, options) {
 
   if (
-    options.unit && (ctx.browserBuilt || ctx.nodeBuilt)
+    options.unit && (ctx.browserBuilt || ctx.nodeBuilt || !ctx.argv.clean)
     // (options.unit === 'conditional' && ctx.browserBuilt) ||
     // options.unit && options.unit !== 'conditional'
   ) {

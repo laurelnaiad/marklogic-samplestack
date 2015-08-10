@@ -18,15 +18,24 @@ var cycle = function (inputStream, context, options) {
   // inputStream.pipe($.filelog());
   // console.log('devenvFiles: ' + JSON.stringify(globs.devenvFiles));
   // console.log('cycle');
-  return promises.conditionalClean(options)
+  // return promises.conditionalClean(options)
 
-  .then(promises.buildDeploy.bind(null,
-    inputStream,
-    context,
-    options
-  ))
 
-  .then(promises.runApp.bind(null,
+  var redeploy;
+  if (ctx.argv.clean || ctx.argv.cleandb) {
+    redeploy = promises.conditionalClean(options)
+
+    .then(promises.buildDeploy.bind(null,
+      inputStream,
+      context,
+      options
+    ));
+  }
+  else {
+    redeploy = Promise.resolve();
+  }
+
+  return redeploy.then(promises.runApp.bind(null,
     context,
     options
   ))
