@@ -73,15 +73,15 @@ World.prototype.go = function (page, suffix) {
       browser.setLocation(url) :
       browser.get(url);
   return promise
-  .then(function () {
-    return browser.executeScript(function () {
-      window.goCount = window.goCount ? window.goCount + 1 : 1;
-      return window.goCount;
-    });
-  })
-  .then(function (goCount) {
-    console.log('GO COUNT ' + goCount);
-  })
+  // .then(function () {
+  //   return browser.executeScript(function () {
+  //     window.goCount = window.goCount ? window.goCount + 1 : 1;
+  //     return window.goCount;
+  //   });
+  // })
+  // .then(function (goCount) {
+  //   console.log('GO COUNT ' + goCount);
+  // })
   .then(
     function () {
       self.currentPage = page;

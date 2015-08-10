@@ -6,7 +6,6 @@ var cp = require('child_process');
 
 var go = function (opts, cb) {
   var args = opts.argv;
-  console.log('go');
   var Runner = require('protractor/lib/runner');
 
   var ptorConfig = {

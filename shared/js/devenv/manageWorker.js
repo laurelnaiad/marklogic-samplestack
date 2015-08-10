@@ -100,7 +100,6 @@ module.exports = function (ctx) {
       if (worker) {
         // do a onetime restart
         worker.on('exit', function (code) {
-          console.log('worker on exit');
           // console.log('on exit, start');
           start();
         });

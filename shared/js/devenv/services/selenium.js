@@ -3,10 +3,11 @@ var ctx = require('../context');
 var globs = require('../globs');
 var options = require('../../options');
 
+var myService;
 /* external */
 
 var startExternal = function (ctx, cb) {
-  ctx.services.selenium = {
+  myService = {
     close: function (cb) { cb(); },
     url: url.parse(options.seleniumAddress)
   };
@@ -38,7 +39,7 @@ var startSauce = function (ctx, cb) {
     sauceProcess = sauceConnectProcess;
     process.stdout.write('\n');
 
-    ctx.services.selenium = {
+    myService = {
       url: url.parse('localhost:4445/wd/hub'),
       close: function (cb) {
         process.stdout.write('shutting down Sauce Connect\n');
@@ -151,7 +152,7 @@ var startLocal = function (ctx, cb) {
       stdio: 'inherit'
     })
     .then(function (url) {
-      ctx.services.selenium = {
+      myService = {
         url: url,
         close: function (cb) {
           cb();
@@ -163,37 +164,42 @@ var startLocal = function (ctx, cb) {
   });
 };
 
+var seleniumHandler;
+
 module.exports = {
   start: function (ctx) {
-    return new Promise(function (resolve, reject) {
-      var seleniumHandler;
-      switch (ctx.argv.selenium) {
-        case 'external':
-          $.util.log('using **external** Selenium server');
-          seleniumHandler = startExternal;
-          break;
-        case 'sauce':
-          $.util.log('using **self-tunnelled** SauceLabs Selenium server');
-          seleniumHandler = startSauce;
-          break;
-        case 'local':
-          $.util.log('using **local** Selenium server');
-          seleniumHandler = startLocal;
-          break;
-        default:
-          return reject(new Error(
-            'parameter `--selenium` must be one of [external|sauce|local]'
-          ));
-      }
-      seleniumHandler(ctx, function (err) {
-        if (err) {
-          reject(err);
+    if (!myService) {
+      return new Promise(function (resolve, reject) {
+        switch (ctx.argv.selenium) {
+          case 'external':
+            $.util.log('using **external** Selenium server');
+            seleniumHandler = startExternal;
+            break;
+          case 'sauce':
+            $.util.log('using **self-tunnelled** SauceLabs Selenium server');
+            seleniumHandler = startSauce;
+            break;
+          case 'local':
+            $.util.log('using **local** Selenium server');
+            seleniumHandler = startLocal;
+            break;
+          default:
+            return reject(new Error(
+              'parameter `--selenium` must be one of [external|sauce|local]'
+            ));
         }
-        else {
-          resolve();
-        }
+        seleniumHandler(ctx, function (err) {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        });
       });
-    });
-
+    }
+    else {
+      return Promise.resolve();
+    }
   }
 };

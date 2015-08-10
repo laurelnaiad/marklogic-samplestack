@@ -36,6 +36,7 @@ globs.browserSrcFiles = [
 ];
 globs.browserUnitSrcFiles = [all(join(globs.browserDir, 'test/unit-tests'))];
 globs.cucumberSupportDir = join(globs.browserDir, 'test/cucumber-support');
+globs.cucumberFiles = [all(globs.cucumberSupportDir)];
 globs.browserFiles = _.flattenDeep(
   [globs.browserSrcFiles, globs.browserUnitSrcFiles]
 );
@@ -98,7 +99,12 @@ globs.sassFiles = [ join(globs.browserDir, '**/*.scss') ];
 
 
 globs.allSrcFiles = _.flattenDeep(
-  [globs.browserFiles, globs.nodeFiles,  globs.schemaFiles ]
+  [
+    globs.browserFiles,
+    globs.nodeFiles,
+    globs.schemaFiles,
+    globs.cucumberFiles
+  ]
 );
 
 // TODO: more to come in globbing files within streams
