@@ -23,6 +23,7 @@
    *    "displayName":"JoeUser"}
    * @return {[type]}
    */
+var _ = require('lodash');
 var Promise = require('bluebird');
 var errs = libRequire('errors');
 

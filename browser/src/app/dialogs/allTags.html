@@ -62,7 +62,7 @@
     </div><!-- tags-modal-search-wrapper -->
 
     <ul class="ss-sort nav nav-tabs" role="tablist">
-      <li
+      <li class="sort-{{sort.label.toLowerCase()}}"
         ng-repeat="sort in sorts"
         ng-click="setSort()"
         ng-class="{

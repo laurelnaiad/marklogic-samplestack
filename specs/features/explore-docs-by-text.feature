@@ -14,6 +14,10 @@ Feature: Explore Docs By Text
     Then the result "title" is "Q: Get element -moz-transform:rotate value in jQuery"
     When I focus on the "last" search result,
     Then the result "title" is "Q: Nested For loop for initializing array of arrays for Javascript"
+    Then I clear the search text with the X button
+    And the docs count is "1903"
+    When I focus on the "last" search result,
+    Then the result "title" is "Q: Show modal if page refreshed, but not if a link is followed"
 
   Scenario: As a contributor searching for "Math", I see the correct results
     Given I am a contributor
@@ -25,3 +29,9 @@ Feature: Explore Docs By Text
     Then the result "title" is "Q: Get element -moz-transform:rotate value in jQuery"
     When I focus on the "last" search result,
     Then the result "title" is "Q: Not same src when append images"
+    Then sort results by newest
+    When I focus on the "first" search result,
+    Then the result "title" is "Q: Format number to always show 2 decimal places"
+    Then sort results by votes
+    When I focus on the "last" search result,
+    Then the result "title" is "Q: How big are Javascript function objects?"

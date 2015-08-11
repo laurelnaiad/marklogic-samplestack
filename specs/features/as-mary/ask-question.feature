@@ -1,4 +1,4 @@
-@ask-question
+@ask-question @qnadoc
 Feature: Ask Question
 
   Any Contributor may ask questions with Markdown formatting, associating one or

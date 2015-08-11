@@ -1,10 +1,10 @@
-@vote-on-question @vote @qnadoc
-Feature: Vote on Question
+@vote-on-answer @vote @qnadoc
+Feature: Vote on Answer
 
-  Contributors may vote questions up or down. One may only vote on a question
-  once. When an upvote is made to a quesiton, the author of the question
-  gains reputation points. When a downvote is made to a  question, the author
-  of the question loses reputation points.
+  Contributors may vote answers up or down. One may only vote on an answer
+  once. When an upvote is made to an answer, the author of the answer
+  gains reputation points. When a downvote is made to an answer, the author
+  of the answer loses reputation points.
 
   Scenario: Mary votes for Joe's question
     Given I am "Joe"
@@ -16,7 +16,10 @@ Feature: Vote on Question
     And the question id is known as "qid"
     And I am "Mary"
     When I visit the "qnadoc" page with id equal to "qid"
-    And I focus on the question
+    And I answer the question with "This is my first answer"
+    And I am "Joe"
+    When I visit the "qnadoc" page with id equal to "qid"
+    And I focus on the first answer
     And the content contributor reputation is known as "reputation"
-    And I vote the question up
+    And I vote the answer up
     Then the content contributor reputation is greater than "reputation"

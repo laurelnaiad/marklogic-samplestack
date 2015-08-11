@@ -20,12 +20,13 @@ module.exports.support = function (obj) {
   /*******************************/
 
   obj.loginStart = function () {
-    return obj.pself(getLoginElement().click());
+    var loginBtn = getLoginElement();
+    return obj.pself((loginBtn) ? loginBtn.click() : false );
   };
 
   obj.loginCancel = function () {
     return obj.pself(
-      element(by.css('.ss-dialog-login .ss-button-cancel')).click()
+      element(by.css('.ss-dialog-login .close')).click()
     );
   };
 

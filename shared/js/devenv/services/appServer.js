@@ -1,3 +1,4 @@
+var Promise = require('bluebird');
 var path = require('path');
 var globs = require('../globs');
 var childProcess = require('child_process');
@@ -26,43 +27,54 @@ var ensureLiveReload = function (options, cb) {
 var launchChild = function (options) {
   var ctx = require('../context');
   var execArgv = [];
-  if (ctx.argv.debugBrk) {
-    ctx.argv.debug = ctx.argv.debug || true;
-  }
-  ctx.debugPort = ctx.argv.debug === true ? 5858 : ctx.argv.debug;
 
-  if (ctx.debugPort) {
-    // launch the child with debegging enabled`
-    execArgv.push('--debug=' + ctx.debugPort);
+
+  return new Promise(function (resolve, reject) {
     if (ctx.argv.debugBrk) {
-      execArgv.push('--debug-brk');
+      ctx.argv.debug = ctx.argv.debug || true;
     }
-  }
-  var argsArray = process.argv.slice(2);
+    if (ctx.argv.debug) {
+      ctx.findPort(5959).then(resolve);
+    }
+    else {
+      resolve(false);
+    }
+  })
+  .then(function (debugPort) {
+    if (debugPort) {
+      // launch the child with debegging enabled`
+      execArgv.push('--debug=' + debugPort);
+      if (ctx.argv.debugBrk) {
+        execArgv.push('--debug-brk');
+      }
+    }
 
-  var child = childProcess.fork(
-    path.join(globs.projectDir, 'shared/js/builds/app/main'),
-    argsArray,
-    { cwd: process.cwd(), execArgv: execArgv }
-  );
-  process.on('exit', function () {
-    child.kill();
+    var child = childProcess.fork(
+      path.join(globs.projectDir, 'shared/js/builds/app/main'),
+      [],
+      { cwd: process.cwd(), execArgv: execArgv }
+    );
+    process.on('exit', function () {
+      child.kill();
+    });
+
+    console.log('appServer PID: ' + child.pid);
+    return child;
   });
-
-  console.log('appServer PID: ' + child.pid);
-  return child;
 };
 
 var doStart = function (options, cb) {
   try {
-    myProcess = launchChild(options);
-    myProcess.on('exit', function (code) {
-      myProcess = null;
-      if (code) {
-        console.log('app server exited with code: ' + code);
-      }
+    launchChild(options).then(function (childProc) {
+      myProcess = childProc;
+      myProcess.on('exit', function (code) {
+        myProcess = null;
+        if (code) {
+          console.log('app server exited with code: ' + code);
+        }
+      });
+      cb();
     });
-    cb();
   }
   catch (err) { cb(err); }
 };

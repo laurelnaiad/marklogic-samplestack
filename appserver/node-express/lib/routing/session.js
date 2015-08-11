@@ -62,29 +62,6 @@ module.exports = function (app, mw) {
     }
   ]);
 
-  app.put('/v1/session', [
-    function (req, res, next) {
-      mw.auth.tryReviveSession(req, res, next);
-    },
-    function (req, res, next) {
-      mw.parseBody.json(req, res, next);
-    },
-    function (req, res, next) {
-      mw.schema.validate(
-        'http://marklogic.com/samplestack#sessionCreate', req, res, next
-      );
-    },
-    function (req, res, next) {
-      mw.auth.login(req, res, next);
-    },
-    function (req, res, next) {
-      mw.auth.associateBestRole(['contributors'], req, res, next);
-    },
-    function (req, res, next) {
-      res.status(200).send(req.contributor);
-    }
-  ]);
-
   app.post('/v1/session', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);

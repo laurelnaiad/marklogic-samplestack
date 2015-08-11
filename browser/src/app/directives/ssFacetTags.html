@@ -14,7 +14,7 @@
  * limitations under the License.
  -->
 
-<div class="list-group-section">
+<div class="list-group-section tags-search">
 
   <!-- tags search -->
   <div class="tags-module-search-wrapper">
@@ -80,7 +80,7 @@
           type="checkbox"
           checked="true"
         />
-        {{ tag.name }}
+        <span class="text-name">{{ tag.name }}</span>
         <span class="text-muted">({{ tag.count }})</span>
       </label>
     </div>
@@ -115,7 +115,7 @@
           type="checkbox"
           ng-disabled="!tag.count"
         />
-        {{ tag.name }}
+        <span class="text-name">{{ tag.name }}</span>
         <span class="text-muted">({{ tag.count }})</span>
       </label>
     </div>

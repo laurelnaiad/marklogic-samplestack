@@ -25,3 +25,28 @@ Feature: Explore Docs By Tags
     Then the results count should equal "291"
     And the selected tags should display
       | javascript  | 291 |
+
+  Scenario: As a visitor looking at all tags, I see the correct list of tags
+    Given I am a visitor
+    When I visit the "explore" page
+    And I open the more tags dialogue
+    the available tags list shows
+      | javascript  |
+      | jquery      |
+      | html        |
+      | marklogic   |
+      | php         |
+      | xquery      |
+      | css         |
+      | ajax        |
+      | xml         |
+      | json        |
+      | arrays      |
+      | regex       |
+      | java        |
+      | database    |
+      | forms       |
+      | html5       |
+      | function    |
+      | xpath       |
+    And I close the more tags dialogue

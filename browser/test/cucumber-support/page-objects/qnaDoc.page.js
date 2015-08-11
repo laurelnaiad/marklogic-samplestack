@@ -15,7 +15,8 @@
  */
 
 var utilities = require('../utilities');
-var Metadata = require('./directives/qnaDocMetadataConstructor.dctv').Metadata;
+var QuestionMetadata = require('./directives/qnaDocAnswerConstructor.dctv');
+var AnswerMetadata = require('./directives/qnaDocQuestionConstructor.dctv');
 
 function QnaDocPage () {
   var self = this;
@@ -25,8 +26,42 @@ function QnaDocPage () {
   require('./dialogs/contributor.dlg').support(self);
 
   self.focusQuestion = function () {
-    self.focusedItem = { metadata:  getQuestionMetadata() };
+    self.focusedItem = getQuestionMetadata();
     return self.pself();
+  };
+
+  self.focusFirstAnswer = function (position) {
+    self.focusedItem = getAnswerMetadata(0);
+    return self.pself();
+  };
+
+  self.focusLastAnswer = function (position) {
+    console.log('getAnswerCount: ' + getAnswerCount());
+    getAnswerCount().then(function (count) {
+      self.focusedItem = getAnswerMetadata(count - 1);
+    });
+    return self.pself();
+  };
+
+  self.commentStart = function () {
+    return self.pself(
+      self.focusedItem.webElement.element(by.css('.ss-add-comment-btn'))
+        .click()
+    );
+  };
+
+  self.makeComment = function (content) {
+    getCommentForm()
+      .clear()
+      .sendKeys(content);
+    return self.pself(
+      self.focusedItem.webElement.element(by.css('.ss-submit-comment-btn'))
+        .click()
+    );
+  };
+
+  self.getComment = function () {
+    return self.focusedItem.metadata.getOnlyComment();
   };
 
   self.questionVoteUp = function () {
@@ -37,15 +72,101 @@ function QnaDocPage () {
     );
   };
 
+  self.questionVoteDown = function () {
+    return self.pself(
+      element(by.className('ss-question-votes'))
+      .element(by.className('ss-vote-control-down'))
+      .click()
+    );
+  };
+
+  self.questionAnswer = function (content) {
+    getQuestionAnswerForm()
+      .clear()
+      .sendKeys(content);
+    return self.pself(
+      element(by.css('.ss-answer-form .form-submit button'))
+      .click()
+    );
+  };
+
+  self.answerVoteUp = function () {
+    return self.pself(
+      self.focusedItem.webElement
+        .element(by.className('ss-vote-up'))
+          .click()
+    );
+  };
+
+  self.answerVoteDown = function () {
+    return self.pself(
+      self.focusedItem.webElement
+        .element(by.className('ss-vote-down'))
+          .click()
+    );
+  };
+
+  self.answerAccept = function () {
+    return self.pself(
+      self.focusedItem.webElement
+        .element(by.className('ss-unaccepted'))
+          .click()
+    );
+  };
+
+  self.getAcceptedAnswerText = function () {
+    return getAcceptedAnswerMetadata().metadata.getText();
+  };
+
   /*******************************/
   /********** PRIVATE ************/
   /*******************************/
   var getQuestionElement = function () {
-    return element(by.className('ss-question'));
+    return element(by.className('ss-question-module-wrapper'));
+  };
+
+  var getQuestionAnswerForm = function () {
+    return element(by.css('.ss-answer-form textarea'));
+  };
+
+  var getCommentForm = function () {
+    return self.focusedItem.webElement
+            .element(by.css('.ss-add-comment textarea'));
   };
 
   var getQuestionMetadata = function () {
-    return new Metadata(getQuestionElement(), self);
+    return new QuestionMetadata(getQuestionElement(), self, 'question');
+  };
+
+  var getAnswerMetadata = function (position) {
+    return new AnswerMetadata(getAnswerElement(position), self, 'answer');
+  };
+
+  var getAcceptedAnswerMetadata = function () {
+    return new AnswerMetadata(getAcceptedAnswer(), self, 'answer');
+  };
+
+  var getAnswerCount = function () {
+    return element.all(by.className('ss-answer-wrapper')).count();
+  };
+
+  var getAnswerElements = function (position) {
+    return element.all(by.className('ss-answer-wrapper'));
+  };
+
+  // var getAnswerElement = function (position) {
+  //   return getAnswerElements().then(function (elms) {
+  //     return elms[position];
+  //   });
+  // };
+
+  // test is assuming 1 answer, to avoid Promise issues
+  var getAnswerElement = function () {
+    return element(by.className('ss-answer-wrapper'));
+  };
+
+  var getAcceptedAnswer = function () {
+    return element(by.css('.ss-answer-wrapper .answer-accepted'));
   };
 
 }

@@ -24,6 +24,7 @@ function ExplorePage () {
   require('./directives/searchBar.dctv').support(self);
   require('./directives/searchResults.dctv').support(self);
   require('./dialogs/contributor.dlg').support(self);
+  require('./directives/tagResults.dctv').support(self);
 
   self.filters = {
     clearAll: function () {
@@ -34,6 +35,11 @@ function ExplorePage () {
         // self.filters.dateFrom.setValue(''),
         // self.filters.dateTo.setValue('')
       ]));
+    },
+    clearTags: function () {
+      return self.pself(
+        getClearTagsBtn().click()
+      );
     },
     mineOnly: {
       setValue: function (value) {
@@ -72,9 +78,53 @@ function ExplorePage () {
           getDateEndFilterElement().sendKeys(protractor.Key.ENTER)
         );
       }
+    },
+    tagSearch: {
+      setValue: function (value) {
+        return self.pself(
+          utilities.setInputValue(getTagSearchFilterElement(), value)
+        );
+      },
+      pressEnter: function () {
+        return self.pself(
+          getTagSearchFilterElement().sendKeys(protractor.Key.ENTER)
+        );
+      }
+    },
+    tagSelect: {
+      setValue: function (name) {
+        return self.pself(
+          utilities.setCheckboxPromiseValue(
+            getTagFilterElement(name), true
+          )
+        );
+      }
+    },
+    tagUnselect: {
+      setValue: function (name) {
+        return self.pself(
+          utilities.setCheckboxPromiseValue(
+            getTagFilterElement(name), false
+          )
+        );
+      }
+    },
+    openMoreTags: function () {
+      return self.pself(
+        getMoreTagsBtn().click()
+      );
+    },
+    closeMoreTags: function () {
+      return self.pself(
+        getMoreTagsCloseBtn().click()
+      );
+    },
+    sortMoreTags: function (sortType) {
+      return self.pself(
+        getMoreTagsSortTab(sortType).click()
+      );
     }
   };
-
 
   /*******************************/
   /********** PRIVATE ************/
@@ -96,6 +146,41 @@ function ExplorePage () {
     return element(by.model('pickerDateEnd'));
   };
 
+  var getClearTagsBtn = function () {
+    return element(by.css('.clear-tags'));
+  };
+
+  var getMoreTagsSortTab = function (type) {
+    return element.all(
+      by.css('.ss-dialog-all-tags .ss-sort .sort-' + type)
+    );
+  };
+
+  var getMoreTagsBtn = function () {
+    return element(by.css('.button-more-tags'));
+  };
+
+  var getMoreTagsCloseBtn = function () {
+    return element(by.css('.ss-dialog-all-tags .close'));
+  };
+
+  var getTagSearchFilterElement = function () {
+    return element(by.model('selected'));
+  };
+
+  var getTagFilterElement = function (name) {
+    return element.all(by.css('.tags-search .checkbox .text-name')).filter(
+      function (elem, index) {
+        return elem.getText().then(function (text) {
+          return text === name;
+        });
+      }
+    ).then(
+      function (elems) {
+        return elems[0];
+      }
+    );
+  };
 }
 
 var me = ExplorePage;

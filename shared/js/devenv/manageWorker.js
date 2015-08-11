@@ -22,6 +22,7 @@
 // in case ports are occupied, and/or give clear messages in those cases
 // so that the developer can reconfigure
 
+var Promise = require('bluebird');
 var _ = require('lodash');
 var path = require('path');
 var childProcess = require('child_process');
@@ -55,37 +56,49 @@ module.exports = function (ctx) {
     var start = function () {
       // console.log('manageWorker.restartWorker.start');
       var execArgv = [];
-      if (ctx.argv.debugBrk) {
-        ctx.argv.debug = ctx.argv.debug || true;
-      }
-      ctx.debugPort = ctx.argv.debug === true ? 5858 : ctx.argv.debug;
-      if (ctx.debugPort) {
-        // launch the child with debegging enabled`
-        execArgv.push('--debug=' + ctx.debugPort);
+      return new Promise(function (resolve, reject) {
         if (ctx.argv.debugBrk) {
-          execArgv.push('--debug-brk');
+          ctx.argv.debug = ctx.argv.debug || true;
         }
-      }
-      var argsArray = process.argv.slice(2);
-      worker = childProcess.fork(
-        path.resolve(globs.projectDir, 'node_modules/gulp/bin/gulp.js'),
-        argsArray.concat('--manager-pid=' + process.pid),
-        { cwd: process.cwd(), execArgv: execArgv }
-      );
-      // worker.on('exit', process.exit);
-
-      console.log(
-        'manager PID: ' + process.pid + ', worker PID: ' + worker.pid
-      );
-
-      // if the child sends a 'restartChild' message to the parent process
-      // then the parent process , have it
-      // call the restart
-      worker.on('message', function (message) {
-        if (message.restartWorker) {
-          // console.log('got restartWorker from worker');
-          manageWorker.restartWorker();
+        if (ctx.argv.debug) {
+          ctx.findPort(5959).then(resolve);
         }
+        else {
+          resolve(false);
+        }
+      })
+      .then(function (debugPort) {
+        if (debugPort) {
+          // launch the child with debegging enabled`
+          execArgv.push('--debug=' + debugPort);
+          if (ctx.argv.debugBrk) {
+            execArgv.push('--debug-brk');
+          }
+        }
+        var argsArray = process.argv.slice(2);
+        worker = childProcess.fork(
+          path.resolve(globs.projectDir, 'node_modules/gulp/bin/gulp.js'),
+          argsArray.concat('--manager-pid=' + process.pid),
+          { cwd: process.cwd(), execArgv: execArgv }
+        );
+        // worker.on('exit', process.exit);
+
+        console.log(
+          'manager PID: ' + process.pid + ', worker PID: ' + worker.pid
+        );
+        if (debugPort) {
+          console.log('worker debug port: ' + debugPort);
+        }
+
+        // if the child sends a 'restartChild' message to the parent process
+        // then the parent process , have it
+        // call the restart
+        worker.on('message', function (message) {
+          if (message.restartWorker) {
+            // console.log('got restartWorker from worker');
+            manageWorker.restartWorker();
+          }
+        });
       });
     };
 

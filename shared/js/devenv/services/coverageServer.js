@@ -6,19 +6,45 @@ var Promise = require('bluebird');
 var myProcess;
 
 var launchChild = function (options) {
-  var argsArray = process.argv.slice(2);
+  var ctx = require('../context');
+  var execArgv = [];
 
-  var child = childProcess.fork(
-    path.join(globs.projectDir, 'shared/js/builds/coverage/main'),
-    argsArray,
-    { cwd: process.cwd() }
-  );
-  process.on('exit', function () {
-    child.kill();
+
+  return new Promise(function (resolve, reject) {
+    if (ctx.argv.debugBrk) {
+      ctx.argv.debug = ctx.argv.debug || true;
+    }
+    if (ctx.argv.debug) {
+      ctx.findPort(5959).then(resolve);
+    }
+    else {
+      resolve(false);
+    }
+  })
+  .then(function (debugPort) {
+    debugPort = 0;
+    if (debugPort) {
+      // launch the child with debegging enabled`
+      execArgv.push('--debug=' + debugPort);
+      if (ctx.argv.debugBrk) {
+        execArgv.push('--debug-brk');
+      }
+    }
+
+    var argsArray = process.argv.slice(2);
+
+    var child = childProcess.fork(
+      path.join(globs.projectDir, 'shared/js/builds/coverage/main'),
+      [],
+      { cwd: process.cwd(), execArgv: execArgv }
+    );
+    process.on('exit', function () {
+      child.kill();
+    });
+
+    console.log('coverageServer PID: ' + child.pid);
+    return child;
   });
-
-  console.log('coverageServer PID: ' + child.pid);
-  return child;
   //
   //
   // var server = require(
@@ -34,14 +60,16 @@ var launchChild = function (options) {
 
 var doStart = function (options, cb) {
   try {
-    myProcess = launchChild(options);
-    myProcess.on('exit', function (code) {
-      myProcess = null;
-      if (code) {
-        console.log('coverage server exited with code: ' + code);
-      }
+    launchChild(options).then(function (childProc) {
+      myProcess = childProc;
+      myProcess.on('exit', function (code) {
+        myProcess = null;
+        if (code) {
+          console.log('coverage server exited with code: ' + code);
+        }
+      });
+      cb();
     });
-    cb();
   }
   catch (err) { cb(err); }
 };

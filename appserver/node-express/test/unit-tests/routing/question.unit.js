@@ -88,7 +88,7 @@ module.exports = function () {
             });
           });
 
-          it('succeeds to create question as contributor', function (done) {
+          it('successfully creates a question as contributor', function (done) {
             var dbClient = {
               qnaDoc: {
                 post: sandbox.spy(function () {
@@ -146,7 +146,7 @@ module.exports = function () {
             });
           });
 
-          it('succeeds to upvote a question as contributor', function (done) {
+          it('successfully upvotes a question as contributor', function (done) {
             var dbClient = {
               qnaDoc: {
                 getUniqueContent: sandbox.spy(function () {
@@ -179,26 +179,7 @@ module.exports = function () {
             });
           });
 
-        });
-
-        describe('downvote', function () {
-          it('fails to downvote a question as visitor', function (done) {
-            var dbClient = {};
-            var authStubs = mocks.middleware.auth.impersonateUnauthorized(
-              sandbox, dbClient
-            );
-
-            agent
-            .post('/v1/questions/' + questionDoc.id + '/upvotes')
-            .send({ upDown: -1 })
-            .end(function (err, res) {
-              res.status.should.equal(401);
-              res.body.message.should.equal('Unauthorized');
-              done();
-            });
-          });
-
-          it('succeeds to downvote a question as contributor', function (done) {
+          it('successfully upvotes an answer as contributor', function (done) {
             var dbClient = {
               qnaDoc: {
                 getUniqueContent: sandbox.spy(function () {
@@ -217,7 +198,97 @@ module.exports = function () {
             );
 
             agent
-            .post('/v1/questions/' + questionDoc.id + '/upvotes')
+            .post('/v1/questions/' + questionDoc.id +
+                    '/answers/' + questionDoc.answers[0].id + '/upvotes')
+            .send({ upDown: 1 })
+            .end(function (err, res) {
+              authStubs.tryReviveSession.calledOnce.should.equal(true);
+              authStubs.associateBestRole.calledOnce.should.equal(true);
+              parseBodyStubs.json.calledOnce.should.equal(true);
+              businessLogicStubs.getAndRespond.calledOnce.should.equal(true);
+              businessLogicStubs.handleVote.calledOnce.should.equal(true);
+              res.status.should.equal(200);
+              res.body.should.deep.equal(questionDoc);
+              done();
+            });
+          });
+        });
+
+        describe('downvote', function () {
+          it('fails to downvote a question as visitor', function (done) {
+            var dbClient = {};
+            var authStubs = mocks.middleware.auth.impersonateUnauthorized(
+              sandbox, dbClient
+            );
+
+            agent
+            .post('/v1/questions/' + questionDoc.id + '/downvotes')
+            .send({ upDown: -1 })
+            .end(function (err, res) {
+              res.status.should.equal(401);
+              res.body.message.should.equal('Unauthorized');
+              done();
+            });
+          });
+
+          it('successfully downvotes a question as contributor', function (
+            done
+          ) {
+            var dbClient = {
+              qnaDoc: {
+                getUniqueContent: sandbox.spy(function () {
+                  return Promise.resolve(questionDoc);
+                })
+              }
+            };
+            var authStubs = mocks.middleware.auth.impersonateJoe(
+              sandbox, dbClient
+            );
+            var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+              sandbox
+            );
+            var businessLogicStubs = mocks['business-logic'].stubBusinessLogic(
+              sandbox, questionDoc
+            );
+
+            agent
+            .post('/v1/questions/' + questionDoc.id + '/downvotes')
+            .send({ upDown: -1 })
+            .end(function (err, res) {
+              authStubs.tryReviveSession.calledOnce.should.equal(true);
+              authStubs.associateBestRole.calledOnce.should.equal(true);
+              parseBodyStubs.json.calledOnce.should.equal(true);
+              businessLogicStubs.getAndRespond.calledOnce.should.equal(true);
+              businessLogicStubs.handleVote.calledOnce.should.equal(true);
+              res.status.should.equal(200);
+              res.body.should.deep.equal(questionDoc);
+              done();
+            });
+          });
+
+          it('successfully downvotes an answer as contributor', function (
+            done
+          ) {
+            var dbClient = {
+              qnaDoc: {
+                getUniqueContent: sandbox.spy(function () {
+                  return Promise.resolve(questionDoc);
+                })
+              }
+            };
+            var authStubs = mocks.middleware.auth.impersonateJoe(
+              sandbox, dbClient
+            );
+            var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+              sandbox
+            );
+            var businessLogicStubs = mocks['business-logic'].stubBusinessLogic(
+              sandbox, questionDoc
+            );
+
+            agent
+            .post('/v1/questions/' + questionDoc.id +
+                    '/answers/' + questionDoc.answers[0].id + '/downvotes')
             .send({ upDown: -1 })
             .end(function (err, res) {
               authStubs.tryReviveSession.calledOnce.should.equal(true);
@@ -234,7 +305,7 @@ module.exports = function () {
         });
 
         describe('comment', function () {
-          it('succeeds to comment on a question as visitor', function (done) {
+          it('successfully comments on a question as visitor', function (done) {
             var dbClient = {
               qnaDoc: {
                 patch: sandbox.spy(function () {
@@ -270,7 +341,7 @@ module.exports = function () {
             });
           });
 
-          it('succeeds to comment on a question as contributor', function (
+          it('successfully comments on a question as contributor', function (
             done
           ) {
             var dbClient = {
@@ -308,6 +379,44 @@ module.exports = function () {
             });
           });
 
+          it('successfully comments on an answer as contributor', function (
+            done
+          ) {
+            var dbClient = {
+              qnaDoc: {
+                patch: sandbox.spy(function () {
+                  return Promise.resolve({ id: questionDoc.id });
+                }),
+                getUniqueContent: sandbox.spy(function () {
+                  return Promise.resolve(questionDoc);
+                })
+              }
+            };
+            var authStubs = mocks.middleware.auth.impersonateJoe(
+              sandbox, dbClient
+            );
+            var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+              sandbox
+            );
+            var businessLogicStubs = mocks['business-logic'].stubBusinessLogic(
+              sandbox, questionDoc
+            );
+
+            agent
+            .post('/v1/questions/' + questionDoc.id +
+                    '/answers/' + questionDoc.answers[0].id + '/comments')
+            .send({ text: 'comment on your question' })
+            .end(function (err, res) {
+              authStubs.tryReviveSession.calledOnce.should.equal(true);
+              authStubs.associateBestRole.calledOnce.should.equal(true);
+              parseBodyStubs.json.calledOnce.should.equal(true);
+              businessLogicStubs.getAndRespond.calledOnce.should.equal(true);
+              businessLogicStubs.handleComment.calledOnce.should.equal(true);
+              res.status.should.equal(200);
+              res.body.should.deep.equal(questionDoc);
+              done();
+            });
+          });
         });
 
         describe('answer', function () {
@@ -327,7 +436,7 @@ module.exports = function () {
             });
           });
 
-          it('succeeds to answer a question as contributor', function (done) {
+          it('successfully answers a question as contributor', function (done) {
             var dbClient = {
               qnaDoc: {
                 getUniqueContent: sandbox.spy(function () {
@@ -362,6 +471,57 @@ module.exports = function () {
 
         });
 
+        describe('accept', function () {
+          it('fails to accept a question as visitor', function (done) {
+            var dbClient = {};
+            var authStubs = mocks.middleware.auth.impersonateUnauthorized(
+              sandbox, dbClient
+            );
+
+            agent
+            .post('/v1/questions/' + questionDoc.id +
+                    '/answers/' + questionDoc.answers[0].id + '/accept')
+            .end(function (err, res) {
+              res.status.should.equal(401);
+              res.body.message.should.equal('Unauthorized');
+              done();
+            });
+          });
+
+          it('successfully answers a question as contributor', function (done) {
+            var dbClient = {
+              qnaDoc: {
+                getUniqueContent: sandbox.spy(function () {
+                  return Promise.resolve(questionDoc);
+                })
+              }
+            };
+            var authStubs = mocks.middleware.auth.impersonateJoe(
+              sandbox, dbClient
+            );
+            var parseBodyStubs = mocks.middleware.parseBody.spyParseBody(
+              sandbox
+            );
+            var businessLogicStubs = mocks['business-logic'].stubBusinessLogic(
+              sandbox, questionDoc
+            );
+
+            agent
+            .post('/v1/questions/' + questionDoc.id +
+                    '/answers/' + questionDoc.answers[0].id + '/accept')
+            .end(function (err, res) {
+              authStubs.tryReviveSession.calledOnce.should.equal(true);
+              authStubs.associateBestRole.calledOnce.should.equal(true);
+              parseBodyStubs.json.calledOnce.should.equal(true);
+              businessLogicStubs.getAndRespond.calledOnce.should.equal(true);
+              businessLogicStubs.handleAccept.calledOnce.should.equal(true);
+              res.status.should.equal(200);
+              res.body.should.deep.equal(questionDoc);
+              done();
+            });
+          });
+
+        });
 
       });
 
