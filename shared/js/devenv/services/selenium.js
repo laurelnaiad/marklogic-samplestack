@@ -2,6 +2,7 @@ var url = require('url');
 var ctx = require('../context');
 var globs = require('../globs');
 var options = require('../../options');
+var Promise = require('bluebird');
 
 var myService;
 /* external */

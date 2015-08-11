@@ -3,6 +3,7 @@ var globs = require('../globs');
 var path = require('path');
 var fs = require('fs');
 var cp = require('child_process');
+var Promise = require('bluebird');
 
 var go = function (opts, cb) {
   var args = opts.argv;

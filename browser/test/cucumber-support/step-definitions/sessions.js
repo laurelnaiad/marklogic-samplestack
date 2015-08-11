@@ -40,6 +40,11 @@ module.exports = function () {
       .then(this.notifyOk(next), next);
   });
 
+  this.When(/stop logging in/, function (next) {
+    this.currentPage.loginCancel()
+      .then(this.notifyOk(next), next);
+  });
+
   this.When(/attempt to log in with invalid/, function (next) {
     return this.currentPage.loginEnterUserName('notJoeUser@example.com')
     .call('loginEnterPassword', 'not-his-password')
@@ -81,6 +86,22 @@ module.exports = function () {
     function (next) {
       expect(this.currentPage.isLoggedIn).to.eventually.equal(true)
         .and.notify(next);
+    }
+  );
+
+  this.When(
+    /I am not logged in/,
+    function (next) {
+      expect(this.currentPage.isLoggedIn).to.eventually.equal(false)
+        .and.notify(next);
+    }
+  );
+
+  this.When(
+    /I log out/,
+    function (next) {
+      this.currentPage.logout()
+        .then(this.notifyOk(next), next);
     }
   );
 

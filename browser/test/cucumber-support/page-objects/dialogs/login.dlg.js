@@ -25,7 +25,7 @@ module.exports.support = function (obj) {
 
   obj.loginCancel = function () {
     return obj.pself(
-      element(by.css('.ss-dialog-login .ss-button-cancel')).click()
+      element(by.css('.ss-dialog-login .close')).click()
     );
   };
 

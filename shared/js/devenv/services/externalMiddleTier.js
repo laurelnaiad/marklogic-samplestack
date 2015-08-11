@@ -1,3 +1,5 @@
+var Promise = require('bluebird');
+
 module.exports = {
   start: function (err) {
     console.log('(using Node.js middle tier)');
