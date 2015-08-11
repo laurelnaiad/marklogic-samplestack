@@ -11,7 +11,9 @@
     "q": false,
     "_": false,
     "protractor": false,
-    "Promise": false
+    "Promise": false,
+    "window": false,
+    "$": false
   },
   "esnext": false,
   "expr": true,

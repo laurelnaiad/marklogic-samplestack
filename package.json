@@ -30,7 +30,7 @@
     "connect": "^3.4.0",
     "connect-livereload": "^0.5.3",
     "connect-modrewrite": "^0.8.1",
-    "cucumber": "^0.5.1",
+    "cucumber": "^0.4.9",
     "cucumber-junit": "^1.1.10",
     "duplexer": "^0.1.1",
     "event-stream": "^3.3.1",

@@ -11,6 +11,7 @@ Feature: Login
     And I attempt to log in with invalid credentials
     And my login attempt is denied
     And I stop logging in
+    When I start to log in
     And I attempt to log in as a Contributor
     Then I am logged in
 
