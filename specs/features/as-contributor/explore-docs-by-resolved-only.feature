@@ -5,7 +5,7 @@ Feature: Explore Docs By Resolved Only
   those documents which are only resolved.
 
   Scenario: As a contributor filtering by resolved only, I see the correct results
-    Given I am a contributor
+    Given I am "Joe"
     And I am using the brief seed data
     And I visit the "explore" page
     And I clear all filters

@@ -23,6 +23,16 @@ module.exports = {
       }
     });
   },
+  setCheckboxPromiseValue : function (e, value) {
+    e.then(function (el) {
+      return el.isSelected()
+      .then(function (isSelected) {
+        if (isSelected && !value || !isSelected && value) {
+          return el.click();
+        }
+      });
+    });
+  },
   setInputValue : function (el, value) {
     return el.click().clear().sendKeys(value);
   }
