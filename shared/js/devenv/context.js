@@ -42,4 +42,20 @@ ctx.shutdown = function (err, cb) {
 
 ctx.services = require('./services');
 
+
+ctx.findPort = function (startingFrom) {
+  var portfinder = require('portfinder');
+  return new Promise(function (resolve, reject) {
+    portfinder.basePort = startingFrom;
+    portfinder.getPort(function (err, port) {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(port);
+      }
+    });
+  });
+};
+
 module.exports = ctx;
