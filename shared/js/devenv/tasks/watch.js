@@ -66,6 +66,8 @@ var cycle = function (inputStream, context, options) {
 
 var watch = function (cb) {
   var doWatch = function (result) {
+    console.log('watching for changes...');
+
     // console.log('not this again');
     $.watch(
       globs.allSrcFiles,
@@ -81,11 +83,11 @@ var watch = function (cb) {
             // finalStreamLog: true
           }
         ).then(function (errs) {
+          console.log('watching for changes...');
           cb();
         });
       })
     );
-    console.log('watching for changes...');
   };
 
   var srcFiles = gulp.src(globs.allSrcFiles);
@@ -94,7 +96,7 @@ var watch = function (cb) {
     srcFiles,
     ctx,
     {
-      // clean: true,
+      clean: true,
       doLiveReload: true,
       // finalStreamLog: false
     }

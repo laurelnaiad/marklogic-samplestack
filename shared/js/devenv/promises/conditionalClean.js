@@ -5,11 +5,10 @@ var globs = require('../globs');
 var async = require('async');
 var mkdirp = require('mkdirp');
 
-module.exports = function (ctx) {
+module.exports = function (options) {
   var rimraf = require('rimraf');
   return new Promise(function (resolve, reject) {
-    if (ctx.clean) {
-      // console.log('cleaning');
+    if (options.clean) {
       async.parallel([
         rimraf.bind(rimraf, path.join(globs.projectDir, 'shared/js/builds')),
         rimraf.bind(rimraf, path.join(globs.projectDir, 'shared/js/reports'))

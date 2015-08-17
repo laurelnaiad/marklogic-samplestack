@@ -1,3 +1,4 @@
 {
- "validate-queries":true
+  "validate-queries": true,
+  "validate-options": false
 }

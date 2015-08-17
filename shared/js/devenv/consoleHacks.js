@@ -4,7 +4,7 @@ module.exports = function (workerManager) {
   // expression to test for task names whose starting and ending log messages
   // we wish to suppress
   var taskNoLogExpr = new RegExp('[' + [
-    'watch', 'e2e'
+    'watch', 'e2e', 'db'
   ].join('|') + ']');
 
   /**

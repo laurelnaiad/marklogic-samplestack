@@ -15,10 +15,8 @@ if (ctx.isWorker) {
   global.$ = require('gulp-load-plugins')({
     config: path.join(globs.projectDir, 'package.json')
   });
-
-
-
 }
+
 ctx.taskWrap = function (promise, cb) {
 
   promise.then(function () {

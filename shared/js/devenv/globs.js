@@ -25,8 +25,14 @@ var _ = require('lodash');
 globs.projectDir = path.resolve(__dirname, '../../..');
 globs.browserDir = join(globs.projectDir, 'browser');
 globs.nodeDir = join(globs.projectDir, 'appserver/node-express');
-globs.marklogicDir = join(globs.projectDir, 'database');
 globs.sharedDir = path.resolve(__dirname, '../..');
+
+globs.dbDir = join(globs.projectDir, 'database');
+globs.dataDir = join(globs.dbDir, 'data');
+globs.dbSrcFiles = [
+  join(globs.dbDir, '**/*.{json,sjs}'),
+  '!' + join(globs.dataDir, 'seed/**/*')
+];
 
 globs.browserSrcFiles = [
   all(join(globs.browserDir, 'src')),

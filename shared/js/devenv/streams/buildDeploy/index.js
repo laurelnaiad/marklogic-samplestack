@@ -2,7 +2,7 @@ var _ = require('lodash');
 var lazypipe = require('lazypipe');
 var through = require('through2');
 var duplex = require('event-stream').duplex;
-var merge = require('merge-stream');
+var merge = require('event-stream').merge;
 // var rebaser = require('../../rebaser');
 var path = require('path');
 var stepThrough = require('../stepThrough');
@@ -22,6 +22,7 @@ var configureExtention = function (file) {
   var ext = path.extname(file.path);
   switch (ext) {
     case '.js':
+    case '.sjs':
       file.fileType = '.js';
       file.isJs = true;
       switch (path.basename(file.path, '.js')) {

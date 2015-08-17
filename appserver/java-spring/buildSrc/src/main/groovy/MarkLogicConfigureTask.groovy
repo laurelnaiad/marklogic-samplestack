@@ -16,7 +16,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
 
     @OutputDirectory
     def File outputDir
-    
+
     @Input
     def inputProperty
 
@@ -35,7 +35,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
     void configureREST(IncrementalTaskInputs inputs) {
         logger.info(inputs.incremental ? "CHANGED inputs considered out of date" : "ALL inputs considered out of date")
         logger.debug("File Separator: " + sep)
-        inputs.outOfDate { change -> 
+        inputs.outOfDate { change ->
             logger.debug("out of date: ${change.file.name}")
             def targetFile = new File(outputDir, change.file.name)
             targetFile.text = "done"
@@ -45,7 +45,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
                 logger.info("Skipping hidden file " + change.file.name)
             }
             else if (changeFile.path =~ /seed-data/) {
-                logger.info("Skipping seed data") 
+                logger.info("Skipping seed data")
             }
             else if (changeFile.path.contains(transforms)) {
                 logger.warn("Putting transform " + change.file.name)
@@ -69,7 +69,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
             }
             else if (changeFile.path.contains(restProperties)) {
                 putRESTProperties(changeFile)
-            } 
+            }
             else if (changeFile.path.contains("security")) {
                 logger.info("Skipping security configuration" + change.file.name)
             } else {
@@ -123,7 +123,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
 
     void putExtension(extension) {
         def extensionFileName = extension.getPath().replaceAll(~"\\\\","/")
-        def extensionName = 
+        def extensionName =
             extensionFileName.replaceAll(~".*\\/","")
         logger.info( "Saving library extension " + extensionFileName)
         RESTClient client = new RESTClient("http://" + config.marklogic.rest.host + ":" + config.marklogic.rest.port + "/v1/ext/" + extensionName)
@@ -142,7 +142,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
 
     void putServiceExtension(extension) {
         def extensionFileName = extension.getPath().replaceAll(~"\\\\","/")
-        def extensionName = 
+        def extensionName =
             extensionFileName.replaceAll(~".*\\/","").replaceAll(~"\\.(sjs|xqy)","")
         logger.info( "Saving service extension " + extensionFileName)
         RESTClient client = new RESTClient("http://" + config.marklogic.rest.host + ":" + config.marklogic.rest.port + "/v1/config/resources/" + extensionName)
@@ -161,7 +161,7 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
 
     void putOptions(options) {
         def optionsFileName = options.getPath().replaceAll(~"\\\\","/").replaceAll(~"\\.json","")
-        def optionsName = 
+        def optionsName =
             optionsFileName.replaceAll(~".*\\/","")
         logger.info( "Saving options " + optionsFileName)
         RESTClient client = new RESTClient("http://" + config.marklogic.rest.host + ":" + config.marklogic.rest.port + "/v1/config/query/" + optionsName)
@@ -183,4 +183,3 @@ public class MarkLogicConfigureTask extends MarkLogicTask {
     }
 
 }
-

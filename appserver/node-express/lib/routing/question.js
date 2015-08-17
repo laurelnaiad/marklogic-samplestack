@@ -145,7 +145,10 @@ module.exports = function (app, mw) {
 
       return actionPromise
       .then(businessLogic.getAndRespond.bind(null, req, res, next))
-      .catch(next);
+      .catch(function (err) {
+        console.log(err);
+        next(err);
+      });
 
     }
   ]);
@@ -218,7 +221,12 @@ module.exports = function (app, mw) {
 
       return actionPromise
       .then(businessLogic.getAndRespond.bind(null, req, res, next))
-      .catch(next);
+      .catch(function (err) {
+        console.log(err);
+        console.log(err.stack);
+        next(err);
+      });
+      // .catch(next);
     }
   ]);
 

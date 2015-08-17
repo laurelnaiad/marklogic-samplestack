@@ -6,7 +6,7 @@ module.exports = function () {
   var globs = require('../../globs');
   var through = require('through2');
   var path = require('path');
-  var merge = require('merge-stream');
+  var merge = require('event-stream').merge;
   var duplex = require('event-stream').duplex;
   var Promise = require('bluebird');
 

@@ -2,6 +2,7 @@ var afterFeatures = function () {
   this.registerHandler('AfterFeatures', function (event, callback) {
 
     browser.executeAsyncScript(function () {
+      /* jshint ignore:start */
       if (window.__coverage__) {
         $.ajax({
           type: 'POST',
@@ -13,6 +14,7 @@ var afterFeatures = function () {
       else {
         arguments[arguments.length - 1]();
       }
+      /* jshint ignore:end */
     }).then(callback);
 
 

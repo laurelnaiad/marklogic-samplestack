@@ -26,6 +26,7 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
 var errs = libRequire('errors');
+var _ = require('lodash');
 
 var getAndRespond = function (req, res, next, docSpec) {
   return req.db.qnaDoc.getUniqueContent(

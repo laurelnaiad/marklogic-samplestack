@@ -24,7 +24,7 @@
 module.exports = function (context, options) {
   var path = require('path');
   var bowerFiles = require('main-bower-files');
-  var merge = require('merge-stream');
+  var merge = require('event-stream').merge;
   var stepThrough = require('../stepThrough');
   var through = require('through2');
   var Promise = require('bluebird');

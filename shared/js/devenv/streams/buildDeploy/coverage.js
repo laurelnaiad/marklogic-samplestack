@@ -3,7 +3,7 @@ var steps = require('../steps');
 var lazypipe = require('lazypipe');
 var gulp = require('gulp');
 var through = require('through2');
-var merge = require('merge-stream');
+var merge = require('event-stream').merge;
 var duplex = require('event-stream').duplex;
 
 var postprocess = function (context, options) {
