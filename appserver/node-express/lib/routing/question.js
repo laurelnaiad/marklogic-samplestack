@@ -160,12 +160,15 @@ module.exports = function (app, mw) {
    */
   app.post('/v1/questions/:questionId/answers/:answerId/:operation', [
     function (req, res, next) {
+      console.log('tryReviveSession');
       mw.auth.tryReviveSession(req, res, next);
     },
     function (req, res, next) {
+      console.log('associateBestRole');
       mw.auth.associateBestRole(['contributors'], req, res, next);
     },
     function (req, res, next) {
+      console.log('parseBody');
       mw.parseBody.json(req, res, next);
     },
     function (req, res, next) {
@@ -182,6 +185,7 @@ module.exports = function (app, mw) {
           schemaType = 'accept';
           break;
       }
+      console.log('schemaType: ' + schemaType);
       if (schemaType) {
         mw.schema.validate(
           'http://marklogic.com/samplestack#' + schemaType, req, res, next
@@ -193,6 +197,7 @@ module.exports = function (app, mw) {
     },
 
     function (req, res, next) {
+      console.log('OPERATION');
       var spec = _.clone(req.params);
       var promises = [];
 

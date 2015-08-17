@@ -1,4 +1,4 @@
-@broken @vote-on-question @vote
+@vote-on-question @vote
 Feature: Vote on Question
 
   Contributors may vote questions up or down. One may only vote on a question
@@ -18,5 +18,5 @@ Feature: Vote on Question
     When I visit the "qnadoc" page with id equal to "qid"
     And I focus on the question
     And the content contributor reputation is known as "reputation"
-    And I vote it up
+    And I vote the question up
     Then the content contributor reputation is greater than "reputation"

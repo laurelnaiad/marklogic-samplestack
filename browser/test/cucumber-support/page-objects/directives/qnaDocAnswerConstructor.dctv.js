@@ -16,21 +16,18 @@
 
 var Metadata = require('./qnaDocMetaBaseConstr.dctv').Metadata;
 
-module.exports.SearchResult = function (webElement, page) {
+module.exports = function (webElement, page) {
   var self = this;
+
+  console.log('qnaDocAnswerConstructor');
+  console.log(webElement);
 
   /*******************************/
   /******** PUBLIC API ***********/
   /*******************************/
 
-  self.metadata = new Metadata(webElement, page, 'result');
-
-  Object.defineProperty(self, 'title', {
-    get: function () {
-      return webElement.element(by.className('ss-result-title'))
-          .getText();
-    }
-  });
+  self.webElement = webElement;
+  self.metadata = new Metadata(webElement, page, 'answer');
 
   /*******************************/
   /********** PRIVATE ************/
