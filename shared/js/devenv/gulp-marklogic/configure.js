@@ -94,22 +94,15 @@ var configureStream = function (options) {
       self.push(file);
     }
     if (promise) {
-      toFullfill.push(promise);
+      return promise.then(function () {
+        cb();
+      }, function (err) {
+        cb(err);
+      });
     }
-    // self.push(file);
-    cb();
-  }, function (cb) {
-    var self = this;
-    // flush function -- make sure we're really done with the promises
-    Promise.all(toFullfill).then(
-      function () {
-        cb();
-      },
-      function (err) {
-        self.emit('error', err);
-        cb();
-      }
-    );
+    else {
+      cb();
+    }
   });
 
   return stream;
