@@ -107,15 +107,12 @@ module.exports = function (app, mw) {
         case 'answers':
           schemaType = 'answer';
           break;
+        default:
+          return next({ error: 'unsupported method: ' + req.params.operation});
       }
-      if (schemaType) {
-        mw.schema.validate(
-          'http://marklogic.com/samplestack#' + schemaType, req, res, next
-        );
-      }
-      else {
-        next();
-      }
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#' + schemaType, req, res, next
+      );
     },
 
     function (req, res, next) {
@@ -140,7 +137,7 @@ module.exports = function (app, mw) {
           actionPromise = businessLogic.handleAnswer(req.db, spec);
           break;
         default:
-          next({ error: 'unsupported method: ' + spec.operation});
+          return next({ error: 'unsupported method: ' + spec.operation});
       }
 
       return actionPromise
@@ -184,15 +181,12 @@ module.exports = function (app, mw) {
         case 'accept':
           schemaType = 'accept';
           break;
+        default:
+          return next({ error: 'unsupported method: ' + req.params.operation });
       }
-      if (schemaType) {
-        mw.schema.validate(
-          'http://marklogic.com/samplestack#' + schemaType, req, res, next
-        );
-      }
-      else {
-        next();
-      }
+      mw.schema.validate(
+        'http://marklogic.com/samplestack#' + schemaType, req, res, next
+      );
     },
 
     function (req, res, next) {
@@ -216,7 +210,7 @@ module.exports = function (app, mw) {
           actionPromise = businessLogic.handleAccept(req.db, spec);
           break;
         default:
-          throw new errs.unsupportedMethod(req);
+          return next({ error: 'unsupported method: ' + spec.operation });
       }
 
       return actionPromise
