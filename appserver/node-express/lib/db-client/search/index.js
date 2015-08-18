@@ -26,9 +26,11 @@ var search = function (spec) {
   delete query.search.start;
   query.pageLength = 10;
   query.optionsName = 'questions';
+  query.view = 'all';
   if (!spec.shadow) {
+    // this transform not needed for shadow queries because they
+    // don't need content, just facets aggregates
     query['transform'] = 'search-response';
-    query.view = 'all';
   }
 
   // limit to qna docs
@@ -74,12 +76,11 @@ var search = function (spec) {
   // execute async search
   return this.documents.query(query).result()
   .then(function (response) {
-    if (spec.shadow) {
-      return response;
-    }
-    else {
-      // final response is first element of original response
-      var finalResponse = response.shift();
+    // final response is first element of original response
+    var finalResponse = response.shift();
+    // there is no need to worry about the individual items in shadow queries
+    // because they only deal in facet aggregates
+    if (!spec.shadow) {
       // put doc content into each result
       _.each(finalResponse.results, function (finalItem, index) {
         var snippets = finalItem.matches;
@@ -91,8 +92,8 @@ var search = function (spec) {
           finalItem.content.snippets = snippets;
         }
       });
-      return finalResponse;
     }
+    return finalResponse;
   });
 };
 

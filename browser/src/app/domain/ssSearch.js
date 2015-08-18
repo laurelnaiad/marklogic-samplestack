@@ -190,18 +190,22 @@ define([
 
         if (this.results.items) {
           angular.forEach(this.results.items, function (item) {
-            var docScore = item.content.docScore || item.content.itemTally || 0;
-            item.content.id = item.content.id.replace(/^\/questions\//, '');
-            if (item.content.acceptedAnswerId) {
-              item.content.acceptedAnswerId = item.content.acceptedAnswerId
-                  .replace(/^\/answers\//, '');
-            }
-            angular.forEach(item.content.answers, function (answer, index) {
-              docScore += answer.itemTally || 0;
-              answer.id = answer.id.replace(/^\/answers\//, '');
-            });
+            if (item.content) {
+              var docScore = item.content.docScore ||
+                  item.content.itemTally ||
+                  0;
+              item.content.id = item.content.id.replace(/^\/questions\//, '');
+              if (item.content.acceptedAnswerId) {
+                item.content.acceptedAnswerId = item.content.acceptedAnswerId
+                    .replace(/^\/answers\//, '');
+              }
+              angular.forEach(item.content.answers, function (answer, index) {
+                docScore += answer.itemTally || 0;
+                answer.id = answer.id.replace(/^\/answers\//, '');
+              });
 
-            item.content.docScore = docScore;
+              item.content.docScore = docScore;
+            }
           });
         }
       };

@@ -33,7 +33,7 @@ module.exports = function (app, mw) {
       );
     },
     function (req, res, next) {
-      req.body.shadow = req.params.shadow;
+      req.body.shadow = req.query.shadow;
 
       return req.db.search(req.body)
       .then(function (result) {

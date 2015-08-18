@@ -20,26 +20,24 @@ var funcs = {};
 
 var filterResponse = function (response, forTag, start, pageLength) {
   var vals = response['values-response'];
-  if (vals) {
-    var distinct = vals['distinct-value'];
-    var zeroIndexStart = start - 1;
-    if (distinct) {
-      var allMatches;
+  var distinct = vals['distinct-value'];
+  var zeroIndexStart = start - 1;
+  if (distinct) {
+    var allMatches;
 
-      if (forTag) {
-        allMatches = _.filter(distinct, function (distinctVal) {
-          return distinctVal._value.indexOf(forTag) >= 0;
-        });
-      }
-      else {
-        allMatches = distinct;
-      }
-
-      vals['distinct-value'] = allMatches.slice(
-        zeroIndexStart, zeroIndexStart + pageLength
-      );
-      vals.total = allMatches.length;
+    if (forTag) {
+      allMatches = _.filter(distinct, function (distinctVal) {
+        return distinctVal._value.indexOf(forTag) >= 0;
+      });
     }
+    else {
+      allMatches = distinct;
+    }
+
+    vals['distinct-value'] = allMatches.slice(
+      zeroIndexStart, zeroIndexStart + pageLength
+    );
+    vals.total = allMatches.length;
   }
   return response;
 };
@@ -87,9 +85,6 @@ funcs.getTags = function (spec) {
 
   return result.then(function (response) {
     return filterResponse(response, spec.search.forTag, start, pageLength);
-  })
-  .catch(function (err) {
-    throw err;
   });
 };
 
@@ -143,9 +138,6 @@ funcs.getRelatedTags = function (spec) {
 
       return response2;
     });
-  })
-  .catch(function (err) {
-    throw err;
   });
 };
 
