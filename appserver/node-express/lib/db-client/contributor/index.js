@@ -66,6 +66,13 @@ funcs.patchVoteCount = function (txid, id, increment) {
     .then(meta.responseToSpec);
 };
 
+/**
+ * Get the requested document content
+ *
+ * @param  {String} txid The transaction ID.
+ * @param  {Object} spec The document spec.
+ * @return {Promise} A promise object.
+ */
 funcs.getUniqueContent = function (txid, spec) {
   var self = this;
   // if given id, we can do this more efficinetly by reading via URI

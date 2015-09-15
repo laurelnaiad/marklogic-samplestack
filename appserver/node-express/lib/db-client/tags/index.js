@@ -18,6 +18,17 @@ var _ = require('lodash');
 
 var funcs = {};
 
+/**
+ * Filter the tags query response.  If forTag is present, then the response
+ * limits the number of distinct matches to those which contain that string.
+ *
+ * @param  {Object} response The tags query response.
+ * @param  {String} forTag The string to filter tag matches by.
+ * @param  {Integer} start The start page.
+ * @param  {Integer} pageLength The page length.
+ * @return {Object} The Node.js API query response object, with some
+ * transormations to that add content and snippets.
+ */
 var filterResponse = function (response, forTag, start, pageLength) {
   var vals = response['values-response'];
   var distinct = vals['distinct-value'];
@@ -50,6 +61,15 @@ var filterResponse = function (response, forTag, start, pageLength) {
 // The use of the hookStartRequest is not recommended. It is a temporary
 // workaround for Samplestack 1.1.0, to be used only as long as compatibility
 // with Node Client version 1.0.1 is required.
+
+/**
+ * Function for getting the list of tags for type-ahead tags search as well as
+ * the More Tags dialogue.
+ *
+ * @param  {Object} response The search spec.
+ * @return {Object} The Node.js API query response object, with some
+ * filtering transormations.
+ */
 funcs.getTags = function (spec) {
   // don't worry about uppercase, all tags are lowercase
   spec.search.forTag = spec.search.forTag ?
@@ -88,6 +108,14 @@ funcs.getTags = function (spec) {
   });
 };
 
+/**
+ * Function for getting the list of related tags for related tags feature
+ * in the SS UI.
+ *
+ * @param  {Object} spec The search spec.
+ * @return {Object} The Node.js API query response object, with some
+ * filtering transormations.
+ */
 funcs.getRelatedTags = function (spec) {
   var self = this;
   var start = spec.search.start;

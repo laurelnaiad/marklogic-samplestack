@@ -52,7 +52,6 @@ module.exports = function () {
           .end(function (err, res) {
             authStubs.tryReviveSession.calledOnce.should.equal(true);
             authStubs.associateBestRole.calledOnce.should.equal(true);
-            // businessLogic.getAndRespond calledOnce check??
             dbClient.qnaDoc.getUniqueContent.calledOnce.should.equal(true);
             res.status.should.equal(200);
             res.body.should.deep.equal(questionDoc);
@@ -118,7 +117,6 @@ module.exports = function () {
               authStubs.tryReviveSession.calledOnce.should.equal(true);
               authStubs.associateBestRole.calledOnce.should.equal(true);
               parseBodyStubs.json.calledOnce.should.equal(true);
-              // TODO: businessLogic.getAndRespond calledOnce check
               dbClient.qnaDoc.post.calledOnce.should.equal(true);
               dbClient.qnaDoc.getUniqueContent.calledOnce.should.equal(true);
               res.status.should.equal(200);

@@ -23,11 +23,16 @@ var util = libRequire('db-client/util');
 
 var funcs = {};
 var moment = require('moment-timezone');
-// funcs.exploreSearch = require('./exploreSearch');
+
+/**
+ * Function that handles all qnaDoc parse operations.
+ *
+ * @param  {Object} qnaDoc spec.
+ * @return {Promise} A promise object.
+ */
 funcs.patch = require('./patch');
 
 funcs.search = function (spec) {
-  // TODO: should really be supporting the txid param
   // query function wants an args list so we use apply since we
   // are dynamically creating values out of what is specified
   return this.documents.query.apply(
@@ -51,8 +56,6 @@ funcs.search = function (spec) {
  * @return {Promise} A promise object.
  */
 funcs.getUniqueContent = function (txid, spec) {
-  // TODO: this is identical to the code for contributor (except for the pojo
-  // issue)... abstract it?
   // if given id, we can do this more efficinetly by reading via URI
   // otheriwse, we search
   if (spec.id) {
@@ -113,8 +116,6 @@ funcs.post = function (txid, contributor, spec) {
   }).result()
   .then(meta.responseToSpec);
 };
-
-// TODO: various patches
 
 module.exports = function (connection) {
   // create an object with the funcs all bound to the given connection

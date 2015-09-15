@@ -179,6 +179,22 @@ module.exports = function (txid, spec) {
     .then(meta.responseToSpec);
   };
 
+  /**
+   * Handle the post of a new comment to a Samplestack question. The posted
+   * comment is merged with an comment template object, contributor
+   * information, and the current time. The resulting object is
+   * written to the MarkLogic database.
+   *
+   * @param  {String} txid The transaction ID.
+   * @param  {Object} contributor Contributor object. Example:
+   *   {"id":"cf99542d-f024-4478-a6dc-7e723a51b040",
+   *    "displayName":"JoeUser"}
+   * @param  {String} questionId The question ID.
+   * @param  {Object} spec The answer content from the request. Example:
+   *   {"text":"The comment is foo."}
+   * @return {Promise} A promise object. When fulfilled, the response for the
+   * promise is empty.
+   */
   var patchQuestionAddComment = function (
     txid, contributor, questionId, spec
   ) {
@@ -201,6 +217,23 @@ module.exports = function (txid, spec) {
     .then(meta.responseToSpec);
   };
 
+  /**
+   * Handle the post of a new comment to a Samplestack answer. The posted
+   * comment is merged with an comment template object, contributor
+   * information, and the current time. The resulting object is
+   * written to the MarkLogic database.
+   *
+   * @param  {String} txid The transaction ID.
+   * @param  {Object} contributor Contributor object. Example:
+   *   {"id":"cf99542d-f024-4478-a6dc-7e723a51b040",
+   *    "displayName":"JoeUser"}
+   * @param  {String} questionId The question ID.
+   * @param  {String} answerId The answer ID.
+   * @param  {Object} spec The answer content from the request. Example:
+   *   {"text":"The comment is foo."}
+   * @return {Promise} A promise object. When fulfilled, the response for the
+   * promise is empty.
+   */
   var patchAnswerAddComment = function (
     txid, contributor, questionId, answerId, spec
   ) {
@@ -227,6 +260,23 @@ module.exports = function (txid, spec) {
     .then(meta.responseToSpec);
   };
 
+  /**
+   * Handle the acceptance of a Samplestack answer. The question is updated,
+   * setting its accepted property TRUE, acceptedAnswerID to answerID & the
+   * lastActivityDate to the current time.
+   *
+   * @param  {String} txid The transaction ID.
+   * @param  {Object} contributor Contributor object. Example:
+   *   {"id":"cf99542d-f024-4478-a6dc-7e723a51b040",
+   *    "displayName":"JoeUser"}
+   * @param  {String} questionId The question ID.
+   * @param  {String} answerId The answer ID.
+   * @param  {Object} spec The answer content from the request. Example:
+   *   {"text":"The comment is foo."}
+   * @return {Promise} A promise object. When fulfilled, the response for the
+   * promise is the complete document which is then transformed into a simple
+   * Object with the question ID.
+   */
   var patchAnswerAccept = function (txid, contributor, questionId, answerId) {
     return self.documents.patch(
       {
@@ -242,6 +292,10 @@ module.exports = function (txid, spec) {
     .then(meta.responseToSpec);
   };
 
+  /**
+   * Massive switch statement routing all the different types of spec.operation
+   * values to the proper patch function.
+   */
   switch (spec.operation) {
     case 'voteQuestion':
       return patchQuestionVote(

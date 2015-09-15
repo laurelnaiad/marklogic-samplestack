@@ -32,6 +32,9 @@ var sessionGetter = function (req, res, next) {
 };
 
 module.exports = function (app, mw) {
+  /**
+   * GET Session - get your session
+   */
   app.get('/v1/session', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);
@@ -53,6 +56,9 @@ module.exports = function (app, mw) {
 
   ]);
 
+  /**
+   * DELETE Session - destroy your session
+   */
   app.delete('/v1/session', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);
@@ -62,6 +68,9 @@ module.exports = function (app, mw) {
     }
   ]);
 
+  /**
+   * POST Session - create a session
+   */
   app.post('/v1/session', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);

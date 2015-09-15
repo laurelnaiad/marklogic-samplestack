@@ -128,10 +128,6 @@ define(['app/module'], function (module) {
             // dateStart and dateEnd variables
             var chartUpdateSelections = function (event) {
               var i;
-
-              // do nothing if there isn't date data
-              // TODO: show some sort of message instead of a blank chart
-
               // note: using the embedded chart b/c highcharts-ng requires
               // an extra event loop to process its version of the series
               var series = scope.chart.target.series;
@@ -196,6 +192,8 @@ define(['app/module'], function (module) {
                   }
                 }
               }
+              // do nothing if there isn't date data
+
               return false; // no more jquery event handling
             };
 
@@ -523,12 +521,6 @@ define(['app/module'], function (module) {
               }
             });
             scope.$on('newResults', function () {
-
-
-              //TODO: this timeout is a cheap hack to alleviate
-              //problems from overlapping searches. The real solution
-              // properly supercede those searches when a new search
-              // gets under way.
               $timeout(function () {
 
                 // empty the dateDate without losing the array object

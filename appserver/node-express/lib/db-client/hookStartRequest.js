@@ -28,6 +28,15 @@ var origStartRequest = mlrest.startRequest;
 var _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
+
+/**
+ * Function for temporary working around Samplestack 1.1.0 adding the tags
+ * option to the query string when making a request to the ML Rest client.
+ *
+ * @param  {Object} operation The operation object.
+ * @return {Object} The mlrest.startRequest response after passing it our
+ * transformed operation object.
+ */
 mlrest.startRequest = function (operation) {
 
   if (

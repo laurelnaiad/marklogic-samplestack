@@ -79,7 +79,6 @@ define([
      * This method is used when validating {@link mlModelBase}-derived objects.
      */
     objectify: function (obj) {
-      // TODO: this is cheap and dirty
       return angular.fromJson(angular.toJson(obj));
     },
 

@@ -34,6 +34,14 @@ module.exports = function (app) {
   //   },
 
   return {
+    /**
+     * Function used to validate request bodies against their schema references.
+     *
+     * @param {Object}   schemaRef Schema to validate against.
+     * @param {Object}   req
+     * @param {Object}   res
+     * @param {Function} next
+     */
     validate: function (schemaRef, req, res, next) {
       var validated = validator.validate(req.body, { $ref: schemaRef });
       if (validated.errors.length === 0) {

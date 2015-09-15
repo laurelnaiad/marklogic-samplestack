@@ -471,9 +471,8 @@ define([
         }
         if (constraint.type === 'dateTime' ) {
           if (constraint.value) {
-            // TODO: here we are wiping out tht time portion to accomodate
-            // the type conigured on the server while not expsoing the user
-            // to times
+            // wipe out the time portion to accomodate the type configured
+            // on the server while not expsoing the user to times
             param[constraint.queryStringName] =
                 constraint.value.toISOString();
           }
@@ -650,8 +649,14 @@ define([
         }
       };
 
-      //TODO document these functions
-
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.incrementPage
+       * @param {integer} increment number of pages to increment/decrement.
+       * @description Increment or decrement a page by a specific number, as
+       * long as the resulting new page is valid.
+       * @returns {integer} New current page number.
+       */
       MlSearchObject.prototype.incrementPage = function (increment) {
         var newPage = this.getCurrentPage() + increment;
         if (newPage > 0 && newPage <= this.getPageCount()) {
@@ -659,47 +664,121 @@ define([
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.getCurrentPage
+       * @description The current search page.
+       * @returns {integer} Current page number.
+       */
       MlSearchObject.prototype.getCurrentPage = function () {
         return this.$ml.pagingInfo.currentPage;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.getPageLength
+       * @description The number of results per page in a search.
+       * @returns {integer} Number of results per page.
+       */
       MlSearchObject.prototype.getPageLength = function () {
         return this.$ml.pagingInfo.pageLength;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.getPageCount
+       * @description The total number of pages in a search.
+       * @returns {integer} The total number of pages.
+       */
       MlSearchObject.prototype.getPageCount = function () {
         return this.$ml.pagingInfo.pageCount;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.hasPrevPage
+       * @description Does the current page have one previous.
+       * @returns {boolean} Whether or not the page has one previous.
+       */
       MlSearchObject.prototype.hasPrevPage = function () {
         return this.getCurrentPage() > 1;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.hasNextPage
+       * @description Does the current page have one next.
+       * @returns {boolean} Whether or not the page has one next.
+       */
       MlSearchObject.prototype.hasNextPage = function () {
         return this.getCurrentPage() < this.getPageCount();
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.pageOutOfBounds
+       * @description Criteria check determining if the requested start
+       * is within the valid result range.
+       * @returns {boolean} Whether or not the start criteria falls within a
+       * valid range.
+       */
       MlSearchObject.prototype.pageOutOfBounds = function () {
         if (this.results.total > 0) {
           return this.criteria.start > this.results.total;
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.setPageInBounds
+       * @description Set the current page to the last possible valid
+       * page for the search results.
+       */
       MlSearchObject.prototype.setPageInBounds = function () {
         this.setCurrentPage(getPageForStart(this, this.results.total));
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.getPageForStart
+       * @param {object} self reference to mlSearch object
+       * @param {integer} override number to use as an override, instead of
+       * criteria.start.
+       * @description Get correct page number for criteria.start.  If override
+       * is present, then use that to determine the page.
+       * @returns {integer} The page number.
+       */
       var getPageForStart = function (self, override) {
         return window.Math.ceil(
           (override || self.criteria.start) / self.$ml.pageLength
         );
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.getStartForPage
+       * @param {object} self reference to mlSearch object
+       * @param {integer} override page number to use as an override, instead of
+       * getCurrentPage.
+       * @description Get correct start number for the current page.
+       * If override is present, then use that to determine the start.
+       * @returns {integer} The start number.
+       */
       var getStartForPage = function (self, override) {
         return  1 +
-            ((override || self.getCurrentPage) - 1) * self.getPageLength();
+            ((override || self.getCurrentPage()) - 1) * self.getPageLength();
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.getPageCalcs
+       * @param {object} self reference to mlSearch object
+       * @description Construct an object with various information about
+       * the search results: pageLength, start, total, currentPage, pageCount,
+       * isLastPage, isFirstPage, nextPageStart, prevPageStart.
+       * @returns {object} An object containing information about
+       * the search results.
+       */
       var getPageCalcs = function (self) {
         var info = {};
         info.pageLength = self.$ml.pageLength;
@@ -727,6 +806,13 @@ define([
         return info;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.constraintNonEmpty
+       * @param {object} constraint Browser-side constraint object.
+       * @description Simple check to see if the constraint object is not empty.
+       * @returns {boolean} Whether or not the constraint object is not empty.
+       */
       var constraintNonEmpty = function (constraint) {
         var valueProp = constraint.values || constraint.value;
         if (valueProp) {
@@ -746,14 +832,21 @@ define([
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name MlSearchObject#prototype.makeShadowSearches
+       * @param {object} self reference to mlSearch object
+       * @param {object} service Service from which domain-specific model
+       * elements are derived.
+       * @description Create the shadow searchs for a particular criteria, for
+       * instance, the date range shadow still bears the impact of the tags
+       * criteria.
+       * @returns {object} shadowSearches object.
+       */
       var makeShadowSearches = function (
         self,
         service
       ) {
-        // TODO: this implementation means that, for instance, the date
-        // range shadow still bears the impact of the tags criteria --
-        // is this what we want? I've heard tell that each constraint might
-        // want a shadow that is *NOT* impacted by other constraints...
         var shadowSearches = {};
         angular.forEach(self.facets, function (facet, name) {
           if (facet.shadowConstraints) {

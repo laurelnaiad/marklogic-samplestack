@@ -17,6 +17,9 @@
 var roles = [ 'contributors', 'default' ];
 
 module.exports = function (app, mw) {
+  /**
+   * POST Search - perform a search
+   */
   app.post('/v1/search', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);

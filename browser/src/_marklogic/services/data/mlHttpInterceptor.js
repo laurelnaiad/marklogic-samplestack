@@ -101,8 +101,6 @@ define(['_marklogic/module'], function (module) {
               var deferred = $q.defer();
               $http(requestConfig).then(
                 function (response) {
-                  // if the server doesn't give us a CSRF token, we should
-                  // we complain? TODO
                   var token = response.headers(self.headerName);
                   if (token){
                     $http.defaults.headers.common[self.headerName] = token;

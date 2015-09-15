@@ -39,6 +39,9 @@ module.exports = function (app, mw) {
   //   }
   // ]);
 
+  /**
+   * GET Question - get a question by its ID
+   */
   app.get('/v1/questions/:id', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);
@@ -53,6 +56,9 @@ module.exports = function (app, mw) {
     }
   ]);
 
+  /**
+   * POST Question - create a new question
+   */
   app.post('/v1/questions', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);
@@ -80,9 +86,9 @@ module.exports = function (app, mw) {
   /*
    * Route for the following requests
    *
-   * /v1/questions/{id}/{upvotes | downvotes}
-   * /v1/questions/{id}/comments
-   * /v1/questions/{id}/answers
+   * /v1/questions/{id}/{upvotes | downvotes} - Up/Down voting a question
+   * /v1/questions/{id}/comments - Commenting on a question
+   * /v1/questions/{id}/answers - answering questions
    */
   app.post('/v1/questions/:questionId/:operation', [
     function (req, res, next) {
@@ -154,9 +160,10 @@ module.exports = function (app, mw) {
   /*
    * Route for the following requests
    *
-   * /v1/questions/{id}/answers/{answerId}/{upvotes | downvotes}
-   * /v1/questions/{id}/answers/{answerId}/comments
-   * /v1/questions/{id}/answers/{answerId}/accept
+   * /v1/questions/{id}/answers/{answerId}/{upvotes | downvotes} - Up/Down
+   *   voting an answer
+   * /v1/questions/{id}/answers/{answerId}/comments - Commenting on an answer
+   * /v1/questions/{id}/answers/{answerId}/accept - accepting an answer
    */
   app.post('/v1/questions/:questionId/answers/:answerId/:operation', [
     function (req, res, next) {

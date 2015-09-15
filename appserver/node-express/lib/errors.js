@@ -16,6 +16,11 @@
 
 module.exports = {
 
+  /**
+   * Cardinality Error
+   *
+   * @param {String}   details Message with the error.
+   */
   cardinality: function (details) {
     return {
       status: 500,
@@ -25,12 +30,24 @@ module.exports = {
       }
     };
   },
+
+  /**
+   * Unsupported Method Error
+   *
+   * @param {String}   details Message with the error.
+   */
   unsupportedMethod: function (details) {
     return {
       status: 400,
       details: details
     };
   },
+
+  /**
+   * Already Voted Error
+   *
+   * @param {String}   details Message with the error.
+   */
   alreadyVoted: function (details) {
     return {
       status: 403,
@@ -40,6 +57,11 @@ module.exports = {
     };
   },
 
+  /**
+   * Must Be Owner Error
+   *
+   * @param {String}   details Message with the error.
+   */
   mustBeOwner: function (deatals) {
     return {
       status: 403,

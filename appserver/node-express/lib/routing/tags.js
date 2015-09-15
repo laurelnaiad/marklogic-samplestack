@@ -17,6 +17,9 @@
 var roles = [ 'contributors', 'default' ];
 
 module.exports = function (app, mw) {
+  /**
+   * POST Tags - get tags, related or any tags by string
+   */
   app.post('/v1/tags', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);
@@ -39,7 +42,6 @@ module.exports = function (app, mw) {
       if (req.body.search.relatedTo) {
         return req.db.tags.getRelatedTags(req.body)
         .then(function (result) {
-          // TODO make it work
           return res.status(200).send(result);
         })
         .catch(next);

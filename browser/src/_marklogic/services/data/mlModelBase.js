@@ -1,18 +1,18 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /*
 _marklogic/services/model/mlModel.js
@@ -90,11 +90,10 @@ define(['_marklogic/module'], function (module) {
    * by specifying such an override of the `onResponsePOST` method.
    *
    * <p style="color: red">
-   * **TODO** the current version of this object  makes documentation difficult
-   * because of the way that
-   * instances are defined -- that is, there is no Angular component associated
-   * with instances of mlModelBase, and such no good place, in Angular terms,
-   * to put documentation.
+   * **TODO** the current version of this object makes documentation difficult
+   * because of the way that instances are defined -- that is, there is no
+   * Angular component associated with instances of mlModelBase, and such
+   * no good place, in Angular terms, to put documentation.
    * </p>
    *
    * <p style="color: red">
@@ -146,7 +145,7 @@ define(['_marklogic/module'], function (module) {
       };
 
       MlModel.prototype.getBaseUrl = function () {
-        return '/v1'; // TODO should come from config setting
+        return '/v1';
       };
 
       MlModel.prototype.attachScope = function (scope, as) {

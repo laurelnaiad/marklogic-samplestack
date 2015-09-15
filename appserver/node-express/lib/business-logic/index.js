@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-  /**
-   * Check if a contributor has not already voted on a question or answer.
-   * @param  {Object} content Content for the question or answer being
-   * checked.
-   * @param  {Object} contributor Contributor objectExample:
-   *   {"id":"cf99542d-f024-4478-a6dc-7e723a51b040",
-   *    "displayName":"JoeUser"}
-   * @return {[type]}
-   */
 var _ = require('lodash');
 var Promise = require('bluebird');
 var errs = libRequire('errors');
 var _ = require('lodash');
 
+/**
+ * Get one or more documents from the Samplestack database and return its
+ * content with a 200 status code.  If no content exists, return a 401 status.
+ *
+ * @param  {Object}   req
+ * @param  {Object}   res
+ * @param  {Function} next
+ * @param  {Object}   docSpec The document spec.
+ * @return {Promise} A promise resolving with the appropriate Express content
+ * and status.
+ */
 var getAndRespond = function (req, res, next, docSpec) {
   return req.db.qnaDoc.getUniqueContent(
     null, docSpec
@@ -42,6 +44,14 @@ var getAndRespond = function (req, res, next, docSpec) {
   });
 };
 
+/**
+ * Check if a contributor has not already voted on a question or answer.
+ * @param  {Object} content Content for the question or answer being
+ * checked.
+ * @param  {Object} contributor Contributor objectExample:
+ *   {"id":"cf99542d-f024-4478-a6dc-7e723a51b040",
+ *    "displayName":"JoeUser"}
+ */
 var notAlreadyVoted = function (content, contributor) {
   var already = (content.upvotingContributorIds &&
       content.upvotingContributorIds.indexOf(contributor.id) >= 0) ||
@@ -55,6 +65,18 @@ var notAlreadyVoted = function (content, contributor) {
   }
 };
 
+/**
+ * Handle a vote on a question or answer.  Three operations, as a
+ * transaction occur:
+ * (1) Increment/decrement the vote count for the q/a within the document.
+ * (2) Increment/decrement reputation of the q/a owner.
+ * (2) Increment/decrement the vote count for the person voting.
+ *
+ * @param  {String} type The comment type (question/answer)
+ * @param  {Object} db The database client.
+ * @param  {Object} spec The vote spec.
+ * @return {Object} The content the document patched.s
+ */
 var handleVote = function (type, db, spec) {
   return db.execAsTransaction(function (txid) {
     return db.qnaDoc.getUniqueContent(
@@ -89,17 +111,41 @@ var handleVote = function (type, db, spec) {
   });
 };
 
-
+/**
+ * Handle a comment on a question or answer.
+ *
+ * @param  {String} type The comment type (question/answer)
+ * @param  {Object} db The database client.
+ * @param  {Object} spec The comment spec.
+ * @return {Promise} A Promise returned from the document patch resulting from
+ * the document operation to add a comment to a question or answer.
+ */
 var handleComment = function (type, db, spec) {
   spec.operation = 'add' + type + 'Comment';
   return db.qnaDoc.patch(null, spec);
 };
 
+/**
+ * Handle an answer to a question.
+ *
+ * @param  {Object} db The database client.
+ * @param  {Object} spec The search spec.
+ * @return {Promise} A Promise returned from the document patch resulting from
+ * the document operation to add an answer to a question.
+ */
 var handleAnswer = function (db, spec) {
   spec.operation = 'addAnswer';
   return db.qnaDoc.patch(null, spec);
 };
 
+/**
+ * Handle the acceptance of an answer to a question.
+ *
+ * @param  {Object} db The database client.
+ * @param  {Object} spec The search spec.
+ * @return {Promise} A Promise returned from the document patch resulting from
+ * the document operation to accept an answer to a question.
+ */
 var handleAccept = function (db, spec) {
   return db.execAsTransaction(function (txid) {
     return db.qnaDoc.getUniqueContent(
@@ -145,10 +191,10 @@ var handleAccept = function (db, spec) {
 };
 
 module.exports = {
-    getAndRespond:    getAndRespond,
-    notAlreadyVoted:  notAlreadyVoted,
-    handleVote:       handleVote,
-    handleComment:    handleComment,
-    handleAnswer:     handleAnswer,
-    handleAccept:     handleAccept
-  };
+  getAndRespond:    getAndRespond,
+  notAlreadyVoted:  notAlreadyVoted,
+  handleVote:       handleVote,
+  handleComment:    handleComment,
+  handleAnswer:     handleAnswer,
+  handleAccept:     handleAccept
+};

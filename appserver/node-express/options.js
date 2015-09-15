@@ -43,7 +43,6 @@ module.exports = {
     protocol: 'ldap' // or 'ldaps' for secure
   },
   // mapping of LDAP roles to database credentials
-  // TODO store/manage passwords more securely
   rolesMap: {
     admins: {
       name: 'admins',

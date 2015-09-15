@@ -23,6 +23,17 @@ require('./hookStartRequest');
 
 var boundClients = {};
 
+/**
+ * Function for opening and executing any passed function as a transaction.
+ * This requires the passed function to accept a transaction ID for use within
+ * it's own calls to the MarkLogic Node.js API.  The called function also must
+ * return a Promise which when resolved will trigger commit() of the
+ * transaction or rollback, if that commit fails.
+ *
+ * @param  {Function} ex The function to execute as a transaction.
+ * @return {Object} The mlrest.startRequest response after passing it our
+ * transformed operation object.
+ */
 var execAsTransaction = function (ex) {
   var self = this;
   var txid;
@@ -44,6 +55,13 @@ var execAsTransaction = function (ex) {
   });
 };
 
+/**
+ * Function for creating a database client connection to the ML database.
+ *
+ * @param  {String} user The ML user.
+ * @param  {String} password The ML password.
+ * @return {Object} The mlrest.createDatabaseClient() client object.
+ */
 var getClient = function (user, password) {
   return mlclient.createDatabaseClient(_.merge(
     options.db.clientConnection,
@@ -54,13 +72,17 @@ var getClient = function (user, password) {
   ));
 };
 
+/**
+ * Function for creating a database client connection to the ML database with
+ * bound modules for qnaDoc, contributor, tags and search db-clients.
+ *
+ * @param  {String} user The ML user.
+ * @param  {String} password The ML password.
+ * @return {Object} The object containing all bound ML db client objects.
+ */
 var getBoundClient = function (user, password) {
   if (!boundClients[user]) {
     var connection = getClient(user, password);
-    // TODO: this used to work -- determine best way to catch
-    // errors in-app and keep logging from being spit out of dbclient
-    // connections[role].setLogger({ console: false });
-
     var boundClient = {};
 
     var modules = {

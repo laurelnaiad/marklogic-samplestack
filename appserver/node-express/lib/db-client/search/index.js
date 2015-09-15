@@ -18,6 +18,15 @@ var _ = require('lodash');
 
 var moment = require('moment-timezone');
 
+/**
+ * The search function that transforms a search spec into a valid MarkLogic
+ * Node.js API call to MarkLogic server.  Handles shadow search, directory
+ * queries, and date bucketing.
+ *
+ * @param  {Object} spec The search spec.
+ * @return {Object} The Node.js API query response object, with some
+ * transormations to that add content and snippets.
+ */
 var search = function (spec) {
   var query = spec;
 

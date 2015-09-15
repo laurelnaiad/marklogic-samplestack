@@ -28,10 +28,18 @@ var util = require('util');
 var dbClient = libRequire('db-client');
 // var mon = libRequire('monitoring');
 
-// TODO: serialize to-from server
 var users = {};
 
-
+/**
+ * If the CSRF has a bad token, ask the next route to handle the error.
+ * Then error out with a 400 error and error object stating the
+ * token is invalid.
+ *
+ * @param {Object}   err
+ * @param {Object}   req
+ * @param {Object}   res
+ * @param {Function} next
+ */
 var handleCsrfError = function (err, req, res, next) {
   if (err.code !== 'EBADCSRFTOKEN') {
     return next(err);
@@ -39,10 +47,6 @@ var handleCsrfError = function (err, req, res, next) {
   res.status(400).send({error: 'Invalid CSRF token.'});
 };
 
-/**
- * Error handlers associated with this module.
- * @type {Array}
- */
 /**
  * If enabled, generates a CSRF token, stores it to the session (TODO), and
  * sets the response HEADER.
@@ -94,6 +98,12 @@ var checkCsrfHeader = function (req, res, next) {
   }
 };
 
+/**
+ * Sets the db client based on the user with the requested role.
+ *
+ * @param {Object}   role
+ * @param {Object}   req
+ */
 var useRole = function (role, req) {
   req.role = role;
   var user = options.rolesMap[role].dbUser;
@@ -103,6 +113,15 @@ var useRole = function (role, req) {
 
 };
 
+/**
+ * Choose and setup the db client based on the role(s) passed in.  At a minimum,
+ * they will get the default role.
+ *
+ * @param {Array}    roles
+ * @param {Object}   req
+ * @param {Object}   res
+ * @param {Function} next
+ */
 var pickRole = function (roles, req, res, next) {
   // a request is made by someone with roles.
   // the fallback role is "default", so we tack that on to the end of
@@ -143,6 +162,13 @@ var pickRole = function (roles, req, res, next) {
   }
 };
 
+/**
+ * Create an object for the creation of a session through Express and for
+ * logging into LDAP.
+ *
+ * @param {Object}  app Express app
+ * @return {Object} Return has function properties createSession & loginSession.
+ */
 var configurePassport = function (app) {
   var ldapOptions = options.ldap;
 
@@ -245,23 +271,20 @@ module.exports = function (app) {
 
   app.use(handleCsrfError);
 
-  // TEMPORARY
-  // var dbClient = libRequire('db-client');
-  // var mockContributor = libRequire('mocks/joeSessionMock');
-
   return {
-    // associateBestRole: function (roles, req, res, next) {
-    //   var db = dbClient('samplestack-contributor', 'sc-pass');
-    //   req.db = db;
-    //   req.session = {
-    //     contributor: mockContributor
-    //   };
-    //   next();
-    // },
 
+    /**
+     * Passport Create session.
+     */
     createSession: sessions.createSession,
 
-
+    /**
+     * Try to revive a session from cookies.
+     *
+     * @param {Object}   req
+     * @param {Object}   res
+     * @param {Function} next
+     */
     tryReviveSession: function (req, res, next) {
       // is the request purporting to have a session?
       // if so, it should have a csrf ID, in which case we will try reviving
@@ -285,6 +308,13 @@ module.exports = function (app) {
       }
     },
 
+    /**
+     * Login to LDAP
+     *
+     * @param {Object}   req
+     * @param {Object}   res
+     * @param {Function} next
+     */
     login: function (req, res, next) {
       async.waterfall([
         checkCsrfHeader.bind(app, req, res),
@@ -292,8 +322,20 @@ module.exports = function (app) {
       ], next);
     },
 
+    /**
+     * See pickRole documentation
+     */
     associateBestRole: pickRole,
 
+    /**
+     * Logout of LDAP.  Remove users from the stored users object.
+     * Trigger an express logout & if it still exists, destroy the session.
+     * If no session found, send status 454.
+     *
+     * @param {Object}   req
+     * @param {Object}   res
+     * @param {Function} next
+     */
     logout: function (req, res, next) {
       try {
         if (!req.session) {

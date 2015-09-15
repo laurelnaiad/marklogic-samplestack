@@ -32,6 +32,9 @@ module.exports = function (app, mw) {
   //   }
   // ]);
 
+  /**
+   * GET Contributor by ID route
+   */
   app.get('/v1/contributors/:id', [
     function (req, res, next) {
       mw.auth.tryReviveSession(req, res, next);
