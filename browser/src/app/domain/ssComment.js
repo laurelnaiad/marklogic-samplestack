@@ -25,7 +25,12 @@ define([
    * @requires mlSchema
    *
    * @description
-   * TBD
+   * Implements comment operations on questions/answers for
+   * the Samplestack application (as {@link SsCommentObject}).
+   *
+   * `ssComment` is a derivation of {@link mlModelBase},
+   * customized to be able to handle comment operations.
+   *
    */
 
   module.factory('ssComment', [

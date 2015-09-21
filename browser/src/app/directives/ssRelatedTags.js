@@ -16,7 +16,10 @@ define([
    *
    * | Variable  | Type | Details |
    * |--|--|--|
-   * | `foo`  | {@type function}  | Description of foo. |
+   * | `relatedTags`  | {@type Array}  | Array of related tags found in the tags search. |
+   * | `loading`  | {@type Boolean}  | Flag tracking whether or not the tag search is loading the results. |
+   * | `show`  | {@type function}  | Populate and show related-tag popup. Uses ssTagsSearch to retrieve tag data. |
+   * | `selectRelated`  | {@type function(string)}  | Set clicked tag as only tag in criteria then initiate new search.  @param {object} selTag Selected tag object. |
    */
 
   /* jshint ignore:end */
@@ -41,10 +44,6 @@ define([
           scope.relatedTags = null;
           scope.loading = true;
 
-          /**
-          * Populate and show related-tag popup. Uses ssTagsSearch to
-          * retrieve tag data.
-          */
           scope.show = function () {
 
             // Remove any tag constraint values, we don't want those
@@ -76,10 +75,6 @@ define([
             });
           };
 
-          /**
-          * Set clicked tag as only tag in criteria then initiate new search.
-          * @param {object} selTag Selected tag object.
-          */
           scope.selectRelated = function (selTag) {
             scope.criteria.constraints.tags.values = [selTag.name];
             scope.$emit('criteriaChange');

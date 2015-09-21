@@ -27,7 +27,12 @@ define([
    * @requires ssContributor
    *
    * @description
-   * TBD
+   * Implements session handling for the Samplestack application (as
+   * {@link SsSessionObject}).
+   *
+   * `ssSession` is a derivation of {@link mlSession},
+   * customized for the specifics of Samplestack.
+   *
    */
 
   module.factory('ssSession', [

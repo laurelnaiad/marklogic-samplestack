@@ -49,9 +49,9 @@ define(['app/module'], function (module) {
    * | `highchartsConfig`  | {@type object}  | Configuration for the highcharts object. |
    * | `chart` | {@type object} | Reference to the actual Highcharts chart |
    * | `store.session`  | {@link ssSession}  | As provided by $rootScope, provides session information. |
-   * | `dateStartOptions`  | {@type ojbect}  | Configuration for date start picker |
-   * | `dateEndOptions`  | {@type ojbect}  | Configuration for date end picker |
-   * | `pickerOpen` | {@type function(string)}  | Opens one or the other date picker as specified by the parameter. |
+   * | `dateStartOptions`  | {@type object}  | Configuration for date start picker |
+   * | `dateEndOptions`  | {@type object}  | Configuration for date end picker |
+   * | `pickerOpen` | {@type function(object, string)}  | Opens one or the other date picker as specified by the parameter. |
    * | `applyPickerDates`  | {@type function}  | Applies the values in the date pickers to the relevant properties of the search constraints, and if they have been modified, emits `criteriaChange` |
    * | `dateStartPlaceholder` | {@type string}  | Formatted representation of the first date found (shadowed) search results to use as placeholder in the dateStart picker. |
    * | `dateEndPlaceholder` | {@type string}  | Formatted representation of the late date found (shadowed) search results to use as placeholder in the dateEnd picker. |

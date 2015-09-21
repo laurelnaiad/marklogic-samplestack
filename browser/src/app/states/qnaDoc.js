@@ -184,6 +184,14 @@ define(['app/module'], function (module) {
         }
       };
 
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.tooltipUpFor
+      * @description Returns tooltip for the up vote button.
+      * @param {object} obj A ssQnaDoc object or ssAnswer object
+      * @returns {string} relevant tooltip text, depending on app or
+      * object state.
+      */
       $scope.tooltipUpFor = function (contentObj) {
         if ($scope.canVoteOn(contentObj)) {
           return 'Vote this up';
@@ -198,6 +206,14 @@ define(['app/module'], function (module) {
         }
       };
 
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.tooltipDownFor
+      * @description Returns tooltip for the down vote button.
+      * @param {object} obj A ssQnaDoc object or ssAnswer object
+      * @returns {string} relevant tooltip text, depending on app or
+      * object state.
+      */
       $scope.tooltipDownFor = function (contentObj) {
         if ($scope.canVoteOn(contentObj)) {
           return 'Vote this down';
@@ -262,7 +278,12 @@ define(['app/module'], function (module) {
         return marked(text);
       };
 
-      $scope.setQueryText = function (text) {
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.setQueryText
+      * @description Submits a search with the current search bar text.
+      */
+      $scope.setQueryText = function () {
         appRouting.go('^.explore', { q: $scope.searchbarText });
       };
 
@@ -321,6 +342,7 @@ define(['app/module'], function (module) {
       * @ngdoc method
       * @name qnaDocCtlr#$scope.saveAnswerComment
       * @description Saves an answer comment if valid.
+      * @param {ssAnswer} answer Answer with draft comment to be saved.
       */
       $scope.saveAnswerComment = function (answer) {
         var comment = answer.comments.draft;
@@ -342,6 +364,13 @@ define(['app/module'], function (module) {
         }
       };
 
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.updateReputation
+      * @description Updates the logged in user's reputation.
+      * @param {ssQnaDoc} item qnaDoc to reference to see if we need to
+      * update the current logged in user's reputation.
+      */
       $scope.updateReputation = function (item) {
         if (item.owner.id === $scope.store.session.id) {
           // be careful here -- the existing item is dead, having been
@@ -359,6 +388,14 @@ define(['app/module'], function (module) {
         }
       };
 
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.vote
+      * @description Perform the vote operation (up/down) on the clicked item.
+      * @param {integer} val Vote value indicating and up (1) or down (-1) vote.
+      * @param {ssQnaDoc} item Document to reference to see if we need to
+      * update the current logged in user's reputation.
+      */
       $scope.vote = function (val, item) {
         if ($scope.canVoteOn(item)) {
           item.vote(val, $scope.store.session.userInfo)
@@ -368,6 +405,12 @@ define(['app/module'], function (module) {
         }
       };
 
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.accept
+      * @description Accepts the answer and updates user reputation.
+      * @param {ssAnswer} answer Answer to be accepted.
+      */
       $scope.accept = function (answer) {
         answer.accept()
         .then(function () {
@@ -382,6 +425,12 @@ define(['app/module'], function (module) {
 
       init();
 
+      /**
+      * @ngdoc method
+      * @name qnaDocCtlr#$scope.addComment
+      * @description Adds a comment to the question in the document.
+      * @param {object} contentObj A ssQnaDoc object to have a comment added to.
+      */
       $scope.addComment = function (contentObj) {
         contentObj.comments.draft = ssComment.create({}, contentObj);
       };

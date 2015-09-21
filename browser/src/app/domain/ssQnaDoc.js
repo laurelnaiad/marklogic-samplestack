@@ -25,7 +25,11 @@ define([
    * @requires mlSchema
    *
    * @description
-   * TBD
+   * Implements qna document operations on for the Samplestack application.
+   *
+   * `ssQnaDoc` is a derivation of {@link mlModelBase},
+   * customized to be able to handle qna document operations.
+   *
    */
 
   module.factory('ssQnaDoc', [

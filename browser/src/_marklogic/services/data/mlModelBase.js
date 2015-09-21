@@ -148,6 +148,13 @@ define(['_marklogic/module'], function (module) {
         return '/v1';
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.attachScope
+       * @description Attaches the current object to the scope.
+       * @param {object} scope The scope.
+       * @param {string} as Scope name to attach to.
+       */
       MlModel.prototype.attachScope = function (scope, as) {
         var self = this;
         scope[as] = self;
@@ -161,10 +168,22 @@ define(['_marklogic/module'], function (module) {
         self.testValidity();
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getResourceId
+       * @description Get the schema resource's ID.
+       * @return {string} Schema resource's ID.
+       */
       MlModel.prototype.getResourceId = function () {
         return this.$mlSpec.schema.id;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getResourceName
+       * @description Utility function to get the resource's name.
+       * @return {string} Schema resource's name.
+       */
       MlModel.prototype.getResourceName = function (httpMethod) {
         var resId = this.getResourceId();
         return resId.substring(resId.lastIndexOf('#') + 1);
@@ -174,6 +193,9 @@ define(['_marklogic/module'], function (module) {
         return undefined;
       };
 
+      /**
+       * onResponse functions overwritten/implemented by child objects.
+       */
       MlModel.prototype.onResponseGET = function (data) {
         this.assignData(data);
       };
@@ -220,6 +242,15 @@ define(['_marklogic/module'], function (module) {
         this.testValidity(); // Based on schema, sets $ml validity flags
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.onHttpResponse
+       * @description When an http request responds, trigger the proper response
+       * function depending on the method and test the validity of the response.
+       * @param {object} data Data to merge.
+       * @param {object} httpMethod Http method name.
+       * @param {object} additionalResolves Additional data.
+       */
       MlModel.prototype.onHttpResponse = function (
         data, httpMethod, additionalResolves
       ) {
@@ -244,15 +275,27 @@ define(['_marklogic/module'], function (module) {
         this.testValidity();
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.specFromArguments
+       * @description Maps the first param to the value of an object param "id".
+       * Most override if anything other wanting the first parameter to be
+       * mapped to ID.
+       * @return {object} Object with property "id" set to first argument.
+       */
       MlModel.prototype.specFromArguments = function () {
-        // most override if anything other wanting the first parameter
-        // to be mapped to id
         return {
           id: arguments[0]
         };
       };
 
-      MlModel.prototype.getEndpointIdentifier = function (httpMethod) {
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getEndpointIdentifier
+       * @description Construct endpoint ID.
+       * @return {string} Endpoint ID.
+       */
+      MlModel.prototype.getEndpointIdentifier = function () {
         return '/' + this.id;
       };
 
@@ -279,6 +322,10 @@ define(['_marklogic/module'], function (module) {
         }
       };
 
+
+      /**
+       * getHttpData functions overwritten/implemented by child objects.
+       */
       MlModel.prototype.getHttpDataPUT = function () {
         return this;
       };
@@ -319,10 +366,25 @@ define(['_marklogic/module'], function (module) {
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getHttpMethodOverride
+       * @description Returns passed HTTP method.
+       * @param {string} httpMethod HTTP method.
+       * @return {string} HTTP method.
+       */
       MlModel.prototype.getHttpMethodOverride = function (httpMethod) {
         return httpMethod;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getHttpConfig
+       * @description Returns a HTTP config object with properties for url,
+       * method, data and headers, if they exist.
+       * @param {string} httpMethod HTTP method.
+       * @return {object} Config object.
+       */
       MlModel.prototype.getHttpConfig = function (httpMethod) {
         var config = {
           url: this.getHttpUrl(httpMethod),
@@ -355,6 +417,14 @@ define(['_marklogic/module'], function (module) {
         return newObj;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.validateObject
+       * @description Attempts to validate the schema for an object.
+       * @param {string} obj Object to validate against the schema.
+       * @return {object} validation results as specified by the
+       * jsonschema library.
+       */
       MlModel.prototype.validateObject = function (obj) {
         return mlSchema.validate(
           angular.fromJson(angular.toJson(obj)),
@@ -362,6 +432,11 @@ define(['_marklogic/module'], function (module) {
         );
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.testValidity
+       * @description Test the validity of this object.
+       */
       MlModel.prototype.testValidity = function () {
         this.$ml.validation = this.validateObject(this);
         this.$ml.invalid = !(
@@ -369,6 +444,12 @@ define(['_marklogic/module'], function (module) {
         );
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.sortedValidationErrors
+       * @description Returns the array of validation errors, sorted.
+       * @return {Array} Vaidation errors.
+       */
       MlModel.prototype.sortedValidationErrors = function () {
         var errors = {};
         // if (this.$ml.validation.errors) {
@@ -387,23 +468,57 @@ define(['_marklogic/module'], function (module) {
         return errors;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.errors
+       * @description Returns the array of validation errors for a particular
+       * property.
+       * @param {string} property Object property.
+       * @return {Array} Vaidation errors.
+       */
       MlModel.prototype.errors = function (property) {
         var errs = this.sortedValidationErrors();
         return errs[property] || [];
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.propertyValid
+       * @description Whether a property is valid or not.
+       * @param {string} property Object property.
+       * @return {Boolean} Is the property valid?
+       */
       MlModel.prototype.propertyValid = function (property) {
         return this.errors(property).length === 0;
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.getStateParams
+       * @description Requires override to use.
+       */
       MlModel.prototype.getStateParams = function () {
         throw new Error('not implemented'); // override this to use it
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.assignStateParams
+       * @description Requires override to use.
+       */
       MlModel.prototype.assignStateParams = function (stateParams) {
         throw new Error('not implemented');  // override this to use it
       };
 
+      /**
+       * @ngdoc method
+       * @name MlModel#prototype.propertyValid
+       * @description Generalized function for handling http request generated
+       * Promises.  Timeout handling + proper response routing included.
+       * @param {string} httpMethod HTTP method.
+       * @param {Promise} promises HTTP method.
+       * @return {Object} MlModel object.
+       */
       MlModel.prototype.http = function (httpMethod, promises) {
         var self = this;
         if (!promises) {

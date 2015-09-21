@@ -33,6 +33,7 @@ define([
    *
    * It is also used by {@link ssSession} to expose information
    * about the currently logged-in user.
+   *
    */
 
   module.factory('ssContributor', [

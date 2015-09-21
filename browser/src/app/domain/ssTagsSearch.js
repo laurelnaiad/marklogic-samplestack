@@ -27,7 +27,10 @@ define([
    *
    * @description
    * Implements search over tags on top of an ssSearch for the Samplestack
-   * application (as {@link SsTagsSreachObject}).
+   * application (as {@link SsTagsSearchObject}).
+   *
+   * `ssTagsSearch` is a derivation of {@link ssSearch},
+   * customized for the specifics of Samplestack.
    *
    */
 

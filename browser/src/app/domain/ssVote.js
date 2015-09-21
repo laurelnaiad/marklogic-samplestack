@@ -25,7 +25,11 @@ define([
    * @requires mlSchema
    *
    * @description
-   * TODO: This component is not yet implemented.
+   * Implements voting operations on for the Samplestack application.
+   *
+   * `ssVote` is a derivation of {@link mlModelBase},
+   * customized to be able to fetch contributor information.
+   *
    */
 
   module.factory('ssVote', [

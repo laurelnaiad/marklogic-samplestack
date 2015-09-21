@@ -25,7 +25,11 @@ define([
    * @requires mlSchema
    *
    * @description
-   * TODO: This component is not yet implemented.
+   * Implements accepted answer operations for the Samplestack application.
+   *
+   * `ssAnswer` is a derivation of {@link mlModelBase},
+   * customized to be able to handle accepted answer operations.
+   *
    */
 
   module.factory('ssAcceptedAnswer', [
@@ -35,6 +39,13 @@ define([
       mlModelBase, mlSchema
     ) {
 
+      /**
+       * @ngdoc method
+       * @name ssAcceptedAnswer#constructor
+       * @param {object} spec Data used to populate
+       * the new instance.
+       * @description Constructor. Uses default implementation.
+       */
       var ssAcceptedAnswer = function (spec, parent) {
         mlModelBase.object.call(this, spec, parent);
       };
@@ -47,10 +58,28 @@ define([
         schema: mlSchema.addSchema(schema)
       };
 
+      /**
+       * @ngdoc method
+       * @name ssAcceptedAnswer#prototype.getResourceName
+       * @description Returns the name associated with the REST endpoint used
+       * to operate on an answer.
+       * @return {string} Route name fragment.
+       */
       ssAcceptedAnswer.prototype.getResourceName = function (httpMethod) {
         return 'accept';
       };
 
+      /**
+       * @ngdoc method
+       * @name ssAcceptedAnswer#prototype.getHttpUrl
+       * @description Returns URL string for accessing REST endpoint based
+       * on HTTP method. Overrides mlModelBase method since the referencing
+       * the parent object in the URL is required. Ends up posting to
+       * /v1/questions/{questionid}/answers (given current
+       * parent resource name). This could be genericized as a means to deal
+       * with posting of nested resources generally.
+       * @param {string} httpMethod HTTP method.
+       */
       ssAcceptedAnswer.prototype.getHttpUrl = function (httpMethod) {
         switch (httpMethod) {
           case 'POST':
@@ -68,6 +97,13 @@ define([
         }
       };
 
+      /**
+       * @ngdoc method
+       * @name ssAcceptedAnswer#prototype.onResponsePOST
+       * @description Overrides mlModelBase method. Since endpoint returns
+       * an entire QnaDoc object, the answer's parent method is called.
+       * @param {string} data Response data
+       */
       ssAcceptedAnswer.prototype.onResponsePOST = function (data) {
         return this.$ml.parent.onResponsePOST(data);
       };

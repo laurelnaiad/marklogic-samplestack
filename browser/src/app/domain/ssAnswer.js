@@ -25,7 +25,12 @@ define([
    * @requires mlSchema
    *
    * @description
-   * TBD
+   * Implements answer operations for the Samplestack application
+   * (as {@link SsAnswerObject}).
+   *
+   * `ssAnswer` is a derivation of {@link mlModelBase},
+   * customized to be able to handle answer operations.
+   *
    */
 
   module.factory('ssAnswer', [
@@ -58,9 +63,14 @@ define([
       var SsAnswerObject = function (spec, parent) {
         mlModelBase.object.call(this, spec, parent);
       };
+
       SsAnswerObject.prototype = Object.create(
         mlModelBase.object.prototype
       );
+
+      SsAnswerObject.prototype.$mlSpec = {
+        schema: mlSchema.addSchema(schema)
+      };
 
       // Define hasVotedOn property as the return value of the parent
       // document's hasVoted method.
@@ -115,10 +125,6 @@ define([
         this.$ml.parent.setVoted(this.id);
       };
 
-      SsAnswerObject.prototype.$mlSpec = {
-        schema: mlSchema.addSchema(schema)
-      };
-
       /**
        * @ngdoc method
        * @name SsAnswerObject#prototype.mergeData
@@ -140,6 +146,13 @@ define([
         this.testValidity();
       };
 
+      /**
+       * @ngdoc method
+       * @name SsAnswerObject#prototype.getResourceName
+       * @description Returns the name associated with the REST endpoint used
+       * to operate on an answer.
+       * @return {string} Route name fragment.
+       */
       SsAnswerObject.prototype.getResourceName = function (httpMethod) {
         return 'answers';
       };
