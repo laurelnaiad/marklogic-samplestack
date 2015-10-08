@@ -17,6 +17,7 @@
 var version = function () {
   var matched = process.version.match(/^v\d+\.(\d+)\.(\d+)$/);
   return {
+    major: parseInt(matched[0]),
     minor: parseInt(matched[1]),
     revision: parseInt(matched[2])
   };
@@ -24,7 +25,7 @@ var version = function () {
 
 var v = version();
 
-if ((v.minor == 10 && v.revision < 33) || v.minor < 10) {
+if (v.major < 4 && ((v.minor === 10 && v.revision < 33) || v.minor < 10)) {
   process.stderr.write(
     'Unsupported Node.js version (' + process.version + ').\n\n' +
         'Please install Node.js 0.10.20 or newer'
