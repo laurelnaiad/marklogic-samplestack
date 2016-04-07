@@ -99,6 +99,51 @@ define(['app/module'], function (module) {
 
       /**
        * @ngdoc method
+       * @name allTagsDialogCtlr#$scope.search
+       * @description
+       * Performs a search for tags based on page and sort criteria.
+       * Instantiates a ssTagsSearch object. Upon successful search, the
+       * method populates a $scope.pagedTagsByColumn array of arrays which
+       * organizes tags for display (an array of tags for each column).
+       */
+
+      var search = function () {
+        var tagsSearch = ssTagsSearch.create({
+          criteria: mlUtil.merge(
+            _.clone(criteria),
+            {
+              tagsQuery: {
+                forTag: $scope.selected,
+                start: 1 + ($scope.currentPage - 1) * $scope.pageSize,
+                pageLength: $scope.pageSize,
+                sort: $scope.selectedSort.value
+              }
+            }
+          )
+        });
+
+        tagsSearch.post().$ml.waiting.then(function () {
+          $scope.tagsCount = tagsSearch.results.count;
+          $scope.asManyAs = tagsSearch.results.asManyAs;
+          $scope.totalPages = Math.ceil(
+            (tagsSearch.tagsCount || $scope.asManyAs) / $scope.pageSize
+          );
+          $scope.pagedTagsByColumn = []; // array of arrays
+          while (
+            tagsSearch.results.items.length &&
+            $scope.pagedTagsByColumn.length < numCols
+          ) {
+            // an array of tags in each column array
+            $scope.pagedTagsByColumn.push(
+              tagsSearch.results.items.splice(0, $scope.tagsPerCol)
+            );
+          }
+        });
+
+      };
+
+      /**
+       * @ngdoc method
        * @name allTagsDialogCtlr#$scope.updatePage
        * @description
        * Handle pagination changes.
@@ -225,50 +270,6 @@ define(['app/module'], function (module) {
         search();
       };
 
-      /**
-       * @ngdoc method
-       * @name allTagsDialogCtlr#$scope.search
-       * @description
-       * Performs a search for tags based on page and sort criteria.
-       * Instantiates a ssTagsSearch object. Upon successful search, the
-       * method populates a $scope.pagedTagsByColumn array of arrays which
-       * organizes tags for display (an array of tags for each column).
-       */
-
-      var search = function () {
-        var tagsSearch = ssTagsSearch.create({
-          criteria: mlUtil.merge(
-            _.clone(criteria),
-            {
-              tagsQuery: {
-                forTag: $scope.selected,
-                start: 1 + ($scope.currentPage - 1) * $scope.pageSize,
-                pageLength: $scope.pageSize,
-                sort: $scope.selectedSort.value
-              }
-            }
-          )
-        });
-
-        tagsSearch.post().$ml.waiting.then(function () {
-          $scope.tagsCount = tagsSearch.results.count;
-          $scope.asManyAs = tagsSearch.results.asManyAs;
-          $scope.totalPages = Math.ceil(
-            (tagsSearch.tagsCount || $scope.asManyAs) / $scope.pageSize
-          );
-          $scope.pagedTagsByColumn = []; // array of arrays
-          while (
-            tagsSearch.results.items.length &&
-            $scope.pagedTagsByColumn.length < numCols
-          ) {
-            // an array of tags in each column array
-            $scope.pagedTagsByColumn.push(
-              tagsSearch.results.items.splice(0, $scope.tagsPerCol)
-            );
-          }
-        });
-
-      };
 
       // perform the initial search
       search();

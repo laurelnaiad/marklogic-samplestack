@@ -224,6 +224,95 @@ define([
         };
       };
 
+      var getPageForStart = function (self, override) {
+        return window.Math.ceil(
+          (override || self.criteria.start) / self.$ml.pageLength
+        );
+      };
+
+      var getStartForPage = function (self, override) {
+        return  1 +
+            ((override || self.getCurrentPage) - 1) * self.getPageLength();
+      };
+
+      var getPageCalcs = function (self) {
+        var info = {};
+        info.pageLength = self.$ml.pageLength;
+        if (!self.results || self.results.count === 0) {
+          return info;
+        }
+        if (self.results.start > self.results.total) {
+          return info;
+        }
+
+        info.start = self.results.start;
+        info.total = self.results.total;
+
+        info.currentPage = window.Math.ceil(info.start / info.pageLength);
+        info.pageCount = window.Math.ceil(info.total / info.pageLength);
+        info.isLastPage = info.currentPage === info.pageCount;
+        info.isFirstPage = info.currentPage === 1;
+        info.nextPageStart = info.isLastPage ?
+            null :
+            1 + info.pageLength * (info.currentPage + 1);
+        info.prevPageStart = info.isFirstPage ?
+            null :
+            1 + info.pageLength * (info.currentPage - 1);
+
+        return info;
+      };
+
+      var constraintNonEmpty = function (constraint) {
+        var valueProp = constraint.values || constraint.value;
+        if (valueProp) {
+          if (angular.isArray(valueProp)) {
+            if (valueProp.length) {
+              return true;
+            }
+          }
+          else {
+            if (valueProp || valueProp === 0) {
+              return true;
+            }
+          }
+        }
+        else {
+          return false;
+        }
+      };
+
+      var makeShadowSearches = function (
+        self,
+        service
+      ) {
+        // TODO: this implementation means that, for instance, the date
+        // range shadow still bears the impact of the tags criteria --
+        // is this what we want? I've heard tell that each constraint might
+        // want a shadow that is *NOT* impacted by other constraints...
+        var shadowSearches = {};
+        angular.forEach(self.facets, function (facet, name) {
+          if (facet.shadowConstraints) {
+            var facetWasFiltered = false;
+            var spec = angular.copy(self.criteria);
+            angular.forEach(
+              facet.shadowConstraints,
+              function (constraint) {
+              if (constraintNonEmpty(spec.constraints[constraint])) {
+                facetWasFiltered = facetWasFiltered || true;
+              }
+              delete spec.constraints[constraint].values;
+              delete spec.constraints[constraint].value;
+            });
+            if (facetWasFiltered) {
+              shadowSearches[name] = service.create({
+                criteria: spec,
+                shadow: name
+              });
+            }
+          }
+        });
+        return shadowSearches;
+      };
 
       /**
        * @ngdoc type
@@ -689,95 +778,7 @@ define([
         this.setCurrentPage(getPageForStart(this, this.results.total));
       };
 
-      var getPageForStart = function (self, override) {
-        return window.Math.ceil(
-          (override || self.criteria.start) / self.$ml.pageLength
-        );
-      };
 
-      var getStartForPage = function (self, override) {
-        return  1 +
-            ((override || self.getCurrentPage) - 1) * self.getPageLength();
-      };
-
-      var getPageCalcs = function (self) {
-        var info = {};
-        info.pageLength = self.$ml.pageLength;
-        if (!self.results || self.results.count === 0) {
-          return info;
-        }
-        if (self.results.start > self.results.total) {
-          return info;
-        }
-
-        info.start = self.results.start;
-        info.total = self.results.total;
-
-        info.currentPage = window.Math.ceil(info.start / info.pageLength);
-        info.pageCount = window.Math.ceil(info.total / info.pageLength);
-        info.isLastPage = info.currentPage === info.pageCount;
-        info.isFirstPage = info.currentPage === 1;
-        info.nextPageStart = info.isLastPage ?
-            null :
-            1 + info.pageLength * (info.currentPage + 1);
-        info.prevPageStart = info.isFirstPage ?
-            null :
-            1 + info.pageLength * (info.currentPage - 1);
-
-        return info;
-      };
-
-      var constraintNonEmpty = function (constraint) {
-        var valueProp = constraint.values || constraint.value;
-        if (valueProp) {
-          if (angular.isArray(valueProp)) {
-            if (valueProp.length) {
-              return true;
-            }
-          }
-          else {
-            if (valueProp || valueProp === 0) {
-              return true;
-            }
-          }
-        }
-        else {
-          return false;
-        }
-      };
-
-      var makeShadowSearches = function (
-        self,
-        service
-      ) {
-        // TODO: this implementation means that, for instance, the date
-        // range shadow still bears the impact of the tags criteria --
-        // is this what we want? I've heard tell that each constraint might
-        // want a shadow that is *NOT* impacted by other constraints...
-        var shadowSearches = {};
-        angular.forEach(self.facets, function (facet, name) {
-          if (facet.shadowConstraints) {
-            var facetWasFiltered = false;
-            var spec = angular.copy(self.criteria);
-            angular.forEach(
-              facet.shadowConstraints,
-              function (constraint) {
-              if (constraintNonEmpty(spec.constraints[constraint])) {
-                facetWasFiltered = facetWasFiltered || true;
-              }
-              delete spec.constraints[constraint].values;
-              delete spec.constraints[constraint].value;
-            });
-            if (facetWasFiltered) {
-              shadowSearches[name] = service.create({
-                criteria: spec,
-                shadow: name
-              });
-            }
-          }
-        });
-        return shadowSearches;
-      };
 
       // Generate array that pagination can repeat over
       // @see http://stackoverflow.com/questions/16824853

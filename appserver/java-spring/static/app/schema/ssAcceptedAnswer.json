@@ -1,0 +1,7 @@
+{
+  "id": "http://marklogic.com/samplestack#accept",
+  "required": [],
+  "properties": {
+    "upDown": { }
+  }
+}

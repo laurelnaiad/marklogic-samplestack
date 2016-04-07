@@ -1,0 +1,13 @@
+{
+  "id": "http://marklogic.com/samplestack#session",
+  "allOf": [
+    {
+      "$ref": "http://marklogic.com/#session"
+    }
+  ],
+  "properties": {
+    "userInfo": {
+      "$ref": "http://marklogic.com/samplestack#contributor"
+    }
+  }
+}

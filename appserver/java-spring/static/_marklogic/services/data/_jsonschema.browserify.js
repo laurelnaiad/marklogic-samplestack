@@ -24,9 +24,1413 @@ define([], function () {
 
 });
 
-},{"jsonschema":9}],2:[function(require,module,exports){
+},{"jsonschema":4}],2:[function(require,module,exports){
+'use strict';
+
+var helpers = require('./helpers');
+
+/** @type ValidatorResult */
+var ValidatorResult = helpers.ValidatorResult;
+/** @type SchemaError */
+var SchemaError = helpers.SchemaError;
+
+var attribute = {};
+
+attribute.ignoreProperties = {
+  // informative properties
+  'id': true,
+  'default': true,
+  'description': true,
+  'title': true,
+  // arguments to other properties
+  'exclusiveMinimum': true,
+  'exclusiveMaximum': true,
+  'additionalItems': true,
+  // special-handled properties
+  '$schema': true,
+  '$ref': true,
+  'extends': true
+};
+
+/**
+ * @name validators
+ */
+var validators = attribute.validators = {};
+
+/**
+ * Validates whether the instance if of a certain type
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {ValidatorResult|null}
+ */
+validators.type = function validateType (instance, schema, options, ctx) {
+  // Ignore undefined instances
+  if (instance === undefined) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var types = (schema.type instanceof Array) ? schema.type : [schema.type];
+  if (!types.some(this.testType.bind(this, instance, schema, options, ctx))) {
+    var list = types.map(function (v) {
+      return v.id && ('<' + v.id + '>') || (v+'');
+    });
+    result.addError({
+      name: 'type',
+      argument: list,
+      message: "is not of a type(s) " + list,
+    });
+  }
+  return result;
+};
+
+function testSchema(instance, options, ctx, schema){
+  return this.validateSchema(instance, schema, options, ctx).valid;
+}
+
+/**
+ * Validates whether the instance matches some of the given schemas
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {ValidatorResult|null}
+ */
+validators.anyOf = function validateAnyOf (instance, schema, options, ctx) {
+  // Ignore undefined instances
+  if (instance === undefined) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!(schema.anyOf instanceof Array)){
+    throw new SchemaError("anyOf must be an array");
+  }
+  if (!schema.anyOf.some(testSchema.bind(this, instance, options, ctx))) {
+    var list = schema.anyOf.map(function (v, i) {
+      return (v.id && ('<' + v.id + '>')) || (v.title && JSON.stringify(v.title)) || (v['$ref'] && ('<' + v['$ref'] + '>')) || '[subschema '+i+']';
+    });
+    result.addError({
+      name: 'anyOf',
+      argument: list,
+      message: "is not any of " + list.join(','),
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance matches every given schema
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null}
+ */
+validators.allOf = function validateAllOf (instance, schema, options, ctx) {
+  // Ignore undefined instances
+  if (instance === undefined) {
+    return null;
+  }
+  if (!(schema.allOf instanceof Array)){
+    throw new SchemaError("allOf must be an array");
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var self = this;
+  schema.allOf.forEach(function(v, i){
+    var valid = self.validateSchema(instance, v, options, ctx);
+    if(!valid.valid){
+      var msg = (v.id && ('<' + v.id + '>')) || (v.title && JSON.stringify(v.title)) || (v['$ref'] && ('<' + v['$ref'] + '>')) || '[subschema '+i+']';
+      result.addError({
+        name: 'allOf',
+        argument: { id: msg, length: valid.errors.length, valid: valid },
+        message: 'does not match allOf schema ' + msg + ' with ' + valid.errors.length + ' error[s]:',
+      });
+      result.importErrors(valid);
+    }
+  });
+  return result;
+};
+
+/**
+ * Validates whether the instance matches exactly one of the given schemas
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null}
+ */
+validators.oneOf = function validateOneOf (instance, schema, options, ctx) {
+  // Ignore undefined instances
+  if (instance === undefined) {
+    return null;
+  }
+  if (!(schema.oneOf instanceof Array)){
+    throw new SchemaError("oneOf must be an array");
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var count = schema.oneOf.filter(testSchema.bind(this, instance, options, ctx)).length;
+  var list = schema.oneOf.map(function (v, i) {
+    return (v.id && ('<' + v.id + '>')) || (v.title && JSON.stringify(v.title)) || (v['$ref'] && ('<' + v['$ref'] + '>')) || '[subschema '+i+']';
+  });
+  if (count!==1) {
+    result.addError({
+      name: 'oneOf',
+      argument: list,
+      message: "is not exactly one from " + list.join(','),
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates properties
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null|ValidatorResult}
+ */
+validators.properties = function validateProperties (instance, schema, options, ctx) {
+  if(instance === undefined || !(instance instanceof Object)) return;
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var properties = schema.properties || {};
+  for (var property in properties) {
+    var prop = (instance || undefined) && instance[property];
+    var res = this.validateSchema(prop, properties[property], options, ctx.makeChild(properties[property], property));
+    if(res.instance !== result.instance[property]) result.instance[property] = res.instance;
+    result.importErrors(res);
+  }
+  return result;
+};
+
+/**
+ * Test a specific property within in instance against the additionalProperties schema attribute
+ * This ignores properties with definitions in the properties schema attribute, but no other attributes.
+ * If too many more types of property-existance tests pop up they may need their own class of tests (like `type` has)
+ * @private
+ * @return {boolean}
+ */
+function testAdditionalProperty (instance, schema, options, ctx, property, result) {
+  if (schema.properties && schema.properties[property] !== undefined) {
+    return;
+  }
+  if (schema.additionalProperties === false) {
+    result.addError({
+      name: 'additionalProperties',
+      argument: property,
+      message: "additionalProperty " + JSON.stringify(property) + " exists in instance when not allowed",
+    });
+  } else {
+    var additionalProperties = schema.additionalProperties || {};
+    var res = this.validateSchema(instance[property], additionalProperties, options, ctx.makeChild(additionalProperties, property));
+    if(res.instance !== result.instance[property]) result.instance[property] = res.instance;
+    result.importErrors(res);
+  }
+}
+
+/**
+ * Validates patternProperties
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null|ValidatorResult}
+ */
+validators.patternProperties = function validatePatternProperties (instance, schema, options, ctx) {
+  if(instance === undefined) return;
+  if(!this.types.object(instance)) return;
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var patternProperties = schema.patternProperties || {};
+
+  for (var property in instance) {
+    var test = true;
+    for (var pattern in patternProperties) {
+      var expr = new RegExp(pattern);
+      if (!expr.test(property)) {
+        continue;
+      }
+      test = false;
+      var res = this.validateSchema(instance[property], patternProperties[pattern], options, ctx.makeChild(patternProperties[pattern], property));
+      if(res.instance !== result.instance[property]) result.instance[property] = res.instance;
+      result.importErrors(res);
+    }
+    if (test) {
+      testAdditionalProperty.call(this, instance, schema, options, ctx, property, result);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Validates additionalProperties
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null|ValidatorResult}
+ */
+validators.additionalProperties = function validateAdditionalProperties (instance, schema, options, ctx) {
+  if(instance === undefined) return;
+  if(!this.types.object(instance)) return;
+  // if patternProperties is defined then we'll test when that one is called instead
+  if (schema.patternProperties) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  for (var property in instance) {
+    testAdditionalProperty.call(this, instance, schema, options, ctx, property, result);
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is at least of a certain length, when the instance value is a string.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.minProperties = function validateMinProperties (instance, schema, options, ctx) {
+  if (!instance || typeof instance !== 'object') {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var keys = Object.keys(instance);
+  if (!(keys.length >= schema.minProperties)) {
+    result.addError({
+      name: 'minProperties',
+      argument: schema.minProperties,
+      message: "does not meet minimum property length of " + schema.minProperties,
+    })
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is at most of a certain length, when the instance value is a string.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.maxProperties = function validateMaxProperties (instance, schema, options, ctx) {
+  if (!instance || typeof instance !== 'object') {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var keys = Object.keys(instance);
+  if (!(keys.length <= schema.maxProperties)) {
+    result.addError({
+      name: 'maxProperties',
+      argument: schema.maxProperties,
+      message: "does not meet maximum property length of " + schema.maxProperties,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates items when instance is an array
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null|ValidatorResult}
+ */
+validators.items = function validateItems (instance, schema, options, ctx) {
+  if (!(instance instanceof Array)) {
+    return null;
+  }
+  var self = this;
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (instance === undefined || !schema.items) {
+    return result;
+  }
+  instance.every(function (value, i) {
+    var items = (schema.items instanceof Array) ? (schema.items[i] || schema.additionalItems) : schema.items;
+    if (items === undefined) {
+      return true;
+    }
+    if (items === false) {
+      result.addError({
+        name: 'items',
+        message: "additionalItems not permitted",
+      });
+      return false;
+    }
+    var res = self.validateSchema(value, items, options, ctx.makeChild(items, i));
+    if(res.instance !== result.instance[i]) result.instance[i] = res.instance;
+    result.importErrors(res);
+    return true;
+  });
+  return result;
+};
+
+/**
+ * Validates minimum and exclusiveMinimum when the type of the instance value is a number.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.minimum = function validateMinimum (instance, schema, options, ctx) {
+  if (typeof instance !== 'number') {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var valid = true;
+  if (schema.exclusiveMinimum && schema.exclusiveMinimum === true) {
+    valid = instance > schema.minimum;
+  } else {
+    valid = instance >= schema.minimum;
+  }
+  if (!valid) {
+    result.addError({
+      name: 'minimum',
+      argument: schema.minimum,
+      message: "must have a minimum value of " + schema.minimum,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates maximum and exclusiveMaximum when the type of the instance value is a number.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.maximum = function validateMaximum (instance, schema, options, ctx) {
+  if (typeof instance !== 'number') {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var valid;
+  if (schema.exclusiveMaximum && schema.exclusiveMaximum === true) {
+    valid = instance < schema.maximum;
+  } else {
+    valid = instance <= schema.maximum;
+  }
+  if (!valid) {
+    result.addError({
+      name: 'maximum',
+      argument: schema.maximum,
+      message: "must have a maximum value of " + schema.maximum,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates divisibleBy when the type of the instance value is a number.
+ * Of course, this is susceptible to floating point error since it compares the floating points
+ * and not the JSON byte sequences to arbitrary precision.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.divisibleBy = function validateDivisibleBy (instance, schema, options, ctx) {
+  if (typeof instance !== 'number') {
+    return null;
+  }
+
+  if (schema.divisibleBy == 0) {
+    throw new SchemaError("divisibleBy cannot be zero");
+  }
+
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (instance / schema.divisibleBy % 1) {
+    result.addError({
+      name: 'divisibleBy',
+      argument: schema.divisibleBy,
+      message: "is not divisible by (multiple of) " + JSON.stringify(schema.divisibleBy),
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates divisibleBy when the type of the instance value is a number.
+ * Of course, this is susceptible to floating point error since it compares the floating points
+ * and not the JSON byte sequences to arbitrary precision.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.multipleOf = function validateMultipleOf (instance, schema, options, ctx) {
+  if (typeof instance !== 'number') {
+    return null;
+  }
+
+  if (schema.multipleOf == 0) {
+    throw new SchemaError("multipleOf cannot be zero");
+  }
+
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (instance / schema.multipleOf % 1) {
+    result.addError({
+      name: 'multipleOf',
+      argument:  schema.multipleOf,
+      message: "is not a multiple of (divisible by) " + JSON.stringify(schema.multipleOf),
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is present.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.required = function validateRequired (instance, schema, options, ctx) {
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (instance === undefined && schema.required === true) {
+    result.addError({
+      name: 'required',
+      message: "is required"
+    });
+  } else if (instance && typeof instance==='object' && Array.isArray(schema.required)) {
+    schema.required.forEach(function(n){
+      if(instance[n]===undefined){
+        result.addError({
+          name: 'required',
+          argument: n,
+          message: "requires property " + JSON.stringify(n),
+        });
+      }
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value matches the regular expression, when the instance value is a string.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.pattern = function validatePattern (instance, schema, options, ctx) {
+  if (typeof instance !== 'string') {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!instance.match(schema.pattern)) {
+    result.addError({
+      name: 'pattern',
+      argument: schema.pattern,
+      message: "does not match pattern " + JSON.stringify(schema.pattern),
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is of a certain defined format or a custom
+ * format.
+ * The following formats are supported for string types:
+ *   - date-time
+ *   - date
+ *   - time
+ *   - ip-address
+ *   - ipv6
+ *   - uri
+ *   - color
+ *   - host-name
+ *   - alpha
+ *   - alpha-numeric
+ *   - utc-millisec
+ * @param instance
+ * @param schema
+ * @param [options]
+ * @param [ctx]
+ * @return {String|null}
+ */
+validators.format = function validateFormat (instance, schema, options, ctx) {
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!result.disableFormat && !helpers.isFormat(instance, schema.format, this)) {
+    result.addError({
+      name: 'format',
+      argument: schema.format,
+      message: "does not conform to the " + JSON.stringify(schema.format) + " format",
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is at least of a certain length, when the instance value is a string.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.minLength = function validateMinLength (instance, schema, options, ctx) {
+  if (!(typeof instance === 'string')) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!(instance.length >= schema.minLength)) {
+    result.addError({
+      name: 'minLength',
+      argument: schema.minLength,
+      message: "does not meet minimum length of " + schema.minLength,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is at most of a certain length, when the instance value is a string.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.maxLength = function validateMaxLength (instance, schema, options, ctx) {
+  if (!(typeof instance === 'string')) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!(instance.length <= schema.maxLength)) {
+    result.addError({
+      name: 'maxLength',
+      argument: schema.maxLength,
+      message: "does not meet maximum length of " + schema.maxLength,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether instance contains at least a minimum number of items, when the instance is an Array.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.minItems = function validateMinItems (instance, schema, options, ctx) {
+  if (!(instance instanceof Array)) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!(instance.length >= schema.minItems)) {
+    result.addError({
+      name: 'minItems',
+      argument: schema.minItems,
+      message: "does not meet minimum length of " + schema.minItems,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether instance contains no more than a maximum number of items, when the instance is an Array.
+ * @param instance
+ * @param schema
+ * @return {String|null}
+ */
+validators.maxItems = function validateMaxItems (instance, schema, options, ctx) {
+  if (!(instance instanceof Array)) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!(instance.length <= schema.maxItems)) {
+    result.addError({
+      name: 'maxItems',
+      argument: schema.maxItems,
+      message: "does not meet maximum length of " + schema.maxItems,
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates that every item in an instance array is unique, when instance is an array
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {String|null|ValidatorResult}
+ */
+validators.uniqueItems = function validateUniqueItems (instance, schema, options, ctx) {
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!(instance instanceof Array)) {
+    return result;
+  }
+  function testArrays (v, i, a) {
+    for (var j = i + 1; j < a.length; j++) if (helpers.deepCompareStrict(v, a[j])) {
+      return false;
+    }
+    return true;
+  }
+  if (!instance.every(testArrays)) {
+    result.addError({
+      name: 'uniqueItems',
+      message: "contains duplicate item",
+    });
+  }
+  return result;
+};
+
+/**
+ * Deep compares arrays for duplicates
+ * @param v
+ * @param i
+ * @param a
+ * @private
+ * @return {boolean}
+ */
+function testArrays (v, i, a) {
+  var j, len = a.length;
+  for (j = i + 1, len; j < len; j++) {
+    if (helpers.deepCompareStrict(v, a[j])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Validates whether there are no duplicates, when the instance is an Array.
+ * @param instance
+ * @return {String|null}
+ */
+validators.uniqueItems = function validateUniqueItems (instance, schema, options, ctx) {
+  if (!(instance instanceof Array)) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!instance.every(testArrays)) {
+    result.addError({
+      name: 'uniqueItems',
+      message: "contains duplicate item",
+    });
+  }
+  return result;
+};
+
+/**
+ * Validate for the presence of dependency properties, if the instance is an object.
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {null|ValidatorResult}
+ */
+validators.dependencies = function validateDependencies (instance, schema, options, ctx) {
+  if (!instance || typeof instance != 'object') {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  for (var property in schema.dependencies) {
+    if (instance[property] === undefined) {
+      continue;
+    }
+    var dep = schema.dependencies[property];
+    var childContext = ctx.makeChild(dep, property);
+    if (typeof dep == 'string') {
+      dep = [dep];
+    }
+    if (dep instanceof Array) {
+      dep.forEach(function (prop) {
+        if (instance[prop] === undefined) {
+          result.addError({
+            // FIXME there's two different "dependencies" errors here with slightly different outputs
+            // Can we make these the same? Or should we create different error types?
+            name: 'dependencies',
+            argument: childContext.propertyPath,
+            message: "property " + prop + " not found, required by " + childContext.propertyPath,
+          });
+        }
+      });
+    } else {
+      var res = this.validateSchema(instance, dep, options, childContext);
+      if(result.instance !== res.instance) result.instance = res.instance;
+      if (res && res.errors.length) {
+        result.addError({
+          name: 'dependencies',
+          argument: childContext.propertyPath,
+          message: "does not meet dependency required by " + childContext.propertyPath,
+        });
+        result.importErrors(res);
+      }
+    }
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance value is one of the enumerated values.
+ *
+ * @param instance
+ * @param schema
+ * @return {ValidatorResult|null}
+ */
+validators['enum'] = function validateEnum (instance, schema, options, ctx) {
+  if (!(schema['enum'] instanceof Array)) {
+    throw new SchemaError("enum expects an array", schema);
+  }
+  if (instance === undefined) {
+    return null;
+  }
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!schema['enum'].some(helpers.deepCompareStrict.bind(null, instance))) {
+    result.addError({
+      name: 'enum',
+      argument: schema['enum'],
+      message: "is not one of enum values: " + schema['enum'].join(','),
+    });
+  }
+  return result;
+};
+
+/**
+ * Validates whether the instance if of a prohibited type.
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @return {null|ValidatorResult}
+ */
+validators.not = validators.disallow = function validateNot (instance, schema, options, ctx) {
+  var self = this;
+  if(instance===undefined) return null;
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  var notTypes = schema.not || schema.disallow;
+  if(!notTypes) return null;
+  if(!(notTypes instanceof Array)) notTypes=[notTypes];
+  notTypes.forEach(function (type) {
+    if (self.testType(instance, schema, options, ctx, type)) {
+      var schemaId = type && type.id && ('<' + type.id + '>') || type;
+      result.addError({
+        name: 'not',
+        argument: schemaId,
+        message: "is of prohibited type " + schemaId,
+      });
+    }
+  });
+  return result;
+};
+
+module.exports = attribute;
+
+},{"./helpers":3}],3:[function(require,module,exports){
+'use strict';
+
+var uri = require('url');
+
+var ValidationError = exports.ValidationError = function ValidationError (message, instance, schema, propertyPath, name, argument) {
+  if (propertyPath) {
+    this.property = propertyPath;
+  }
+  if (message) {
+    this.message = message;
+  }
+  if (schema) {
+    if (schema.id) {
+      this.schema = schema.id;
+    } else {
+      this.schema = schema;
+    }
+  }
+  if (instance) {
+    this.instance = instance;
+  }
+  this.name = name;
+  this.argument = argument;
+  this.stack = this.toString();
+};
+
+ValidationError.prototype.toString = function toString() {
+  return this.property + ' ' + this.message;
+};
+
+var ValidatorResult = exports.ValidatorResult = function ValidatorResult(instance, schema, options, ctx) {
+  this.instance = instance;
+  this.schema = schema;
+  this.propertyPath = ctx.propertyPath;
+  this.errors = [];
+  this.throwError = options && options.throwError;
+  this.disableFormat = options && options.disableFormat === true;
+};
+
+ValidatorResult.prototype.addError = function addError(detail) {
+  var err;
+  if (typeof detail == 'string') {
+    err = new ValidationError(detail, this.instance, this.schema, this.propertyPath);
+  } else {
+    if (!detail) throw new Error('Missing error detail');
+    if (!detail.message) throw new Error('Missing error message');
+    if (!detail.name) throw new Error('Missing validator type');
+    err = new ValidationError(detail.message, this.instance, this.schema, this.propertyPath, detail.name, detail.argument);
+  }
+
+  if (this.throwError) {
+    throw err;
+  }
+  this.errors.push(err);
+  return err;
+};
+
+ValidatorResult.prototype.importErrors = function importErrors(res) {
+  if (typeof res == 'string' || (res && res.validatorType)) {
+    this.addError(res);
+  } else if (res && res.errors) {
+    var errs = this.errors;
+    res.errors.forEach(function (v) {
+      errs.push(v);
+    });
+  }
+};
+
+ValidatorResult.prototype.toString = function toString(res) {
+  return this.errors.map(function(v,i){ return i+': '+v.toString()+'\n'; }).join('');
+};
+
+Object.defineProperty(ValidatorResult.prototype, "valid", { get: function() {
+  return !this.errors.length;
+} });
+
+/**
+ * Describes a problem with a Schema which prevents validation of an instance
+ * @name SchemaError
+ * @constructor
+ */
+var SchemaError = exports.SchemaError = function SchemaError (msg, schema) {
+  this.message = msg;
+  this.schema = schema;
+  Error.call(this, msg);
+  Error.captureStackTrace(this, SchemaError);
+};
+SchemaError.prototype = Object.create(Error.prototype,
+  { constructor: {value: SchemaError, enumerable: false}
+  , name: {value: 'SchemaError', enumerable: false}
+  });
+
+var SchemaContext = exports.SchemaContext = function SchemaContext (schema, options, propertyPath, base, schemas) {
+  this.schema = schema;
+  this.options = options;
+  this.propertyPath = propertyPath;
+  this.base = base;
+  this.schemas = schemas;
+};
+
+SchemaContext.prototype.resolve = function resolve (target) {
+  return uri.resolve(this.base, target);
+};
+
+SchemaContext.prototype.makeChild = function makeChild(schema, propertyName){
+  var propertyPath = (propertyName===undefined) ? this.propertyPath : this.propertyPath+makeSuffix(propertyName);
+  var base = uri.resolve(this.base, schema.id||'');
+  var ctx = new SchemaContext(schema, this.options, propertyPath, base, Object.create(this.schemas));
+  if(schema.id && !ctx.schemas[base]){
+    ctx.schemas[base] = schema;
+  }
+  return ctx;
+}
+
+var FORMAT_REGEXPS = exports.FORMAT_REGEXPS = {
+  'date-time': /^\d{4}-(?:0[0-9]{1}|1[0-2]{1})-(3[01]|0[1-9]|[12][0-9])[tT ](2[0-4]|[01][0-9]):([0-5][0-9]):(60|[0-5][0-9])(\.\d+)?([zZ]|[+-]([0-5][0-9]):(60|[0-5][0-9]))$/,
+  'date': /^\d{4}-(?:0[0-9]{1}|1[0-2]{1})-(3[01]|0[1-9]|[12][0-9])$/,
+  'time': /^(2[0-4]|[01][0-9]):([0-5][0-9]):(60|[0-5][0-9])$/,
+
+  'email': /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/,
+  'ip-address': /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+  'ipv6': /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
+  'uri': /^[a-zA-Z][a-zA-Z0-9+-.]*:[^\s]*$/,
+
+  'color': /^(#?([0-9A-Fa-f]{3}){1,2}\b|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|(rgb\(\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*\))|(rgb\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*\)))$/,
+
+  // hostname regex from: http://stackoverflow.com/a/1420225/5628
+  'hostname': /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/,
+  'host-name': /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/,
+
+  'alpha': /^[a-zA-Z]+$/,
+  'alphanumeric': /^[a-zA-Z0-9]+$/,
+  'utc-millisec': function (input) {
+    return (typeof input === 'string') && parseFloat(input) === parseInt(input, 10) && !isNaN(input);
+  },
+  'regex': function (input) {
+    var result = true;
+    try {
+      new RegExp(input);
+    } catch (e) {
+      result = false;
+    }
+    return result;
+  },
+  'style': /\s*(.+?):\s*([^;]+);?/g,
+  'phone': /^\+(?:[0-9] ?){6,14}[0-9]$/
+};
+
+FORMAT_REGEXPS.regexp = FORMAT_REGEXPS.regex;
+FORMAT_REGEXPS.pattern = FORMAT_REGEXPS.regex;
+FORMAT_REGEXPS.ipv4 = FORMAT_REGEXPS['ip-address'];
+
+exports.isFormat = function isFormat (input, format, validator) {
+  if (typeof input === 'string' && FORMAT_REGEXPS[format] !== undefined) {
+    if (FORMAT_REGEXPS[format] instanceof RegExp) {
+      return FORMAT_REGEXPS[format].test(input);
+    }
+    if (typeof FORMAT_REGEXPS[format] === 'function') {
+      return FORMAT_REGEXPS[format](input);
+    }
+  } else if (validator && validator.customFormats &&
+      typeof validator.customFormats[format] === 'function') {
+    return validator.customFormats[format](input);
+  }
+  return true;
+};
+
+var makeSuffix = exports.makeSuffix = function makeSuffix (key) {
+  key = key.toString();
+  // This function could be capable of outputting valid a ECMAScript string, but the
+  // resulting code for testing which form to use would be tens of thousands of characters long
+  // That means this will use the name form for some illegal forms
+  if (!key.match(/[.\s\[\]]/) && !key.match(/^[\d]/)) {
+    return '.' + key;
+  }
+  if (key.match(/^\d+$/)) {
+    return '[' + key + ']';
+  }
+  return '[' + JSON.stringify(key) + ']';
+};
+
+exports.deepCompareStrict = function deepCompareStrict (a, b) {
+  if (typeof a !== typeof b) {
+    return false;
+  }
+  if (a instanceof Array) {
+    if (!(b instanceof Array)) {
+      return false;
+    }
+    if (a.length !== b.length) {
+      return false;
+    }
+    return a.every(function (v, i) {
+      return deepCompareStrict(a[i], b[i]);
+    });
+  }
+  if (typeof a === 'object') {
+    if (!a || !b) {
+      return a === b;
+    }
+    var aKeys = Object.keys(a);
+    var bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) {
+      return false;
+    }
+    return aKeys.every(function (v) {
+      return deepCompareStrict(a[v], b[v]);
+    });
+  }
+  return a === b;
+};
+
+module.exports.deepMerge = function deepMerge (target, src) {
+  var array = Array.isArray(src);
+  var dst = array && [] || {};
+
+  if (array) {
+    target = target || [];
+    dst = dst.concat(target);
+    src.forEach(function (e, i) {
+      if (typeof e === 'object') {
+        dst[i] = deepMerge(target[i], e)
+      } else {
+        if (target.indexOf(e) === -1) {
+          dst.push(e)
+        }
+      }
+    });
+  } else {
+    if (target && typeof target === 'object') {
+      Object.keys(target).forEach(function (key) {
+        dst[key] = target[key];
+      });
+    }
+    Object.keys(src).forEach(function (key) {
+      if (typeof src[key] !== 'object' || !src[key]) {
+        dst[key] = src[key];
+      }
+      else {
+        if (!target[key]) {
+          dst[key] = src[key];
+        } else {
+          dst[key] = deepMerge(target[key], src[key])
+        }
+      }
+    });
+  }
+
+  return dst;
+};
+
+/**
+ * Validates instance against the provided schema
+ * Implements URI+JSON Pointer encoding, e.g. "%7e"="~0"=>"~", "~1"="%2f"=>"/"
+ * @param o
+ * @param s The path to walk o along
+ * @return any
+ */
+exports.objectGetPath = function objectGetPath(o, s) {
+  var parts = s.split('/').slice(1);
+  var k;
+  while (typeof (k=parts.shift()) == 'string') {
+    var n = decodeURIComponent(k.replace(/~0/,'~').replace(/~1/g,'/'));
+    if (!(n in o)) return;
+    o = o[n];
+  }
+  return o;
+};
+
+/**
+ * Accept an Array of property names and return a JSON Pointer URI fragment
+ * @param Array a
+ * @return {String}
+ */
+exports.encodePath = function encodePointer(a){
+	// ~ must be encoded explicitly because hacks
+	// the slash is encoded by encodeURIComponent
+	return a.map(function(v){ return '/'+encodeURIComponent(v).replace(/~/g,'%7E'); }).join('');
+};
+
+},{"url":10}],4:[function(require,module,exports){
+'use strict';
+
+var Validator = module.exports.Validator = require('./validator');
+
+module.exports.ValidatorResult = require('./helpers').ValidatorResult;
+module.exports.ValidationError = require('./helpers').ValidationError;
+module.exports.SchemaError = require('./helpers').SchemaError;
+
+module.exports.validate = function (instance, schema, options) {
+  var v = new Validator();
+  return v.validate(instance, schema, options);
+};
+
+},{"./helpers":3,"./validator":5}],5:[function(require,module,exports){
+'use strict';
+
+var urilib = require('url');
+
+var attribute = require('./attribute');
+var helpers = require('./helpers');
+var ValidatorResult = helpers.ValidatorResult;
+var SchemaError = helpers.SchemaError;
+var SchemaContext = helpers.SchemaContext;
+
+/**
+ * Creates a new Validator object
+ * @name Validator
+ * @constructor
+ */
+var Validator = function Validator () {
+  // Allow a validator instance to override global custom formats or to have their
+  // own custom formats.
+  this.customFormats = Object.create(Validator.prototype.customFormats);
+  this.schemas = {};
+  this.unresolvedRefs = [];
+
+  // Use Object.create to make this extensible without Validator instances stepping on each other's toes.
+  this.types = Object.create(types);
+  this.attributes = Object.create(attribute.validators);
+};
+
+// Allow formats to be registered globally.
+Validator.prototype.customFormats = {};
+
+// Hint at the presence of a property
+Validator.prototype.schemas = null;
+Validator.prototype.types = null;
+Validator.prototype.attributes = null;
+Validator.prototype.unresolvedRefs = null;
+
+/**
+ * Adds a schema with a certain urn to the Validator instance.
+ * @param schema
+ * @param urn
+ * @return {Object}
+ */
+Validator.prototype.addSchema = function addSchema (schema, uri) {
+  if (!schema) {
+    return null;
+  }
+  var ourUri = uri || schema.id;
+  this.addSubSchema(ourUri, schema);
+  if (ourUri) {
+    this.schemas[ourUri] = schema;
+  }
+  return this.schemas[ourUri];
+};
+
+Validator.prototype.addSubSchema = function addSubSchema(baseuri, schema) {
+  if(!schema || typeof schema!='object') return;
+  // Mark all referenced schemas so we can tell later which schemas are referred to, but never defined
+  if(schema.$ref){
+    var resolvedUri = urilib.resolve(baseuri, schema.$ref);
+    // Only mark unknown schemas as unresolved
+    if (this.schemas[resolvedUri] === undefined) {
+      this.schemas[resolvedUri] = null;
+      this.unresolvedRefs.push(resolvedUri);
+    }
+    return;
+  }
+  var ourUri = schema.id && urilib.resolve(baseuri, schema.id);
+  var ourBase = ourUri || baseuri;
+  if (ourUri) {
+    if(this.schemas[ourUri]){
+      if(!helpers.deepCompareStrict(this.schemas[ourUri], schema)){
+        throw new Error('Schema <'+schema+'> already exists with different definition');
+      }
+      return this.schemas[ourUri];
+    }
+    this.schemas[ourUri] = schema;
+    var documentUri = ourUri.replace(/^([^#]*)#$/, '$1');
+    this.schemas[documentUri] = schema;
+  }
+  this.addSubSchemaArray(ourBase, ((schema.items instanceof Array)?schema.items:[schema.items]));
+  this.addSubSchemaArray(ourBase, ((schema.extends instanceof Array)?schema.extends:[schema.extends]));
+  this.addSubSchema(ourBase, schema.additionalItems);
+  this.addSubSchemaObject(ourBase, schema.properties);
+  this.addSubSchema(ourBase, schema.additionalProperties);
+  this.addSubSchemaObject(ourBase, schema.definitions);
+  this.addSubSchemaObject(ourBase, schema.patternProperties);
+  this.addSubSchemaObject(ourBase, schema.dependencies);
+  this.addSubSchemaArray(ourBase, schema.disallow);
+  this.addSubSchemaArray(ourBase, schema.allOf);
+  this.addSubSchemaArray(ourBase, schema.anyOf);
+  this.addSubSchemaArray(ourBase, schema.oneOf);
+  this.addSubSchema(ourBase, schema.not);
+  return this.schemas[ourUri];
+};
+
+Validator.prototype.addSubSchemaArray = function addSubSchemaArray(baseuri, schemas) {
+  if(!(schemas instanceof Array)) return;
+  for(var i=0; i<schemas.length; i++){
+    this.addSubSchema(baseuri, schemas[i]);
+  }
+};
+
+Validator.prototype.addSubSchemaObject = function addSubSchemaArray(baseuri, schemas) {
+  if(!schemas || typeof schemas!='object') return;
+  for(var p in schemas){
+    this.addSubSchema(baseuri, schemas[p]);
+  }
+};
+
+
+
+/**
+ * Sets all the schemas of the Validator instance.
+ * @param schemas
+ */
+Validator.prototype.setSchemas = function setSchemas (schemas) {
+  this.schemas = schemas;
+};
+
+/**
+ * Returns the schema of a certain urn
+ * @param urn
+ */
+Validator.prototype.getSchema = function getSchema (urn) {
+  return this.schemas[urn];
+};
+
+/**
+ * Validates instance against the provided schema
+ * @param instance
+ * @param schema
+ * @param [options]
+ * @param [ctx]
+ * @return {Array}
+ */
+Validator.prototype.validate = function validate (instance, schema, options, ctx) {
+  if (!options) {
+    options = {};
+  }
+  var propertyName = options.propertyName || 'instance';
+  // This will work so long as the function at uri.resolve() will resolve a relative URI to a relative URI
+  var base = urilib.resolve(options.base||'/', schema.id||'');
+  if(!ctx){
+    ctx = new SchemaContext(schema, options, propertyName, base, Object.create(this.schemas));
+    if (!ctx.schemas[base]) {
+      ctx.schemas[base] = schema;
+    }
+  }
+  if (schema) {
+    var result = this.validateSchema(instance, schema, options, ctx);
+    if (!result) {
+      throw new Error('Result undefined');
+    }
+    return result;
+  }
+  throw new SchemaError('no schema specified', schema);
+};
+
+/**
+ * Validates an instance against the schema (the actual work horse)
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @private
+ * @return {ValidatorResult}
+ */
+Validator.prototype.validateSchema = function validateSchema (instance, schema, options, ctx) {
+  var self = this;
+  var result = new ValidatorResult(instance, schema, options, ctx);
+  if (!schema) {
+    throw new Error("schema is undefined");
+  }
+
+  /**
+  * @param Object schema
+  * @return mixed schema uri or false
+  */
+  function shouldResolve(schema) {
+    var ref = (typeof schema === 'string') ? schema : schema.$ref;
+    if (typeof ref=='string') return ref;
+    return false;
+  }
+  /**
+  * @param Object schema
+  * @param SchemaContext ctx
+  * @returns Object schema or resolved schema
+  */
+  function resolve(schema, ctx) {
+    var ref;
+    if(ref = shouldResolve(schema)) {
+      return self.resolve(schema, ref, ctx).subschema;
+    }
+    return schema;
+  }
+
+  if (schema['extends']) {
+    if (schema['extends'] instanceof Array) {
+      schema['extends'].forEach(function (s) {
+        schema = helpers.deepMerge(schema, resolve(s, ctx));
+      });
+    } else {
+      schema = helpers.deepMerge(schema, resolve(schema['extends'], ctx));
+    }
+  }
+
+  var switchSchema;
+  if (switchSchema = shouldResolve(schema)) {
+    var resolved = this.resolve(schema, switchSchema, ctx);
+    var subctx = new SchemaContext(resolved.subschema, options, ctx.propertyPath, resolved.switchSchema, ctx.schemas);
+    return this.validateSchema(instance, resolved.subschema, options, subctx);
+  }
+
+  var skipAttributes = options && options.skipAttributes || [];
+  // Validate each schema attribute against the instance
+  for (var key in schema) {
+    if (!attribute.ignoreProperties[key] && skipAttributes.indexOf(key) < 0) {
+      var validatorErr = null;
+      var validator = self.attributes[key];
+      if (validator) {
+        validatorErr = validator.call(self, instance, schema, options, ctx);
+      } else if (options.allowUnknownAttributes === false) {
+        // This represents an error with the schema itself, not an invalid instance
+        throw new SchemaError("Unsupported attribute: " + key, schema);
+      }
+      if (validatorErr) {
+        result.importErrors(validatorErr);
+      }
+    }
+  }
+
+  if (typeof options.rewrite == 'function') {
+    var value = options.rewrite.call(this, instance, schema, options, ctx);
+    result.instance = value;
+  }
+  return result;
+};
+
+/**
+* @private
+* @param Object schema
+* @param Object switchSchema
+* @param SchemaContext ctx
+* @return Object resolved schemas {subschema:String, switchSchema: String}
+* @thorws SchemaError
+*/
+Validator.prototype.resolve = function resolve (schema, switchSchema, ctx) {
+  switchSchema = ctx.resolve(switchSchema);
+  // First see if the schema exists under the provided URI
+  if (ctx.schemas[switchSchema]) {
+    return {subschema: ctx.schemas[switchSchema], switchSchema: switchSchema};
+  }
+  // Else try walking the property pointer
+  var parsed = urilib.parse(switchSchema);
+  var fragment = parsed && parsed.hash;
+  var document = fragment && fragment.length && switchSchema.substr(0, switchSchema.length - fragment.length);
+  if (!document || !ctx.schemas[document]) {
+    throw new SchemaError("no such schema <" + switchSchema + ">", schema);
+  }
+  var subschema = helpers.objectGetPath(ctx.schemas[document], fragment.substr(1));
+  if(subschema===undefined){
+    throw new SchemaError("no such schema " + fragment + " located in <" + document + ">", schema);
+  }
+  return {subschema: subschema, switchSchema: switchSchema};
+};
+
+/**
+ * Tests whether the instance if of a certain type.
+ * @private
+ * @param instance
+ * @param schema
+ * @param options
+ * @param ctx
+ * @param type
+ * @return {boolean}
+ */
+Validator.prototype.testType = function validateType (instance, schema, options, ctx, type) {
+  if (typeof this.types[type] == 'function') {
+    return this.types[type].call(this, instance);
+  }
+  if (type && typeof type == 'object') {
+    var res = this.validateSchema(instance, type, options, ctx);
+    return res === undefined || !(res && res.errors.length);
+  }
+  // Undefined or properties not on the list are acceptable, same as not being defined
+  return true;
+};
+
+var types = Validator.prototype.types = {};
+types.string = function testString (instance) {
+  return typeof instance == 'string';
+};
+types.number = function testNumber (instance) {
+  // isFinite returns false for NaN, Infinity, and -Infinity
+  return typeof instance == 'number' && isFinite(instance);
+};
+types.integer = function testInteger (instance) {
+  return (typeof instance == 'number') && instance % 1 === 0;
+};
+types.boolean = function testBoolean (instance) {
+  return typeof instance == 'boolean';
+};
+types.array = function testArray (instance) {
+  return instance instanceof Array;
+};
+types['null'] = function testNull (instance) {
+  return instance === null;
+};
+types.date = function testDate (instance) {
+  return instance instanceof Date;
+};
+types.any = function testAny (instance) {
+  return true;
+};
+types.object = function testObject (instance) {
+  // TODO: fix this - see #15
+  return instance && (typeof instance) === 'object' && !(instance instanceof Array) && !(instance instanceof Date);
+};
+
+module.exports = Validator;
+
+},{"./attribute":2,"./helpers":3,"url":10}],6:[function(require,module,exports){
 (function (global){
-/*! https://mths.be/punycode v1.3.2 by @mathias */
+/*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
 
 	/** Detect free variables */
@@ -92,7 +1496,7 @@ define([], function () {
 	 * @returns {Error} Throws a `RangeError` with the applicable error message.
 	 */
 	function error(type) {
-		throw RangeError(errors[type]);
+		throw new RangeError(errors[type]);
 	}
 
 	/**
@@ -239,7 +1643,7 @@ define([], function () {
 
 	/**
 	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * http://tools.ietf.org/html/rfc3492#section-3.4
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
 	 * @private
 	 */
 	function adapt(delta, numPoints, firstTime) {
@@ -514,7 +1918,7 @@ define([], function () {
 		 * @memberOf punycode
 		 * @type String
 		 */
-		'version': '1.3.2',
+		'version': '1.4.1',
 		/**
 		 * An object of methods to convert from JavaScript's internal character
 		 * representation (UCS-2) to Unicode code points, and back.
@@ -544,21 +1948,24 @@ define([], function () {
 			return punycode;
 		});
 	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) { // in Node.js or RingoJS v0.8.0+
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
 			freeModule.exports = punycode;
-		} else { // in Narwhal or RingoJS v0.7.0-
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
 			for (key in punycode) {
 				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
 			}
 		}
-	} else { // in Rhino or a web browser
+	} else {
+		// in Rhino or a web browser
 		root.punycode = punycode;
 	}
 
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],3:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -644,7 +2051,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],4:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -731,13 +2138,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":3,"./encode":4}],6:[function(require,module,exports){
+},{"./decode":7,"./encode":8}],10:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1446,1270 +2853,4 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":2,"querystring":5}],7:[function(require,module,exports){
-'use strict';
-
-var helpers = require('./helpers');
-
-/** @type ValidatorResult */
-var ValidatorResult = helpers.ValidatorResult;
-/** @type SchemaError */
-var SchemaError = helpers.SchemaError;
-
-var attribute = {};
-
-attribute.ignoreProperties = {
-  // informative properties
-  'id': true,
-  'default': true,
-  'description': true,
-  'title': true,
-  // arguments to other properties
-  'exclusiveMinimum': true,
-  'exclusiveMaximum': true,
-  'additionalItems': true,
-  // special-handled properties
-  '$schema': true,
-  '$ref': true,
-  'extends': true
-};
-
-/**
- * @name validators
- */
-var validators = attribute.validators = {};
-
-/**
- * Validates whether the instance if of a certain type
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null}
- */
-validators.type = function validateType (instance, schema, options, ctx) {
-  // Ignore undefined instances
-  if (instance === undefined) {
-    return null;
-  }
-  var types = (schema.type instanceof Array) ? schema.type : [schema.type];
-  if (!types.some(this.testType.bind(this, instance, schema, options, ctx))) {
-    return "is not of a type(s) " + types.map(function (v) {
-      return v.id && ('<' + v.id + '>') || (v+'');
-    });
-  }
-  return null;
-};
-
-function testSchema(instance, options, ctx, schema){
-  return this.validateSchema(instance, schema, options, ctx).valid;
-}
-
-/**
- * Validates whether the instance matches some of the given schemas
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null}
- */
-validators.anyOf = function validateAnyOf (instance, schema, options, ctx) {
-  // Ignore undefined instances
-  if (instance === undefined) {
-    return null;
-  }
-  if (!(schema.anyOf instanceof Array)){
-    throw new SchemaError("anyOf must be an array");
-  }
-  if (!schema.anyOf.some(testSchema.bind(this, instance, options, ctx))) {
-    return "is not any of " + schema.anyOf.map(function (v, i) {
-      return (v.id && ('<' + v.id + '>')) || (v.title && JSON.stringify(v.title)) || (v['$ref'] && ('<' + v['$ref'] + '>')) || '[subschema '+i+']';
-    });
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance matches every given schema
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null}
- */
-validators.allOf = function validateAllOf (instance, schema, options, ctx) {
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  // Ignore undefined instances
-  if (instance === undefined) {
-    return null;
-  }
-  if (!(schema.allOf instanceof Array)){
-    throw new SchemaError("allOf must be an array");
-  }
-  var self = this;
-  schema.allOf.forEach(function(v, i){
-    var valid = self.validateSchema(instance, v, options, ctx);
-    if(!valid.valid){
-      var msg = (v.id && ('<' + v.id + '>')) || (v.title && JSON.stringify(v.title)) || (v['$ref'] && ('<' + v['$ref'] + '>')) || '[subschema '+i+']';
-      result.addError('does not match allOf schema ' + msg + ' with ' + valid.errors.length + ' error[s]:');
-      result.importErrors(valid);
-    }
-  });
-  return result;
-};
-
-/**
- * Validates whether the instance matches exactly one of the given schemas
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null}
- */
-validators.oneOf = function validateOneOf (instance, schema, options, ctx) {
-  // Ignore undefined instances
-  if (instance === undefined) {
-    return null;
-  }
-  if (!(schema.oneOf instanceof Array)){
-    throw new SchemaError("oneOf must be an array");
-  }
-  var count = schema.oneOf.filter(testSchema.bind(this, instance, options, ctx)).length;
-  if (count!==1) {
-    return "is not exactly one from " + schema.oneOf.map(function (v, i) {
-      return (v.id && ('<' + v.id + '>')) || (v.title && JSON.stringify(v.title)) || (v['$ref'] && ('<' + v['$ref'] + '>')) || '[subschema '+i+']';
-    });
-  }
-  return null;
-};
-
-/**
- * Validates properties
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.properties = function validateProperties (instance, schema, options, ctx) {
-  if(instance === undefined || !(instance instanceof Object)) return;
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  var properties = schema.properties || {};
-  for (var property in properties) {
-    var prop = (instance || undefined) && instance[property];
-    var res = this.validateSchema(prop, properties[property], options, ctx.makeChild(properties[property], property));
-    if(res.instance !== result.instance[property]) result.instance[property] = res.instance;
-    result.importErrors(res);
-  }
-  return result;
-};
-
-/**
- * Test a specific property within in instance against the additionalProperties schema attribute
- * This ignores properties with definitions in the properties schema attribute, but no other attributes.
- * If too many more types of property-existance tests pop up they may need their own class of tests (like `type` has)
- * @private
- * @return {boolean}
- */
-function testAdditionalProperty (instance, schema, options, ctx, property, result) {
-  if (schema.properties && schema.properties[property] !== undefined) {
-    return;
-  }
-  if (schema.additionalProperties === false) {
-    result.addError("additionalProperty '"+property+"' exists in instance when not allowed");
-  } else {
-    var additionalProperties = schema.additionalProperties || {};
-    var res = this.validateSchema(instance[property], additionalProperties, options, ctx.makeChild(additionalProperties, property));
-    if(res.instance !== result.instance[property]) result.instance[property] = res.instance;
-    result.importErrors(res);
-  }
-}
-
-/**
- * Validates patternProperties
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.patternProperties = function validatePatternProperties (instance, schema, options, ctx) {
-  if(instance === undefined) return;
-  if(!this.types.object(instance)) return;
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  var patternProperties = schema.patternProperties || {};
-
-  for (var property in instance) {
-    var test = true;
-    for (var pattern in patternProperties) {
-      var expr = new RegExp(pattern);
-      if (!expr.test(property)) {
-        continue;
-      }
-      test = false;
-      var res = this.validateSchema(instance[property], patternProperties[pattern], options, ctx.makeChild(patternProperties[pattern], property));
-      if(res.instance !== result.instance[property]) result.instance[property] = res.instance;
-      result.importErrors(res);
-    }
-    if (test) {
-      testAdditionalProperty.call(this, instance, schema, options, ctx, property, result);
-    }
-  }
-
-  return result;
-};
-
-/**
- * Validates additionalProperties
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.additionalProperties = function validateAdditionalProperties (instance, schema, options, ctx) {
-  if(instance === undefined) return;
-  if(!this.types.object(instance)) return;
-  // if patternProperties is defined then we'll test when that one is called instead
-  if (schema.patternProperties) {
-    return null;
-  }
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  for (var property in instance) {
-    testAdditionalProperty.call(this, instance, schema, options, ctx, property, result);
-  }
-  return result;
-};
-
-/**
- * Validates whether the instance value is at least of a certain length, when the instance value is a string.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.minProperties = function validateMinProperties (instance, schema) {
-  if (!instance || typeof instance !== 'object') {
-    return null;
-  }
-  var keys = Object.keys(instance);
-  if (!(keys.length >= schema.minProperties)) {
-    return "does not meet minimum property length of " + schema.minProperties;
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance value is at most of a certain length, when the instance value is a string.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.maxProperties = function validateMaxProperties (instance, schema) {
-  if (!instance || typeof instance !== 'object') {
-    return null;
-  }
-  var keys = Object.keys(instance);
-  if (!(keys.length <= schema.maxProperties)) {
-    return "does not meet maximum property length of " + schema.maxProperties;
-  }
-  return null;
-};
-
-/**
- * Validates items when instance is an array
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.items = function validateItems (instance, schema, options, ctx) {
-  if (!(instance instanceof Array)) {
-    return null;
-  }
-  var self = this;
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  if (instance === undefined || !schema.items) {
-    return result;
-  }
-  instance.every(function (value, i) {
-    var items = (schema.items instanceof Array) ? (schema.items[i] || schema.additionalItems) : schema.items;
-    if (items === undefined) {
-      return true;
-    }
-    if (items === false) {
-      result.addError("additionalItems not permitted");
-      return false;
-    }
-    var res = self.validateSchema(value, items, options, ctx.makeChild(items, i));
-    if(res.instance !== result.instance[i]) result.instance[i] = res.instance;
-    result.importErrors(res);
-    return true;
-  });
-  return result;
-};
-
-/**
- * Validates minimum and exclusiveMinimum when the type of the instance value is a number.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.minimum = function validateMinimum (instance, schema) {
-  if (typeof instance !== 'number') {
-    return null;
-  }
-  var valid = true;
-  if (schema.exclusiveMinimum && schema.exclusiveMinimum === true) {
-    valid = instance > schema.minimum;
-  } else {
-    valid = instance >= schema.minimum;
-  }
-  if (!valid) {
-    return "must have a minimum value of " + schema.minimum;
-  }
-  return null;
-};
-
-/**
- * Validates maximum and exclusiveMaximum when the type of the instance value is a number.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.maximum = function validateMaximum (instance, schema) {
-  if (typeof instance !== 'number') {
-    return null;
-  }
-  var valid;
-  if (schema.exclusiveMaximum && schema.exclusiveMaximum === true) {
-    valid = instance < schema.maximum;
-  } else {
-    valid = instance <= schema.maximum;
-  }
-  if (!valid) {
-    return "must have a maximum value of " + schema.maximum;
-  }
-  return null;
-};
-
-/**
- * Validates divisibleBy when the type of the instance value is a number.
- * Of course, this is susceptible to floating point error since it compares the floating points
- * and not the JSON byte sequences to arbitrary precision.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.divisibleBy = function validateDivisibleBy (instance, schema) {
-  if (typeof instance !== 'number') {
-    return null;
-  }
-
-  if (schema.divisibleBy == 0) {
-    throw new SchemaError("divisibleBy cannot be zero");
-  }
-
-  if (instance / schema.divisibleBy % 1) {
-    return "is not " + schema.divisibleBy;
-  }
-  return null;
-};
-
-/**
- * Validates divisibleBy when the type of the instance value is a number.
- * Of course, this is susceptible to floating point error since it compares the floating points
- * and not the JSON byte sequences to arbitrary precision.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.multipleOf = function validateMultipleOf (instance, schema) {
-  if (typeof instance !== 'number') {
-    return null;
-  }
-
-  if (schema.multipleOf == 0) {
-    throw new SchemaError("multipleOf cannot be zero");
-  }
-
-  if (instance / schema.multipleOf % 1) {
-    return "is not " + schema.multipleOf;
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance value is present.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.required = function validateRequired (instance, schema, options, ctx) {
-  if (instance === undefined && schema.required === true) {
-    return "is required";
-  }else if (instance && typeof instance==='object' && Array.isArray(schema.required)) {
-    var result = new ValidatorResult(instance, schema, options, ctx);
-    schema.required.forEach(function(n){
-      if(instance[n]===undefined){
-        result.addError("requires property "+JSON.stringify(n));
-      }
-    });
-    return result;
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance value matches the regular expression, when the instance value is a string.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.pattern = function validatePattern (instance, schema) {
-  if (typeof instance !== 'string') {
-    return null;
-  }
-  if (!instance.match(schema.pattern)) {
-    return "does not match pattern " + schema.pattern;
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance value is of a certain defined format, when the instance value is a string.
- * The following format are supported:
- *   - date-time
- *   - date
- *   - time
- *   - ip-address
- *   - ipv6
- *   - uri
- *   - color
- *   - host-name
- *   - alpha
- *   - alpha-numeric
- *   - utc-millisec
- * @param instance
- * @param schema
- * @param [options]
- * @param [ctx]
- * @return {String|null}
- */
-validators.format = function validateFormat (instance, schema, options, ctx) {
-  if (!(typeof instance === 'string')) {
-    return null;
-  }
-  if (!helpers.isFormat(instance, schema.format)) {
-    return "does not conform to the '" + schema.format + "' format";
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance value is at least of a certain length, when the instance value is a string.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.minLength = function validateMinLength (instance, schema) {
-  if (!(typeof instance === 'string')) {
-    return null;
-  }
-  if (!(instance.length >= schema.minLength)) {
-    return "does not meet minimum length of " + schema.minLength;
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance value is at most of a certain length, when the instance value is a string.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.maxLength = function validateMaxLength (instance, schema) {
-  if (!(typeof instance === 'string')) {
-    return null;
-  }
-  if (!(instance.length <= schema.maxLength)) {
-    return "does not meet maximum length of " + schema.maxLength;
-  }
-  return null;
-};
-
-/**
- * Validates whether instance contains at least a minimum number of items, when the instance is an Array.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.minItems = function validateMinItems (instance, schema) {
-  if (!(instance instanceof Array)) {
-    return null;
-  }
-  if (!(instance.length >= schema.minItems)) {
-    return "does not meet minimum length of " + schema.minItems;
-  }
-  return null;
-};
-
-/**
- * Validates whether instance contains no more than a maximum number of items, when the instance is an Array.
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators.maxItems = function validateMaxItems (instance, schema) {
-  if (!(instance instanceof Array)) {
-    return null;
-  }
-  if (!(instance.length <= schema.maxItems)) {
-    return "does not meet maximum length of " + schema.maxItems;
-  }
-  return null;
-};
-
-/**
- * Validates that every item in an instance array is unique, when instance is an array
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.uniqueItems = function validateUniqueItems (instance, schema, options, ctx) {
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  if (!(instance instanceof Array)) {
-    return result;
-  }
-  function testArrays (v, i, a) {
-    for (var j = i + 1; j < a.length; j++) if (helpers.deepCompareStrict(v, a[j])) {
-      return false;
-    }
-    return true;
-  }
-  if (!instance.every(testArrays)) {
-    result.addError("contains duplicate item");
-  }
-  return result;
-};
-
-/**
- * Deep compares arrays for duplicates
- * @param v
- * @param i
- * @param a
- * @private
- * @return {boolean}
- */
-function testArrays (v, i, a) {
-  var j, len = a.length;
-  for (j = i + 1, len; j < len; j++) {
-    if (helpers.deepCompareStrict(v, a[j])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
- * Validates whether there are no duplicates, when the instance is an Array.
- * @param instance
- * @return {String|null}
- */
-validators.uniqueItems = function validateUniqueItems (instance) {
-  if (!(instance instanceof Array)) {
-    return null;
-  }
-
-  if (!instance.every(testArrays)) {
-    return "contains duplicate item";
-  }
-  return null;
-};
-
-/**
- * Validate for the presence of dependency properties, if the instance is an object.
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.dependencies = function validateDependencies (instance, schema, options, ctx) {
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  if (!instance || typeof instance != 'object') {
-    return null;
-  }
-  for (var property in schema.dependencies) {
-    if (instance[property] === undefined) {
-      continue;
-    }
-    var dep = schema.dependencies[property];
-    var childContext = ctx.makeChild(dep, property);
-    if (typeof dep == 'string') {
-      dep = [dep];
-    }
-    if (dep instanceof Array) {
-      dep.forEach(function (prop) {
-        if (instance[prop] === undefined) {
-          result.addError("property " + prop + " not found, required by " + childContext.propertyPath);
-        }
-      });
-    } else {
-      var res = this.validateSchema(instance, dep, options, childContext);
-      if(result.instance !== res.instance) result.instance = res.instance;
-      if (res && res.errors.length) {
-        result.addError("does not meet dependency required by " + childContext.propertyPath);
-        result.importErrors(res);
-      }
-    }
-  }
-  return result;
-};
-
-/**
- * Validates whether the instance value is one of the enumerated values.
- *
- * @param instance
- * @param schema
- * @return {String|null}
- */
-validators['enum'] = function validateEnum (instance, schema) {
-  if (!(schema['enum'] instanceof Array)) {
-    throw new SchemaError("enum expects an array", schema);
-  }
-  if (instance === undefined) {
-    return null;
-  }
-  if (!schema['enum'].some(helpers.deepCompareStrict.bind(null, instance))) {
-    return "is not one of enum values: " + schema['enum'];
-  }
-  return null;
-};
-
-/**
- * Validates whether the instance if of a prohibited type.
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @return {String|null|ValidatorResult}
- */
-validators.not = validators.disallow = function validateNot (instance, schema, options, ctx) {
-  var self = this;
-  if(instance===undefined) return null;
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  var notTypes = schema.not || schema.disallow;
-  if(!notTypes) return null;
-  if(!(notTypes instanceof Array)) notTypes=[notTypes];
-  notTypes.forEach(function (type) {
-    if (self.testType(instance, schema, options, ctx, type)) {
-      var schemaId = type && type.id && ('<' + type.id + '>') || type;
-      result.addError("is of prohibited type " + schemaId);
-    }
-  });
-  return result;
-};
-
-module.exports = attribute;
-
-},{"./helpers":8}],8:[function(require,module,exports){
-'use strict';
-
-var uri = require('url');
-
-var ValidationError = exports.ValidationError = function ValidationError (message, instance, schema, propertyPath) {
-  if (propertyPath) {
-    this.property = propertyPath;
-  }
-  if (message) {
-    this.message = message;
-  }
-  if (schema) {
-    if (schema.id) {
-      this.schema = schema.id;
-    } else {
-      this.schema = schema;
-    }
-  }
-  if (instance) {
-    this.instance = instance;
-  }
-  this.stack = this.toString();
-};
-
-ValidationError.prototype.toString = function toString() {
-  return this.property + ' ' + this.message;
-};
-
-var ValidatorResult = exports.ValidatorResult = function ValidatorResult(instance, schema, options, ctx) {
-  this.instance = instance;
-  this.schema = schema;
-  this.propertyPath = ctx.propertyPath;
-  this.errors = [];
-  this.throwError = options && options.throwError;
-};
-
-ValidatorResult.prototype.addError = function addError(message) {
-  var err = new ValidationError(message, this.instance, this.schema, this.propertyPath);
-  if (this.throwError) {
-    throw err;
-  }
-  this.errors.push(err);
-  return err;
-};
-
-ValidatorResult.prototype.importErrors = function importErrors(res) {
-  if (typeof res == 'string') {
-    this.addError(res);
-  } else if (res && res.errors) {
-    var errs = this.errors;
-    res.errors.forEach(function (v) {
-      errs.push(v)
-    });
-  }
-};
-
-ValidatorResult.prototype.toString = function toString(res) {
-  return this.errors.map(function(v,i){ return i+': '+v.toString()+'\n'; }).join('');
-};
-
-Object.defineProperty(ValidatorResult.prototype, "valid", { get: function() {
-	return !this.errors.length;
-} });
-
-/**
- * Describes a problem with a Schema which prevents validation of an instance
- * @name SchemaError
- * @constructor
- */
-var SchemaError = exports.SchemaError = function SchemaError (msg, schema) {
-  this.message = msg;
-  this.schema = schema;
-  Error.call(this, msg);
-  Error.captureStackTrace(this, SchemaError);
-};
-SchemaError.prototype = Object.create(Error.prototype,
-  { constructor: {value: SchemaError, enumerable: false}
-  , name: {value: 'SchemaError', enumerable: false}
-  });
-
-var SchemaContext = exports.SchemaContext = function SchemaContext (schema, options, propertyPath, base, schemas) {
-  this.schema = schema;
-  this.options = options;
-  this.propertyPath = propertyPath;
-  this.base = base;
-  this.schemas = schemas;
-};
-
-SchemaContext.prototype.resolve = function resolve (target) {
-  return uri.resolve(this.base, target);
-};
-
-SchemaContext.prototype.makeChild = function makeChild(schema, propertyName){
-  var propertyPath = (propertyName===undefined) ? this.propertyPath : this.propertyPath+makeSuffix(propertyName);
-  var base = uri.resolve(this.base, schema.id||'');
-  var ctx = new SchemaContext(schema, this.options, propertyPath, base, Object.create(this.schemas));
-  if(schema.id && !ctx.schemas[base]){
-    ctx.schemas[base] = schema;
-  }
-  return ctx;
-}
-
-var FORMAT_REGEXPS = exports.FORMAT_REGEXPS = {
-  'date-time': /^\d{4}-(?:0[0-9]{1}|1[0-2]{1})-[0-9]{2}[tT ]\d{2}:\d{2}:\d{2}(\.\d+)?([zZ]|[+-]\d{2}:\d{2})$/,
-  'date': /^\d{4}-(?:0[0-9]{1}|1[0-2]{1})-[0-9]{2}$/,
-  'time': /^\d{2}:\d{2}:\d{2}$/,
-
-  'email': /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/,
-  'ip-address': /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-  'ipv6': /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
-  'uri': /^[a-zA-Z][a-zA-Z0-9+-.]*:[^\s]*$/,
-
-  'color': /^(#?([0-9A-Fa-f]{3}){1,2}\b|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|(rgb\(\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*\))|(rgb\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*\)))$/,
-
-  // hostname regex from: http://stackoverflow.com/a/1420225/5628
-  'hostname': /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/,
-  'host-name': /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/,
-
-  'alpha': /^[a-zA-Z]+$/,
-  'alphanumeric': /^[a-zA-Z0-9]+$/,
-  'utc-millisec': function (input) {
-    return (typeof input === 'string') && parseFloat(input) === parseInt(input, 10) && !isNaN(input);
-  },
-  'regex': function (input) {
-    var result = true;
-    try {
-      new RegExp(input);
-    } catch (e) {
-      result = false;
-    }
-    return result;
-  },
-  'style': /\s*(.+?):\s*([^;]+);?/g,
-  'phone': /^\+(?:[0-9] ?){6,14}[0-9]$/
-};
-
-FORMAT_REGEXPS.regexp = FORMAT_REGEXPS.regex;
-FORMAT_REGEXPS.pattern = FORMAT_REGEXPS.regex;
-FORMAT_REGEXPS.ipv4 = FORMAT_REGEXPS['ip-address'];
-
-exports.isFormat = function isFormat (input, format) {
-  if (FORMAT_REGEXPS[format] !== undefined) {
-    if (FORMAT_REGEXPS[format] instanceof RegExp) {
-      return FORMAT_REGEXPS[format].test(input);
-    }
-    if (typeof FORMAT_REGEXPS[format] === 'function') {
-      return FORMAT_REGEXPS[format](input);
-    }
-  }
-  return false;
-};
-
-var makeSuffix = exports.makeSuffix = function makeSuffix (key) {
-  key = key.toString();
-  // This function could be capable of outputting valid a ECMAScript string, but the
-  // resulting code for testing which form to use would be tens of thousands of characters long
-  // That means this will use the name form for some illegal forms
-  if (!key.match(/[.\s\[\]]/) && !key.match(/^[\d]/)) {
-    return '.' + key;
-  }
-  if (key.match(/^\d+$/)) {
-    return '[' + key + ']';
-  }
-  return '[' + JSON.stringify(key) + ']';
-};
-
-exports.deepCompareStrict = function deepCompareStrict (a, b) {
-  if (typeof a !== typeof b) {
-    return false;
-  }
-  if (a instanceof Array) {
-    if (!(b instanceof Array)) {
-      return false;
-    }
-    if (a.length !== b.length) {
-      return false;
-    }
-    return a.every(function (v, i) {
-      return deepCompareStrict(a[i], b[i]);
-    });
-  }
-  if (typeof a === 'object') {
-    if (!a || !b) {
-      return a === b;
-    }
-    var aKeys = Object.keys(a);
-    var bKeys = Object.keys(b);
-    if (aKeys.length !== bKeys.length) {
-      return false;
-    }
-    return aKeys.every(function (v) {
-      return deepCompareStrict(a[v], b[v]);
-    });
-  }
-  return a === b;
-};
-
-module.exports.deepMerge = function deepMerge (target, src) {
-  var array = Array.isArray(src);
-  var dst = array && [] || {};
-
-  if (array) {
-    target = target || [];
-    dst = dst.concat(target);
-    src.forEach(function (e, i) {
-      if (typeof e === 'object') {
-        dst[i] = deepMerge(target[i], e)
-      } else {
-        if (target.indexOf(e) === -1) {
-          dst.push(e)
-        }
-      }
-    });
-  } else {
-    if (target && typeof target === 'object') {
-      Object.keys(target).forEach(function (key) {
-        dst[key] = target[key];
-      });
-    }
-    Object.keys(src).forEach(function (key) {
-      if (typeof src[key] !== 'object' || !src[key]) {
-        dst[key] = src[key];
-      }
-      else {
-        if (!target[key]) {
-          dst[key] = src[key];
-        } else {
-          dst[key] = deepMerge(target[key], src[key])
-        }
-      }
-    });
-  }
-
-  return dst;
-};
-
-/**
- * Validates instance against the provided schema
- * Implements URI+JSON Pointer encoding, e.g. "%7e"="~0"=>"~", "~1"="%2f"=>"/"
- * @param o
- * @param s The path to walk o along
- * @return any
- */
-exports.objectGetPath = function objectGetPath(o, s) {
-  var parts = s.split('/').slice(1);
-  var k;
-  while (typeof (k=parts.shift()) == 'string') {
-    var n = decodeURIComponent(k.replace(/~0/,'~').replace(/~1/g,'/'));
-    if (!(n in o)) return;
-    o = o[n];
-  }
-  return o;
-};
-
-/**
- * Accept an Array of property names and return a JSON Pointer URI fragment
- * @param Array a
- * @return {String}
- */
-exports.encodePath = function encodePointer(a){
-	// ~ must be encoded explicitly because hacks
-	// the slash is encoded by encodeURIComponent
-	return a.map(function(v){ return '/'+encodeURIComponent(v).replace(/~/g,'%7E'); }).join('');
-}
-
-},{"url":6}],9:[function(require,module,exports){
-'use strict';
-
-var Validator = module.exports.Validator = require('./validator');
-
-module.exports.ValidatorResult = require('./helpers').ValidatorResult;
-module.exports.ValidationError = require('./helpers').ValidationError;
-module.exports.SchemaError = require('./helpers').SchemaError;
-
-module.exports.validate = function (instance, schema, options) {
-  var v = new Validator();
-  return v.validate(instance, schema, options);
-};
-
-},{"./helpers":8,"./validator":10}],10:[function(require,module,exports){
-'use strict';
-
-var urilib = require('url');
-
-var attribute = require('./attribute');
-var helpers = require('./helpers');
-var ValidatorResult = helpers.ValidatorResult;
-var SchemaError = helpers.SchemaError;
-var SchemaContext = helpers.SchemaContext;
-
-/**
- * Creates a new Validator object
- * @name Validator
- * @constructor
- */
-var Validator = function Validator () {
-  this.schemas = {};
-  this.unresolvedRefs = [];
-
-  // Use Object.create to make this extensible without Validator instances stepping on each other's toes.
-  this.types = Object.create(types);
-  this.attributes = Object.create(attribute.validators);
-};
-
-// Hint at the presence of a property
-Validator.prototype.schemas = null;
-Validator.prototype.types = null;
-Validator.prototype.attributes = null;
-Validator.prototype.unresolvedRefs = null;
-
-/**
- * Adds a schema with a certain urn to the Validator instance.
- * @param schema
- * @param urn
- * @return {Object}
- */
-Validator.prototype.addSchema = function addSchema (schema, uri) {
-  if (!schema) {
-    return null;
-  }
-  var ourUri = uri || schema.id;
-  this.addSubSchema(ourUri, schema);
-  if (ourUri) {
-    this.schemas[ourUri] = schema;
-  }
-  return this.schemas[ourUri];
-};
-
-Validator.prototype.addSubSchema = function addSubSchema(baseuri, schema) {
-  if(!schema || typeof schema!='object') return;
-  // Mark all referenced schemas so we can tell later which schemas are referred to, but never defined
-  if(schema.$ref){
-    var resolvedUri = urilib.resolve(baseuri, schema.$ref);
-    // Only mark unknown schemas as unresolved
-    if (this.schemas[resolvedUri] === undefined) {
-      this.schemas[resolvedUri] = null;
-      this.unresolvedRefs.push(resolvedUri);
-    }
-    return;
-  }
-  var ourUri = schema.id && urilib.resolve(baseuri, schema.id);
-  var ourBase = ourUri || baseuri;
-  if (ourUri) {
-    if(this.schemas[ourUri]){
-      if(!helpers.deepCompareStrict(this.schemas[ourUri], schema)){
-        throw new Error('Schema <'+schema+'> already exists with different definition');
-      }
-      return this.schemas[ourUri];
-    }
-    this.schemas[ourUri] = schema;
-    var documentUri = ourUri.replace(/^([^#]*)#$/, '$1');
-    this.schemas[documentUri] = schema;
-  }
-  this.addSubSchemaArray(ourBase, ((schema.items instanceof Array)?schema.items:[schema.items]));
-  this.addSubSchema(ourBase, schema.additionalItems);
-  this.addSubSchemaObject(ourBase, schema.properties);
-  this.addSubSchema(ourBase, schema.additionalProperties);
-  this.addSubSchemaObject(ourBase, schema.definitions);
-  this.addSubSchemaObject(ourBase, schema.patternProperties);
-  this.addSubSchemaObject(ourBase, schema.dependencies);
-  this.addSubSchemaArray(ourBase, schema.disallow);
-  this.addSubSchemaArray(ourBase, schema.allOf);
-  this.addSubSchemaArray(ourBase, schema.anyOf);
-  this.addSubSchemaArray(ourBase, schema.oneOf);
-  this.addSubSchema(ourBase, schema.not);
-  return this.schemas[ourUri];
-};
-
-Validator.prototype.addSubSchemaArray = function addSubSchemaArray(baseuri, schemas) {
-  if(!(schemas instanceof Array)) return;
-  for(var i=0; i<schemas.length; i++){
-    this.addSubSchema(baseuri, schemas[i]);
-  }
-};
-
-Validator.prototype.addSubSchemaObject = function addSubSchemaArray(baseuri, schemas) {
-  if(!schemas || typeof schemas!='object') return;
-  for(var p in schemas){
-    this.addSubSchema(baseuri, schemas[p]);
-  }
-};
-
-
-
-/**
- * Sets all the schemas of the Validator instance.
- * @param schemas
- */
-Validator.prototype.setSchemas = function setSchemas (schemas) {
-  this.schemas = schemas;
-};
-
-/**
- * Returns the schema of a certain urn
- * @param urn
- */
-Validator.prototype.getSchema = function getSchema (urn) {
-  return this.schemas[urn];
-};
-
-/**
- * Validates instance against the provided schema
- * @param instance
- * @param schema
- * @param [options]
- * @param [ctx]
- * @return {Array}
- */
-Validator.prototype.validate = function validate (instance, schema, options, ctx) {
-  if (!options) {
-    options = {};
-  }
-  var propertyName = options.propertyName || 'instance';
-  // This will work so long as the function at uri.resolve() will resolve a relative URI to a relative URI
-  var base = urilib.resolve(options.base||'/', schema.id||'');
-  if(!ctx){
-    ctx = new SchemaContext(schema, options, propertyName, base, Object.create(this.schemas));
-    if (!ctx.schemas[base]) {
-      ctx.schemas[base] = schema;
-    }
-  }
-  if (schema) {
-    var result = this.validateSchema(instance, schema, options, ctx);
-    if (!result) {
-      throw new Error('Result undefined');
-    }
-    return result;
-  }
-  throw new SchemaError('no schema specified', schema);
-};
-
-/**
- * Validates an instance against the schema (the actual work horse)
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @private
- * @return {ValidatorResult}
- */
-Validator.prototype.validateSchema = function validateSchema (instance, schema, options, ctx) {
-  var self = this;
-  var result = new ValidatorResult(instance, schema, options, ctx);
-  if (!schema) {
-    throw new Error("schema is undefined");
-  }
-
-  /**
-  * @param Object schema
-  * @return mixed schema uri or false
-  */
-  function shouldResolve(schema) {
-    var ref = (typeof schema === 'string') ? schema : schema.$ref;
-    if (typeof ref=='string') return ref;
-    return false;
-  }
-  /**
-  * @param Object schema
-  * @param SchemaContext ctx
-  * @returns Object schema or resolved schema
-  */
-  function resolve(schema, ctx) {
-    var ref;
-    if(ref = shouldResolve(schema)) {
-      return self.resolve(schema, ref, ctx).subschema;
-    }
-    return schema;
-  }
-
-  if (schema['extends']) {
-    if (schema['extends'] instanceof Array) {
-      schema['extends'].forEach(function (s) {
-        schema = helpers.deepMerge(schema, resolve(s, ctx));
-      });
-    } else {
-      schema = helpers.deepMerge(schema, resolve(schema['extends'], ctx));
-    }
-  }
-
-  var switchSchema;
-  if (switchSchema = shouldResolve(schema)) {
-    var resolved = this.resolve(schema, switchSchema, ctx);
-    var subctx = new SchemaContext(resolved.subschema, options, ctx.propertyPath, resolved.switchSchema, ctx.schemas);
-    return this.validateSchema(instance, resolved.subschema, options, subctx);
-  }
-
-  var skipAttributes = options && options.skipAttributes || [];
-  // Validate each schema attribute against the instance
-  for (var key in schema) {
-    if (!attribute.ignoreProperties[key] && skipAttributes.indexOf(key) < 0) {
-      var validatorErr = null;
-      var validator = self.attributes[key];
-      if (validator) {
-        validatorErr = validator.call(self, instance, schema, options, ctx);
-      } else if (options.allowUnknownAttributes === false) {
-        // This represents an error with the schema itself, not an invalid instance
-        throw new SchemaError("Unsupported attribute: " + key, schema);
-      }
-      if (validatorErr) {
-        result.importErrors(validatorErr);
-      }
-    }
-  }
-
-  if (typeof options.rewrite == 'function') {
-    var value = options.rewrite.call(this, instance, schema, options, ctx);
-    result.instance = value;
-  }
-  return result;
-};
-
-/**
-* @private
-* @param Object schema
-* @param Object switchSchema
-* @param SchemaContext ctx
-* @return Object resolved schemas {subschema:String, switchSchema: String}
-* @thorws SchemaError
-*/
-Validator.prototype.resolve = function resolve (schema, switchSchema, ctx) {
-  switchSchema = ctx.resolve(switchSchema);
-  // First see if the schema exists under the provided URI
-  if (ctx.schemas[switchSchema]) {
-    return {subschema: ctx.schemas[switchSchema], switchSchema: switchSchema};
-  }
-  // Else try walking the property pointer
-  var parsed = urilib.parse(switchSchema);
-  var fragment = parsed && parsed.hash;
-  var document = fragment && fragment.length && switchSchema.substr(0, switchSchema.length - fragment.length);
-  if (!document || !ctx.schemas[document]) {
-    throw new SchemaError("no such schema <" + switchSchema + ">", schema);
-  }
-  var subschema = helpers.objectGetPath(ctx.schemas[document], fragment.substr(1));
-  if(subschema===undefined){
-    throw new SchemaError("no such schema " + fragment + " located in <" + document + ">", schema);
-  }
-  return {subschema: subschema, switchSchema: switchSchema};
-};
-
-/**
- * Tests whether the instance if of a certain type.
- * @private
- * @param instance
- * @param schema
- * @param options
- * @param ctx
- * @param type
- * @return {boolean}
- */
-Validator.prototype.testType = function validateType (instance, schema, options, ctx, type) {
-  if (typeof this.types[type] == 'function') {
-    return this.types[type].call(this, instance);
-  }
-  if (type && typeof type == 'object') {
-    var res = this.validateSchema(instance, type, options, ctx);
-    return res === undefined || !(res && res.errors.length);
-  }
-  // Undefined or properties not on the list are acceptable, same as not being defined
-  return true;
-};
-
-var types = Validator.prototype.types = {};
-types.string = function testString (instance) {
-  return typeof instance == 'string';
-};
-types.number = function testNumber (instance) {
-  return typeof instance == 'number';
-};
-types.integer = function testInteger (instance) {
-  return (typeof instance == 'number') && instance % 1 === 0;
-};
-types.boolean = function testBoolean (instance) {
-  return typeof instance == 'boolean';
-};
-types.number = function testNumber (instance) {
-  return typeof instance == 'number';
-};
-types.array = function testArray (instance) {
-  return instance instanceof Array;
-};
-types['null'] = function testNull (instance) {
-  return instance === null;
-};
-types.date = function testDate (instance) {
-  return instance instanceof Date;
-};
-types.any = function testAny (instance) {
-  return true;
-};
-types.object = function testObject (instance) {
-  // TODO: fix this - see #15
-  return instance && (typeof instance) === 'object' && !(instance instanceof Array) && !(instance instanceof Date);
-};
-
-module.exports = Validator;
-
-},{"./attribute":7,"./helpers":8,"url":6}]},{},[1]);
+},{"punycode":6,"querystring":9}]},{},[1]);

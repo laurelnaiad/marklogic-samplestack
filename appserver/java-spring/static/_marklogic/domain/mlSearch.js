@@ -1,20 +1,40 @@
-/* 
- * Copyright 2012-2015 MarkLogic Corporation 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- */ 
+/*
+ * Copyright 2012-2015 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-define(['_marklogic/module'], function (module) {
+define([
+  '_marklogic/module',
+  'json!_marklogic/schema/search.json',
+  'json!_marklogic/schema/searchConstraintBase.json',
+  'json!_marklogic/schema/searchConstraintBoolean.json',
+  'json!_marklogic/schema/searchConstraintDateTime.json',
+  'json!_marklogic/schema/searchConstraintEnum.json',
+  'json!_marklogic/schema/searchConstraintText.json',
+  'json!_marklogic/schema/searchCriteria.json',
+  'json!_marklogic/schema/searchResults.json'
+], function (
+  module,
+  schemaSearch,
+  schemaSearchConstraintBase,
+  schemaSearchConstraintBoolean,
+  schemaSearchConstraintDateTime,
+  schemaSearchConstraintEnum,
+  schemaSearchConstraintText,
+  schemaSearchCriteria,
+  schemaSearchResults
+) {
 
   /**
    * @ngdoc domain
@@ -163,6 +183,17 @@ define(['_marklogic/module'], function (module) {
    * ```
    *
    */
+  var schemas = {
+    search : schemaSearch,
+    searchConstraintBase : schemaSearchConstraintBase,
+    searchConstraintBoolean : schemaSearchConstraintBoolean,
+    searchConstraintDateTime : schemaSearchConstraintDateTime,
+    searchConstraintEnum : schemaSearchConstraintEnum,
+    searchConstraintText : schemaSearchConstraintText,
+    searchCriteria : schemaSearchCriteria,
+    searchResults : schemaSearchResults
+  };
+
   module.factory('mlSearch', [
 
     '$q', 'mlModelBase', 'mlSchema', 'mlUtil',
@@ -170,125 +201,19 @@ define(['_marklogic/module'], function (module) {
       $q, mlModelBase, mlSchema, mlUtil
     ) {
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchCriteria',
-        additionalProperties: false,
-        properties: {
-          q: {
-            oneOf: [ { type: 'string' }, { type: 'null' } ]
-          },
-          sort: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
-          },
-          timezone: { type: 'string' },
-          start: { type: 'integer', minimum: 0 },
-          pageLength: { type: 'integer', minimum: 0 },
-          constraints: {
-            patternProperties: {
-              '^.+$': {
-                oneOf: [
-                  { $ref: 'http://marklogic.com/#searchConstraintText' },
-                  { $ref: 'http://marklogic.com/#searchConstraintBoolean' },
-                  { $ref: 'http://marklogic.com/#searchConstraintEnum' },
-                  { $ref: 'http://marklogic.com/#searchConstraintDateTime' }
-                ]
-              }
-            }
-          }
-        }
-      });
+      mlSchema.addSchema(schemas.searchCriteria);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintText',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type'],
-            properties: {
-              type: { enum: ['text'] },
-              value: { type: ['string', 'null' ] }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schemas.searchConstraintText);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintBoolean',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type'],
-            properties: {
-              type: { enum: ['boolean'] },
-              text: { type: ['boolean', 'null' ] }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schemas.searchConstraintBoolean);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintEnum',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type', 'subType'],
-            properties: {
-              type: { enum: ['enum'] },
-              subType: { enum: ['text'] },
-              values: { type: ['array', 'null' ], items: { type: 'text' } }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schemas.searchConstraintEnum);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintDateTime',
-        allOf: [
-          { $ref: 'http://marklogic.com/#searchConstraintBase' },
-          {
-            required: ['type'],
-            properties: {
-              type: { enum: ['dateTime'] },
-              value: { type: ['date-time', 'null' ] },
-              operator: { enum: ['GE', 'LE' ] }
-            }
-          }
-        ]
-      });
+      mlSchema.addSchema(schemas.searchConstraintDateTime);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchConstraintBase',
-        required: ['constraintName', 'queryStringName'],
-        properties: {
-          constraintName: { type: 'string' },
-          constraintType: { enum: ['range', 'value'] },
-          queryStringName: { type: 'string' }
-        },
-      });
+      mlSchema.addSchema(schemas.searchConstraintBase);
 
-      mlSchema.addSchema({
-        id: 'http://marklogic.com/#searchResults',
-        additionalProperties: true,
-        required: ['start', 'total', 'page-length', 'items'],
-        properties: {
-          start: { type: 'integer' },
-          total: { type: 'integer' },
-          'page-length': { type: 'integer' },
-          items: {
-            type: 'array',
-            items: { type: 'object' }
-          },
-          facets: {
-            type: 'object',
-            patternProperties: {
-              '^.+$': { type: ['object', 'array'] }
-            }
-          }
-        }
-      });
+      mlSchema.addSchema(schemas.searchResults);
 
       var throwMethod = function (method) {
         return function () {
@@ -299,6 +224,95 @@ define(['_marklogic/module'], function (module) {
         };
       };
 
+      var getPageForStart = function (self, override) {
+        return window.Math.ceil(
+          (override || self.criteria.start) / self.$ml.pageLength
+        );
+      };
+
+      var getStartForPage = function (self, override) {
+        return  1 +
+            ((override || self.getCurrentPage) - 1) * self.getPageLength();
+      };
+
+      var getPageCalcs = function (self) {
+        var info = {};
+        info.pageLength = self.$ml.pageLength;
+        if (!self.results || self.results.count === 0) {
+          return info;
+        }
+        if (self.results.start > self.results.total) {
+          return info;
+        }
+
+        info.start = self.results.start;
+        info.total = self.results.total;
+
+        info.currentPage = window.Math.ceil(info.start / info.pageLength);
+        info.pageCount = window.Math.ceil(info.total / info.pageLength);
+        info.isLastPage = info.currentPage === info.pageCount;
+        info.isFirstPage = info.currentPage === 1;
+        info.nextPageStart = info.isLastPage ?
+            null :
+            1 + info.pageLength * (info.currentPage + 1);
+        info.prevPageStart = info.isFirstPage ?
+            null :
+            1 + info.pageLength * (info.currentPage - 1);
+
+        return info;
+      };
+
+      var constraintNonEmpty = function (constraint) {
+        var valueProp = constraint.values || constraint.value;
+        if (valueProp) {
+          if (angular.isArray(valueProp)) {
+            if (valueProp.length) {
+              return true;
+            }
+          }
+          else {
+            if (valueProp || valueProp === 0) {
+              return true;
+            }
+          }
+        }
+        else {
+          return false;
+        }
+      };
+
+      var makeShadowSearches = function (
+        self,
+        service
+      ) {
+        // TODO: this implementation means that, for instance, the date
+        // range shadow still bears the impact of the tags criteria --
+        // is this what we want? I've heard tell that each constraint might
+        // want a shadow that is *NOT* impacted by other constraints...
+        var shadowSearches = {};
+        angular.forEach(self.facets, function (facet, name) {
+          if (facet.shadowConstraints) {
+            var facetWasFiltered = false;
+            var spec = angular.copy(self.criteria);
+            angular.forEach(
+              facet.shadowConstraints,
+              function (constraint) {
+              if (constraintNonEmpty(spec.constraints[constraint])) {
+                facetWasFiltered = facetWasFiltered || true;
+              }
+              delete spec.constraints[constraint].values;
+              delete spec.constraints[constraint].value;
+            });
+            if (facetWasFiltered) {
+              shadowSearches[name] = service.create({
+                criteria: spec,
+                shadow: name
+              });
+            }
+          }
+        });
+        return shadowSearches;
+      };
 
       /**
        * @ngdoc type
@@ -333,32 +347,9 @@ define(['_marklogic/module'], function (module) {
       MlSearchObject.prototype = Object.create(mlModelBase.object.prototype);
 
 
-      Object.defineProperty(MlSearchObject.prototype, '$mlSpec', {
-        value: {
-          schema: mlSchema.addSchema({
-            id: 'http://marklogic.com/#search',
-            required: ['criteria'],
-            additionalProperties: false,
-            properties: {
-              criteria: { $ref: 'http://marklogic.com/#searchCriteria' },
-              facets: {
-                patternProperties: {
-                  '^.+$': {
-                    properties: {
-                      name: { type: 'string' },
-                      valuesType: { enum: ['array', 'object'] },
-                      shadowConstraints: {
-                        type: 'array', items: { type: 'string' }
-                      }
-                    }
-                  }
-                }
-              },
-              results: { $ref: 'http://marklogic.com/#searchResults' }
-            }
-          })
-        }
-      });
+      MlSearchObject.prototype.$mlSpec = {
+        schema: mlSchema.addSchema(schemas.search)
+      };
 
       MlSearchObject.prototype.$mlSpec.serviceName = 'mlSearch';
 
@@ -787,95 +778,7 @@ define(['_marklogic/module'], function (module) {
         this.setCurrentPage(getPageForStart(this, this.results.total));
       };
 
-      var getPageForStart = function (self, override) {
-        return window.Math.ceil(
-          (override || self.criteria.start) / self.$ml.pageLength
-        );
-      };
 
-      var getStartForPage = function (self, override) {
-        return  1 +
-            ((override || self.getCurrentPage) - 1) * self.getPageLength();
-      };
-
-      var getPageCalcs = function (self) {
-        var info = {};
-        info.pageLength = self.$ml.pageLength;
-        if (!self.results || self.results.count === 0) {
-          return info;
-        }
-        if (self.results.start > self.results.total) {
-          return info;
-        }
-
-        info.start = self.results.start;
-        info.total = self.results.total;
-
-        info.currentPage = window.Math.ceil(info.start / info.pageLength);
-        info.pageCount = window.Math.ceil(info.total / info.pageLength);
-        info.isLastPage = info.currentPage === info.pageCount;
-        info.isFirstPage = info.currentPage === 1;
-        info.nextPageStart = info.isLastPage ?
-            null :
-            1 + info.pageLength * (info.currentPage + 1);
-        info.prevPageStart = info.isFirstPage ?
-            null :
-            1 + info.pageLength * (info.currentPage - 1);
-
-        return info;
-      };
-
-      var constraintNonEmpty = function (constraint) {
-        var valueProp = constraint.values || constraint.value;
-        if (valueProp) {
-          if (angular.isArray(valueProp)) {
-            if (valueProp.length) {
-              return true;
-            }
-          }
-          else {
-            if (valueProp || valueProp === 0) {
-              return true;
-            }
-          }
-        }
-        else {
-          return false;
-        }
-      };
-
-      var makeShadowSearches = function (
-        self,
-        service
-      ) {
-        // TODO: this implementation means that, for instance, the date
-        // range shadow still bears the impact of the tags criteria --
-        // is this what we want? I've heard tell that each constraint might
-        // want a shadow that is *NOT* impacted by other constraints...
-        var shadowSearches = {};
-        angular.forEach(self.facets, function (facet, name) {
-          if (facet.shadowConstraints) {
-            var facetWasFiltered = false;
-            var spec = angular.copy(self.criteria);
-            angular.forEach(
-              facet.shadowConstraints,
-              function (constraint) {
-              if (constraintNonEmpty(spec.constraints[constraint])) {
-                facetWasFiltered = facetWasFiltered || true;
-              }
-              delete spec.constraints[constraint].values;
-              delete spec.constraints[constraint].value;
-            });
-            if (facetWasFiltered) {
-              shadowSearches[name] = service.create({
-                criteria: spec,
-                shadow: name
-              });
-            }
-          }
-        });
-        return shadowSearches;
-      };
 
       // Generate array that pagination can repeat over
       // @see http://stackoverflow.com/questions/16824853

@@ -66,25 +66,6 @@ define(['app/module'], function (module) {
         $scope.session.password = getFromInputByClass('ss-input-password');
       };
 
-      /**
-       * @ngdoc method
-       * @name loginDialogCtlr#$scope.authenticate
-       * @description Initiate authentication of the `$scope.session`
-       * credentials.
-       *
-       * On success, closes the dialog.
-       *
-       * On failure, reports the failure to the user via the `$scope.error`
-       * property.
-       */
-      $scope.authenticate = function () {
-        $scope.error = null;
-        credentialsHack();
-        mlAuth.authenticate($scope.session).then(
-          onAuthSuccess,
-          onAuthFailure
-        );
-      };
 
       /**
        * @ngdoc method
@@ -107,6 +88,27 @@ define(['app/module'], function (module) {
         $scope.error = 'Login Failed: ' + reason;
         ssSession.create( { username: $scope.session.username })
             .attachScope($scope, 'session');
+      };
+
+
+      /**
+       * @ngdoc method
+       * @name loginDialogCtlr#$scope.authenticate
+       * @description Initiate authentication of the `$scope.session`
+       * credentials.
+       *
+       * On success, closes the dialog.
+       *
+       * On failure, reports the failure to the user via the `$scope.error`
+       * property.
+       */
+      $scope.authenticate = function () {
+        $scope.error = null;
+        credentialsHack();
+        mlAuth.authenticate($scope.session).then(
+          onAuthSuccess,
+          onAuthFailure
+        );
       };
 
       /**

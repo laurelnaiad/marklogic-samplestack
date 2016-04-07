@@ -1,0 +1,43 @@
+{
+  "id": "http://marklogic.com/samplestack#contributor",
+  "required": [
+    "id",
+    "reputation"
+  ],
+  "properties": {
+    "websiteUrl": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reputation": {
+      "type": [
+        "integer"
+      ]
+    },
+    "aboutMe": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 255
+    },
+    "id": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "location": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "voteCount": {
+      "type": [
+        "integer"
+      ]
+    }
+  }
+}
