@@ -22,12 +22,14 @@ var version = function () {
   };
 };
 
-var v = version();
-
-if ((v.minor == 10 && v.revision < 33) || v.minor < 10) {
-  process.stderr.write(
-    'Unsupported Node.js version (' + process.version + ').\n\n' +
-        'Please install Node.js 0.10.20 or newer'
-  );
-  process.exit(1);
-}
+// This build should be compatible with modern Node.js versions.
+// (Tested on Node 5.9.0 and npm 3.7.3 on OSX Yosesmite)
+// var v = version();
+//
+// if ((v.minor == 10 && v.revision < 33) || v.minor < 10) {
+//   process.stderr.write(
+//     'Unsupported Node.js version (' + process.version + ').\n\n' +
+//         'Please install Node.js 0.10.20 or newer'
+//   );
+//   process.exit(1);
+// }
